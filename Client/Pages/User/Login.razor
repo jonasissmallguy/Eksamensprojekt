@@ -1,0 +1,82 @@
+﻿@page "/login"
+@page "/login/{target:alpha}"
+
+@inject ILogin ILoginService;
+@inject NavigationManager navMan;
+@using Core;
+
+
+
+
+<div class="login-container">
+    <div class="login-logo">
+        <img src="icons/logo.svg" alt="App Logo" class="logo-img" />
+    </div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h2 class="login-title">Log ind for at fortsætte</h2>
+        </div>
+
+        <scan style="color: rgb(235,90,90)">
+            @if (_errorText != null)
+            {
+                @:● @_errorText
+            }
+        </scan>
+        <div class="login-form">
+            <EditForm Model="userLogIn" OnValidSubmit="@HandleLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                    <InputText @bind-Value="userLogIn.Email" class="form-control" placeholder="E-mail eller telefonnummer"/>
+                </div>
+                <br/>
+                <div class="form-group">
+                    <InputText @bind-Value="userLogIn.Password" type="password" class="form-control" placeholder="Adgangskode"/>
+                </div>
+                <div class="forgot-password">Har du glemt din adgangskode?</div>
+                <b @onclick="() => NavigateToResetPassword()" class="nulstil-password">Nulstil adgangskode</b>
+                <button type="submit" class="login-button">Log ind</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+@code {
+
+    private BrugerLoginDTO? userLogIn = new();
+    private string _errorText;
+
+    [Parameter] 
+    public string target { get; set; } = "";
+
+    
+    private async Task HandleLogin()
+    {
+        var bruger = await ILoginService.Login(userLogIn.Email, userLogIn.Password);
+        if (bruger != null)
+        {
+            
+            //Kan dette laves smarter?
+            try
+            {
+                navMan.NavigateTo(target, forceLoad: true);
+            }
+            catch 
+            {
+                navMan.NavigateTo("",forceLoad:true);
+            }
+            
+        }
+        else
+        {
+            _errorText = "Forkerte logindetaljer";
+        }
+    }
+
+    private void NavigateToResetPassword()
+    {
+        navMan.NavigateTo("resetpassword");
+    }
+
+}

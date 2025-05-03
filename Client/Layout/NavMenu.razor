@@ -1,0 +1,44 @@
+﻿@using Core
+@inject ILogin ILoginService;
+@inject NavigationManager navMan;
+
+<div class="nav-container">
+    <span class="logo-icon">
+        <img @onclick="GoToHome" style="cursor: pointer" src="icons/logo.svg"/>
+    </span>
+
+    <nav class="nav-menu">
+        <NavLink href="" Match="NavLinkMatch.All" ActiveClass="active">
+            <div class="nav-item">
+                <img class="icons" src="icons/user.svg"/>
+            </div>
+        </NavLink>
+
+        <NavLink href="overview" ActiveClass="active">
+            <div class="nav-item">
+                <img class="icons" src="icons/view.svg"/>
+            </div>
+        </NavLink>
+    </nav>
+
+    <div class="nav-footer">
+        <div class="nav-item">
+            <img @onclick="() => LogOut()" class="logout-icon" src="icons/sign-out.svg"/>
+        </div>
+    </div>
+</div>
+
+@code {
+    
+    private void GoToHome()
+    {
+        navMan.NavigateTo("");
+    }
+    
+    private async Task LogOut()
+    {
+        await ILoginService.Logout();
+        navMan.NavigateTo("/login", forceLoad: true);
+    }
+
+}

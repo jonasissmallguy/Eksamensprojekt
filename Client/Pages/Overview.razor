@@ -1,0 +1,22 @@
+﻿@inject ILogin ILoginService;
+@inject NavigationManager navMan;
+
+@page "/overview"
+@using Core
+<h3>Overview</h3>
+
+@code {
+
+    private BrugerLoginDTO _currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Henter bruger og viser mine annoncer, ellers navigerer man til login siden
+        _currentUser = await ILoginService.GetBruger();
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/overview");
+            return;
+        }
+    }
+}
