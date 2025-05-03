@@ -10,6 +10,8 @@ namespace Client
         Task Logout();
         Task GetUserByEmail(string email);
 
+        Task<bool> CheckVerficiationCode(string kode);
+
     }
 
 }

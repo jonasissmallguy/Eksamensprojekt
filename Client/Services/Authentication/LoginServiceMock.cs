@@ -35,6 +35,13 @@ namespace Client
                 Password = "123456",
                 Rolle = "Mentor"
             },
+            new Bruger
+            {
+                Id = 4,
+                Email = "tjoernevej53@gmail.com",
+                Password = "123456",
+                Rolle = "Mentor"
+            }
             
         };
         
@@ -115,10 +122,24 @@ namespace Client
             //Anvender SendGrid
             var client = new SendGridClient(apiKey);
 
+            //Fra & Til
             var from = new EmailAddress("jonasdupontheidemann@gmail.com", "HR");
-            var subject = "Nulstilling af Comwell adgangskode";
             var to = new EmailAddress(email);
             
+            //Indhold
+            var subject = "Nulstilling af Comwell adgangskode";
+            var plainTextContent =
+                $"Opret din nye adgangskode\t\n\t\t\n\t" +
+                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
+                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
+                $"{verificeringsKode}" +
+                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
+            
+            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+            
+            //Generer email
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
         }
 
         public async Task GetUserByEmail(string email)
@@ -127,21 +148,39 @@ namespace Client
 
             if (user != null)
             {
-                //Generer kode til at resette password
-                var verificeringsKode = new Random().Next(1000000, 999999).ToString();
+                //Generer kode på 6 cifre til at resette password
+                Random ran = new Random();
+                string verificeringsKode = String.Empty;
+                
+                string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
+                int size = 8;
+
+                for (int i = 0; i < size; i++)
+                {
+                    //Tager et random index
+                    int x = ran.Next(bogstaver.Length);
+                    verificeringsKode = verificeringsKode + bogstaver[x];
+                }
                 
                 verificeringsKoder[email] = (verificeringsKode, DateTime.Now.AddMinutes(10));
                 
-                //Kalder hjælpefunktion til at sende email 
-                await SendResetCodeEmail(email, verificeringsKode);
-            }
-            
-     
-            
-
-            
+                //Kalder hjælpefunktion til at sende email - kan ikke virker i mock
+                //await SendResetCodeEmail(email, verificeringsKode);
                 
-            
+                Console.WriteLine(verificeringsKode);
+            }
+        }
+
+        public async Task<bool> CheckVerficiationCode(string kode)
+        {
+            if (verificeringsKoder.TryGetValue(kode, out var input))
+            {
+                if (input.Kode == kode && input.Expiry > DateTime.Now)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
