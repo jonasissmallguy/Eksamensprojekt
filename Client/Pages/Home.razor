@@ -1,4 +1,4 @@
-﻿@inject ILogin ILoginService;
+﻿@inject IAuth AuthService;
 @inject NavigationManager navMan;
 @page "/"
 @using Core
@@ -87,12 +87,13 @@
 </div>
 
 @code {
-
+    
+    
     private BrugerLoginDTO _currentUser;
     
     protected override async Task OnInitializedAsync()
     {
-        _currentUser = await ILoginService.GetBruger();
+        _currentUser = await AuthService.GetBruger();
         if (_currentUser == null)
         {
             navMan.NavigateTo("login/");

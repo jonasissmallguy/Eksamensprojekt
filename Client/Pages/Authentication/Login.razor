@@ -1,11 +1,10 @@
 ﻿@page "/login"
 @page "/login/{target:alpha}"
 
-@inject ILogin ILoginService;
+@inject IAuth AuthService;
 @inject NavigationManager navMan;
+
 @using Core;
-
-
 
 
 <div class="login-container">
@@ -29,7 +28,7 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="form-group">
-                    <InputText @bind-Value="userLogIn.Email" class="form-control" placeholder="E-mail eller telefonnummer"/>
+                    <InputText @bind-Value="userLogIn.Email" class="form-control" placeholder="E-mail"/>
                 </div>
                 <br/>
                 <div class="form-group">
@@ -49,11 +48,11 @@
 
     [Parameter] 
     public string target { get; set; } = "";
-
+    
     
     private async Task HandleLogin()
     {
-        var bruger = await ILoginService.Login(userLogIn.Email, userLogIn.Password);
+        var bruger = await AuthService.Login(userLogIn.Email, userLogIn.Password);
         if (bruger != null)
         {
             

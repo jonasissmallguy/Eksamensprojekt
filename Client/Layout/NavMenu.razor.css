@@ -7,11 +7,6 @@
     position: relative; 
 }
 
-.logo {
-    padding: 0.1rem 0 0.1rem 0;
-    display: flex;
-    justify-content: center;
-}
 
 .logo-icon {
     width: 64px;

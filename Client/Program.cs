@@ -12,6 +12,9 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped<ILogin, LoginServiceMock>();
+builder.Services.AddScoped<IAuth, AuthServiceMock>();
+builder.Services.AddScoped<IBruger, BrugerServiceMock>();
+
+
 
 await builder.Build().RunAsync();

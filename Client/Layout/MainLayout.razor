@@ -2,40 +2,40 @@
 @using Core;
 @inherits LayoutComponentBase
 
-@inject ILogin ILoginService;
+@inject IAuth AuthService;
 @inject NavigationManager navMan;
 
 
-
-<div class="page">
-    @if (_currentUser != null)
-    {
-        <div class="sidebar">
-            <NavMenu/>
-        </div>
-    }
-    <main>
-        <div class="top-row">
-            <div class="top-row-left">
-                <div class="tab-navigation">
+<CascadingValue Value="_currentUser">
+    <div class="page">
+        @if (_currentUser != null)
+        {
+            <div class="sidebar">
+                <NavMenu/>
+            </div>
+        }
+        <main>
+            <div class="top-row">
+                <div class="top-row-left">
+                    <div class="tab-navigation">
+                    </div>
+                </div>
+                <div class="top-row-right">
+                    <div class="user-profile">
+                        @if (_currentUser != null)
+                        {
+                            <div @onclick="@(() => NavigateToMinSide(_currentUser.Id))" class="intialer" style="cursor: pointer">KC</div>
+                        }
+                    </div>
                 </div>
             </div>
-            <div class="top-row-right">
-                <div class="user-profile">
-                    @if (_currentUser != null)
-                    {
-                        <div @onclick="@(() => NavigateToMinSide(_currentUser.Id))" class="intialer" style="cursor: pointer">KC</div>
-                    }
-                </div>
-            </div>
-        </div>
 
-        <article class="content">
-            @Body
-        </article>
-    </main>
-</div>
-
+            <article class="content">
+                @Body
+            </article>
+        </main>
+    </div>
+</CascadingValue>
 @code
 {
     
@@ -44,7 +44,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _currentUser = await ILoginService.GetBruger();
+        _currentUser = await AuthService.GetBruger();
         if (_currentUser == null)
         {
             return;

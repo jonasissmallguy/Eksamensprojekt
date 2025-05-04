@@ -9,7 +9,7 @@ using SendGrid.Helpers.Mail;
 namespace Client
 {
 
-    public class LoginServiceMock : ILogin
+    public class AuthServiceMock : IAuth
     {
 
         private List<Bruger> _allUsers = new List<Bruger>
@@ -22,9 +22,9 @@ namespace Client
                 Rolle = "HR"
             },
             new Bruger
-            {
+            { 
                 Id = 2,
-            Email = "elev1@admin.com",
+            Email = "elev@elev.com",
             Password = "123456",
             Rolle = "Elev"
             },
@@ -51,7 +51,7 @@ namespace Client
         
         private  ILocalStorageService _localStorage;
 
-        public LoginServiceMock(ILocalStorageService localStorage)
+        public AuthServiceMock(ILocalStorageService localStorage)
         {
             _localStorage = localStorage;
         }
@@ -112,7 +112,7 @@ namespace Client
             await _localStorage.RemoveItemAsync("bruger");
         }
         
-        //Hjælpe funktion til at reset password
+        //Funktion til at sende email med reset kode
         public async Task SendResetCodeEmail(string email, string verificeringsKode)
         {
             //Loader .env
@@ -137,7 +137,7 @@ namespace Client
             
             var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
             
-            //Generer email
+            //Generer email og sender
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
         }
@@ -148,6 +148,10 @@ namespace Client
 
             if (user != null)
             {
+                
+                //Gemmer brugeremail i localStorage for siden "Resetkode"
+                await _localStorage.SetItemAsync("resetEmail", user.Email);
+                
                 //Generer kode på 6 cifre til at resette password
                 Random ran = new Random();
                 string verificeringsKode = String.Empty;
@@ -171,16 +175,57 @@ namespace Client
             }
         }
 
-        public async Task<bool> CheckVerficiationCode(string kode)
+        public async Task<bool> CheckVerficiationCode(string email, string kode)
         {
-            if (verificeringsKoder.TryGetValue(kode, out var input))
+            if (verificeringsKoder.TryGetValue(email, out var output))
             {
-                if (input.Kode == kode && input.Expiry > DateTime.Now)
+                if (output.Kode == kode && output.Expiry > DateTime.Now)
                 {
                     return true;
                 }
             }
             return false;
+        }
+
+        public async Task<string> GetLocalStorageResetEmail()
+        {
+           var userToResetEmail = await _localStorage.GetItemAsync<string>("resetEmail");
+           return userToResetEmail;
+        }
+
+        public async Task DeleteLocalStorageResetEmail()
+        {
+            await _localStorage.RemoveItemAsync("resetEmail");
+        }
+
+        public async Task<bool> UpdatePassword(string updatedPassword, string confirmedPassword)
+        {
+            //Anden validering? - sker også i Annotations
+            if (updatedPassword != confirmedPassword)
+            {
+                return false;
+            }
+
+            BrugerLoginDTO? currentUser = await GetBruger();
+
+            if (currentUser != null)
+            {
+                currentUser.Password = updatedPassword;
+                return true;
+            }
+            else 
+            {
+                var userEmail = await GetLocalStorageResetEmail();
+                var user = _allUsers.FirstOrDefault(u => u.Email.Equals(userEmail));
+
+                if (user != null)
+                {
+                    user.Password = updatedPassword;
+                    return true;
+                }
+            }
+
+            return true;
         }
     }
 

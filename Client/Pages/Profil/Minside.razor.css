@@ -1,0 +1,151 @@
+﻿.min-profil {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+}
+
+.profile-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-image-container {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 4px solid rgb(24,43,57);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.change-password-btn {
+    background-color: rgb(24,43,57);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    padding: 10px 16px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+
+.change-password-btn:hover {
+    background-color: rgb(34, 53, 67);
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.title {
+    font-size: 22px;
+    color: rgb(24,43,57);
+    margin-bottom: 25px;
+    border-bottom: 1px solid #dadde1;
+    padding-bottom: 15px;
+}
+
+.form-control {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #1c1e21;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #dddfe2;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.input-group input:disabled {
+    background-color: #f0f2f5;
+    color: #65676b;
+}
+
+.mentor-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    border-left: 4px solid rgb(24,43,57);
+}
+
+.mentor-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgb(24,43,57);
+    margin-bottom: 10px;
+}
+
+.mentor-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.restaurant-info {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dadde1;
+}
+
+.btn {
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: rgb(24,43,57);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: rgb(34, 53, 67);
+}
+
+
+@media (max-width: 768px) {
+    .min-profil {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-sidebar {
+        margin-bottom: 30px;
+    }
+}

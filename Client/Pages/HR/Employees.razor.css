@@ -1,0 +1,43 @@
+﻿.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.title {
+    font-size: 1.5em;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+
+.button-color {
+    padding: 10px 20px;
+    background-color: rgb(24,43,57);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+
+.button-color:hover {
+    background-color: grey;
+}

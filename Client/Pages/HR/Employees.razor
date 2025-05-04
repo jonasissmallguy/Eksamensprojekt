@@ -1,0 +1,35 @@
+﻿@page "/add"
+<div class="container">
+    <div class="title">
+        Mentor og elever
+    </div>
+    <input type="text" @bind="searchText" @bind:event="oninput" placeholder="Indtast søgeord..."  >
+
+    <div class="buttons">
+        <button class="button">Tildel mentor</button>
+        <button class="button">Tilføj mentor</button>
+        <button class="button-color">Opret elev</button>
+    </div>
+</div>
+
+<div class="content">
+    <h4>Mentor</h4>
+    <ul>
+        <li>Mentor 1</li>
+        <li>Mentor 2</li>
+        <li>Mentor 3</li>
+    </ul>
+    <h4>Elever</h4>
+    <ul>
+        <li>Elev 1</li>
+        <li>Elev 2</li>
+        <li>ELev 3</li>
+    </ul>
+</div>
+
+
+@code {
+    
+    private string searchText = string.Empty;
+
+}

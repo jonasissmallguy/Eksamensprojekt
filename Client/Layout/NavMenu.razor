@@ -1,6 +1,9 @@
 ﻿@using Core
-@inject ILogin ILoginService;
+@inject IAuth AuthService;
 @inject NavigationManager navMan;
+@inherits LayoutComponentBase
+
+
 
 <div class="nav-container">
     <span class="logo-icon">
@@ -13,12 +16,24 @@
                 <img class="icons" src="icons/user.svg"/>
             </div>
         </NavLink>
-
         <NavLink href="overview" ActiveClass="active">
             <div class="nav-item">
                 <img class="icons" src="icons/view.svg"/>
             </div>
         </NavLink>
+        @if (_currentUser.Rolle != null && _currentUser.Rolle == "HR")
+        { 
+            <NavLink href="add" ActiveClass="active">
+                <div class="nav-item">
+                    <img class="icons" src="icons/person-plus.svg"/>
+                </div>
+            </NavLink>
+            <NavLink href="hotels" ActiveClass="active">
+                <div class="nav-item">
+                    <img class="icons" src="icons/building-add.svg"/>
+                </div>
+            </NavLink>   
+        }
     </nav>
 
     <div class="nav-footer">
@@ -29,6 +44,9 @@
 </div>
 
 @code {
+
+    [CascadingParameter] 
+    private BrugerLoginDTO _currentUser { get; set; }
     
     private void GoToHome()
     {
@@ -37,7 +55,7 @@
     
     private async Task LogOut()
     {
-        await ILoginService.Logout();
+        await AuthService.Logout();
         navMan.NavigateTo("/login", forceLoad: true);
     }
 

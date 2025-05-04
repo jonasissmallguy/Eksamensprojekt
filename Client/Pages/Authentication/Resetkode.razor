@@ -1,0 +1,77 @@
+﻿@page "/resetkode"
+
+@inject IAuth AuthService;
+@inject NavigationManager navMan;
+
+
+@using Core
+
+<div class="form">
+    <h3>Skriv kode</h3>
+    <p class="info  ">Vi har sendt en e-mail med en 8-cifret kode. 
+        Det kan tage et par minutter, før du modtager e-mailen. 
+        Husk at tjekke din spam-mappe. Indsæt koden herunder.</p>
+    <scan style="color : rgb(235,90,90)">
+        @if (_errorText != null && !String.IsNullOrWhiteSpace(_errorText)) //Vises ikke ved blank
+        {
+            @:● @_errorText
+        }
+    </scan>
+    <EditForm Model="_brugerKode" OnValidSubmit="@HandleInput">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>    
+        <div class="form-gruppe">
+            <InputText @bind-Value="_brugerKode.Kode" class="form-control" placeholder="8-cifret engangskode">
+            </InputText>
+        </div>
+        <div @onclick="() => NavigateToSendEmail()" class="not-recieved" style="cursor: pointer" >Har du ikke fået en mail? Prøv venligst igen..</div>
+        <br/>
+        <button type="submit" class="confirm-kode-btn">Bekræft kode</button>
+        </EditForm>
+</div>
+
+@code {
+    
+    private BrugerLoginDTO _currentUser { get; set; }
+    
+    private BrugerResetKodeDTO _brugerKode = new();
+    private string _errorText;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _currentUser = await AuthService.GetBruger();
+        
+        if (_currentUser != null)
+        {
+            navMan.NavigateTo("/");
+        }
+    }
+    
+    private async Task HandleInput()
+    {
+        var resetKodeInput = _brugerKode.Kode;
+        var userEmail = await AuthService.GetLocalStorageResetEmail();
+        Console.WriteLine(userEmail);
+        
+        var status = await AuthService.CheckVerficiationCode(userEmail, resetKodeInput);
+        Console.WriteLine("Status er " + status);
+
+        if (status)
+        {
+            Console.WriteLine("Venligst reset password - din kode passer");
+            navMan.NavigateTo("opdaterpassword");
+        }
+        else
+        {
+            Console.WriteLine("Koden er forkert");
+            _errorText = "Koden er forkert eller er den udløbet";
+        }
+    }
+
+    private async Task NavigateToSendEmail()
+    {
+        await AuthService.DeleteLocalStorageResetEmail();
+        navMan.NavigateTo("resetpassword");
+    }
+
+}
