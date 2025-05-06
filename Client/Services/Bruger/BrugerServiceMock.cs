@@ -5,33 +5,32 @@ namespace Client
 
     public class BrugerServiceMock : IBruger
     {
-        private List<Bruger> _allUsers = new List<Bruger>
+        private List<User> _allUsers = new List<User>
         {
-            new Bruger
+            new User
             {
                 Id = 1,
                 Email = "admin@admin.com",
                 Password = "123456",
                 Rolle = "HR"
             },
-            new Bruger
+            new User
             {
                 Id = 2,
                 Email = "elev1@admin.com",
                 Password = "123456",
                 Rolle = "Elev",
-                MentorId = 1,
-                RestaurantId = 1,
-                Navn = "Han Solo"
+                RestaurantId = 1
+                
             },
-            new Bruger
+            new User
             {
                 Id = 3,
                 Email = "elev1@admin.com",
                 Password = "123456",
                 Rolle = "Mentor"
             },
-            new Bruger
+            new User
             {
                 Id = 4,
                 Email = "tjoernevej53@gmail.com",
@@ -44,7 +43,7 @@ namespace Client
         
         public async Task<BrugerProfilDTO> GetBrugerById(int userId)
         {
-            Bruger? bruger = _allUsers.FirstOrDefault(x => x.Id == userId);
+            User? bruger = _allUsers.FirstOrDefault(x => x.Id == userId);
 
             if (bruger == null)
             {
@@ -55,18 +54,16 @@ namespace Client
             {
                 Email = bruger.Email,
                 MentorNavn = "Martin",
-                Navn = bruger.Navn,
+                Navn = bruger.FirstName,
                 RegionNavn = "Fyn",
                 RestaurantNavn = "Comwell Aarhus",
-                Rolle = bruger.Rolle,
-                Telefon = bruger.Telefon
-
+                Rolle = bruger.Rolle
             };
         }
 
         public async Task<bool> OpdaterBruger(int brugerId, BrugerProfilDTO updatedBruger)
         {
-            Bruger? bruger = _allUsers.FirstOrDefault(x => x.Id == brugerId);
+            User? bruger = _allUsers.FirstOrDefault(x => x.Id == brugerId);
 
             if (bruger == null)
             {

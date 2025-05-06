@@ -14,7 +14,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<IAuth, AuthServiceMock>();
 builder.Services.AddScoped<IBruger, BrugerServiceMock>();
-
+builder.Services.AddScoped<IHotel, HotelServiceMock>();
 
 
 await builder.Build().RunAsync();

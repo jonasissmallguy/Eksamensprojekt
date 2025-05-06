@@ -1,0 +1,57 @@
+﻿@page "/opretbruger"
+
+@inject NavigationManager navMan;
+@inject IHotel IHotelService;
+
+@using Core
+<EditForm Model="newUser" OnValidSubmit="@HandleNewUser">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    <InputText @bind-Value="newUser.FrontName" placeholder="Fornavn">Fornavn</InputText>
+    <InputText @bind-Value="newUser.LastName" placeholder="Efternavn">Efternavn</InputText>
+    <InputText @bind-Value="newUser.Email" placeholder="Email">Email</InputText>
+    <InputNumber @bind-Value="newUser.Mobile" placeholder="Mobil">Mobil</InputNumber>
+    <InputSelect @bind-Value="newUser.Rolle">
+        @foreach (var rolle in roller)
+        {
+            <option value="@rolle">@rolle</option>
+        }
+    </InputSelect>
+    <InputSelect @bind-Value="newUser.Hotel">
+        @foreach (var x  in hoteller)
+        {
+            <option value="@x.HotelName">@x.HotelName</option>
+        }
+    </InputSelect>
+    <button type="submit" class="btn btn-primary">Opret bruger</button>
+</EditForm>
+@code {
+
+    private BrugerCreateDTO newUser = new();
+    private string[] roller = { "HR", "Administration","Funktionær","Elev"};
+    private List<HotelNameDTO> hoteller = new();
+    
+
+    protected override async void OnInitialized()
+    {
+        //Starter på elev
+        newUser.Rolle = roller[3];
+
+        //Henter alle hotelnavne til InputSelect
+        hoteller = await IHotelService.GetAllHotelNames();
+        
+    }
+    
+    private void HandleNewUser()
+    {
+        if (newUser.Rolle.Equals("Elev"))
+        {
+            navMan.NavigateTo("opretelevplan");
+        }
+        else
+        {
+            navMan.NavigateTo("");
+        }
+    }
+
+}

@@ -1,17 +1,22 @@
 .nav-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80px; /* adjust as needed */
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
     align-items: center;
-    position: relative; 
+    background-color: white; /* Optional: ensure it's visible */
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05); /* Optional visual polish */
+    z-index: 1000;
 }
 
 
 .logo-icon {
     width: 64px;
     height: 32px;
-    padding-top: 16px;
+    padding-top: 32px;
     padding-bottom: 48px;
     display: flex;
     align-items: center;

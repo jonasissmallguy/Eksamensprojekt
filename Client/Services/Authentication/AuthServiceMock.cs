@@ -12,30 +12,30 @@ namespace Client
     public class AuthServiceMock : IAuth
     {
 
-        private List<Bruger> _allUsers = new List<Bruger>
+        private List<User> _allUsers = new List<User>
         {
-            new Bruger
+            new User
             {
                 Id = 1,
                 Email = "admin@admin.com",
                 Password = "123456",
                 Rolle = "HR"
             },
-            new Bruger
+            new User
             { 
                 Id = 2,
             Email = "elev@elev.com",
             Password = "123456",
             Rolle = "Elev"
             },
-            new Bruger
+            new User
             {
                 Id = 3,
                 Email = "elev1@admin.com",
                 Password = "123456",
                 Rolle = "Mentor"
             },
-            new Bruger
+            new User
             {
                 Id = 4,
                 Email = "tjoernevej53@gmail.com",
@@ -58,7 +58,7 @@ namespace Client
         
         public async Task<BrugerLoginDTO?> GetBruger()
         {
-            Bruger? loggedInBruger = await _localStorage.GetItemAsync<Bruger>("bruger");
+            User? loggedInBruger = await _localStorage.GetItemAsync<User>("bruger");
 
             if (loggedInBruger == null)
             {
@@ -75,9 +75,9 @@ namespace Client
         }
         
         //Hjælpefunktion til at validere om 
-        public virtual async Task<BrugerLoginDTO?> Validate(string username, string password)
+        public async Task<BrugerLoginDTO?> Validate(string username, string password)
         {
-            foreach (Bruger bruger in _allUsers)
+            foreach (User bruger in _allUsers)
             {
                 if (bruger.Email.Equals(username) && bruger.Password.Equals(password))
                 {
