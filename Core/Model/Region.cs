@@ -5,7 +5,8 @@ namespace Core
 {
     public class Region
     {
-        [BsonId] 
+        [BsonId]
+        [BsonRepresentation(BsonType.Int32)]
         public int Id { get; set; }
         public string Navn { get; set; }
     }

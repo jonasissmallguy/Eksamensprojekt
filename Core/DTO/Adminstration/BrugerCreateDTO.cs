@@ -4,8 +4,11 @@ namespace Core
 {
     public class BrugerCreateDTO
     {
+        
+        public int Id { get; set; }
+        
         [Required(ErrorMessage = "Venligst indtast et fornavn")]
-        public string FrontName;
+        public string FirstName;
         
         [Required(ErrorMessage = "Venligst indtast et efternavn")]
         public string LastName;
@@ -21,6 +24,9 @@ namespace Core
         public string Rolle;
         
         [Required(ErrorMessage = "Venligst indtast et hotel")]
-        public string Hotel;
+        public int? HotelId;
+        [Required(ErrorMessage = "Venligst indtast en startdato")]
+        public DateOnly? StartDate { get; set; }
+
     }
 }

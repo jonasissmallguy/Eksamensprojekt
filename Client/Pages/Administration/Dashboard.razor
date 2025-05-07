@@ -1,13 +1,34 @@
-﻿@page "/dashboard"
+﻿
+@inject NavigationManager navMan;
+@inject IBruger IBrugerService;
 @using Core
+
+@page "/dashboard"
 <h3>Dashboard</h3>
+
+@if (alleElever != null)
+{
+    @foreach (var x in alleElever)
+    {
+        <p @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</p>
+    }
+}
 
 
 @code {
 
-    protected override async void OnInitialized()
+    private List<ElevOversigtDTO> alleElever;
+    
+    
+    protected override async Task OnInitializedAsync()
     {
-        
+        alleElever = await IBrugerService.GetElevOversigt();
+        Console.WriteLine("længen af elever er: " +  alleElever.Count);
+    }
+
+    private async Task NavigateToElevPlan(int studentId)
+    {
+        navMan.NavigateTo($"minelevplan/{studentId}");
     }
 
 }

@@ -1,0 +1,44 @@
+﻿@using System.Runtime.Intrinsics.X86
+@using Core
+@using Client.Components.Elevoversigt
+
+@inject IBruger IBrugerService;
+@inject IElevPlan IElevService;
+
+@page "/minelevplan/{studentId:int}"
+<h3>Elevplan for @elev.Navn</h3>
+
+@if (_currentUser.Rolle != "Elev")
+    {
+        <li>
+            <a>@elev.Email</a>
+            <a>@elev.Telefon</a>
+        </li>
+    }
+@if (elev != null)
+{
+    <ElevplanComponent Plan="@elevPlan"ShowSubmitButton="false" ShowComments="true"/>
+}
+else
+{
+    <p>..Loading</p>
+}
+
+@code {
+    
+    [CascadingParameter] 
+    private BrugerLoginDTO _currentUser { get; set; }
+    
+    [Parameter] public int studentId { get; set; }
+    private BrugerProfilDTO elev;
+    private Plan? elevPlan;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+        elev = await IBrugerService.GetBrugerById(studentId);
+        elevPlan =  await IElevService.GetPlanByStudentId(studentId);
+
+    }
+
+}

@@ -7,6 +7,7 @@ namespace Core
     public class Hotel
     {
         [BsonId]
+        [BsonRepresentation(BsonType.Int32)]
         public int Id { get; set; }
         public string HotelNavn { get; set; }
         public string Address { get; set; }
