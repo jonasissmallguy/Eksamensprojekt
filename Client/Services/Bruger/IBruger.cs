@@ -10,5 +10,11 @@ namespace Client
         Task<bool> OpdaterBruger(int userId, BrugerProfilDTO updateBruger);
 
         Task<List<ManagerDTO>> GetAllManagers();
+        
+        Task<User> OpretBruger(BrugerCreateDTO nyBruger);
+
+        Task<List<ElevOversigtDTO>> GetElevOversigt();
+
+
     }
 }

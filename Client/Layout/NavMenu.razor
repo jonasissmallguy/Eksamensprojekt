@@ -34,6 +34,14 @@
                 </div>
             </NavLink>   
         }
+        @if (_currentUser.Rolle == "Elev")
+        {
+            <NavLink href="@($"minelevplan/{_currentUser.Id}")" ActiveClass="active">
+                <div class="nav-item">
+                    <img class="icons" src="icons/person-plus.svg"/>
+                </div>
+            </NavLink>
+        }
     </nav>
 
     <div class="nav-footer">

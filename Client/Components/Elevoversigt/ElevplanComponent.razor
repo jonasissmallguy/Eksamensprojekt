@@ -1,0 +1,94 @@
+﻿@inject IAuth AuthService
+@inject NavigationManager navMan
+@using Core
+
+@using Core
+@using System.Linq
+
+@if (Plan != null)
+{
+    <Tabs EnableFadeEffect="true">
+        @foreach (var forløb in Plan.Forløbs)
+        {
+            <Tab Title="@forløb.Semester">
+                <Content>
+                    <div class="mt-3">
+                        <Accordion>
+                            <AccordionItem Title="@($"{forløb.Title} - {forløb.StartDate:dd-MM-yyyy}")" IsCollapsed="false">
+                                <Content>
+                                    <Accordion>
+                                        @foreach (var goal in forløb.Goals.OrderBy(g => g.SortOrder))
+                                        {
+                                            <AccordionItem Title="@goal.Title" IsCollapsed="true">
+                                                <Content>
+                                                    <p>@goal.Description</p>
+                                                    @if (ShowComments)
+                                                    {
+                                                        if (goal.Comments?.Any() == true)
+                                                        {
+                                                            <div class="comment-section mt-3 p-3 bg-light rounded">
+                                                                <h6>Comments:</h6>
+                                                                @foreach (var comment in goal.Comments)
+                                                                {
+                                                                    <div class="comment mb-2 p-2 bg-white rounded">
+                                                                        <div class="d-flex justify-content-between">
+                                                                            <strong>@comment.CreatorName</strong>
+                                                                            <small class="text-muted">@DateTime.Now.ToString("dd-MM-yyyy HH:mm")</small>
+                                                                        </div>
+                                                                        <p class="mb-0">@comment.Text</p>
+                                                                    </div>
+                                                                }
+
+                                                                <div class="mt-3">
+                                                                    <textarea class="form-control mb-2" placeholder="Add your comment..."></textarea>
+                                                                    <button class="btn btn-sm btn-primary">Post Comment</button>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="comment-section mt-3 p-3 bg-light rounded">
+                                                                <h6>No comments yet.</h6>
+                                                                <div class="mt-3">
+                                                                    <textarea class="form-control mb-2" placeholder="Add your comment..."></textarea>
+                                                                    <button class="btn btn-sm btn-primary">Post Comment</button>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </Content>
+                                            </AccordionItem>
+                                        }
+                                    </Accordion>
+                                </Content>
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                </Content>
+            </Tab>
+        }
+    </Tabs>
+
+    @if (ShowSubmitButton)
+    {
+        <button class="btn btn-success mt-3" @onclick="HandleSubmitButtonClicked">Opret Elevplan</button>
+    }
+}
+
+@code 
+
+{
+    [Parameter] public Plan Plan { get; set; }
+    
+    [Parameter] public bool ShowSubmitButton { get; set; } = false; //Viser ikke Opret Elevplan knap ved visning
+    
+    [Parameter] public bool ShowComments { get; set; } = false; //Viser ikke kommentar spor ved oprettelse
+    
+    [Parameter] 
+    public EventCallback OnSubmitClicked { get; set; } 
+    
+    private async Task HandleSubmitButtonClicked()
+    {
+        await OnSubmitClicked.InvokeAsync(); //Notifier parent componennt (opretelevplan/studentId...)
+    }
+}
