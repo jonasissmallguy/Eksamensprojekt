@@ -1,4 +1,6 @@
-﻿@page "/add"
+﻿@inject NavigationManager navMan;
+
+@page "/add"
 
 <div class="page-container">
     <div class="top-bar">
@@ -7,7 +9,7 @@
             <div class="button-row">
                 <button class="button">Tildel mentor</button>
                 <button class="button">Tilføj mentor</button>
-                <button class="button button-primary">Opret elev</button>
+                <button @onclick="NavigateToCreate" class="button button-primary">Opret elev</button>
             </div>
         </div>
         <input class="search-bar" type="text" @bind="searchText" @bind:event="oninput" placeholder="Søg efter personer eller teams..." />
@@ -48,4 +50,15 @@
 
 @code {
     private string searchText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+    }
+
+    private void NavigateToCreate()
+    {
+        navMan.NavigateTo("opretbruger");
+    }
+
 }

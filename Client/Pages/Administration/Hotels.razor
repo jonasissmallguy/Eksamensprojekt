@@ -1,0 +1,80 @@
+﻿@page "/hotels"
+
+@inject IBruger IBrugerService;
+@inject NavigationManager navMan;
+
+@using Core;
+
+<div class="form-page-container">
+    <div class="form-wrapper">
+        <div class="form-card">
+            <div class="form-header">
+                <h1 class="form-title">Opret nyt hotel</h1>
+                <p class="form-description">Udfyld nedenstående felter for at oprette et nyt hotel i systemet.</p>
+            </div>
+            <EditForm Model="newHotel" OnValidSubmit="@HandleNewHotel">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label class="form-label required-field">Hotel navn</label>
+                    <InputText class="form-control" @bind-Value="newHotel.HotelNavn" placeholder="Indtast fornavn" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">Addresse</label>
+                    <InputText class="form-control" @bind-Value="newHotel.Address" placeholder="Indtast addresse" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">Post-nr</label>
+                    <InputNumber class="form-control" @bind-Value="newHotel.Zip" placeholder="Indtast postkode" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">By</label>
+                    <InputText class="form-control" @bind-Value="newHotel.City" placeholder="Indtast bynavn" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">Region</label>
+                    <InputSelect class="form-select" @bind-Value="newHotel.Region">
+                        @foreach (var region in regioner)
+                        {
+                            <option value="@region">@region</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required-field">Køkkenchef</label>
+                    <InputSelect class="form-select" @bind-Value="newHotel.HrId">
+                        @foreach (var manager in alleManagers)
+                        {
+                            <option value="@manager.ManagerId">@manager.ManagerName</option>
+                        }
+                    </InputSelect>
+                </div>
+                <button type="submit" class="submit-btn">Opret hotel</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private HotelCreationDTO newHotel = new();
+    private string[] regioner = { "Jylland", "Sjælland", "Fyn" };
+    private List<ManagerDTO> alleManagers = new();
+    
+    
+    protected override async void OnInitialized()
+    {
+        alleManagers = await IBrugerService.GetAllManagers();
+        
+    }
+
+    private void HandleNewHotel()
+    {
+        navMan.NavigateTo("/");
+    }
+}

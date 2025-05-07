@@ -16,14 +16,14 @@
                 <img class="icons" src="icons/user.svg"/>
             </div>
         </NavLink>
-        <NavLink href="overview" ActiveClass="active">
+        <NavLink href="dashboard" ActiveClass="active">
             <div class="nav-item">
                 <img class="icons" src="icons/view.svg"/>
             </div>
         </NavLink>
         @if (_currentUser.Rolle != null && _currentUser.Rolle == "HR")
         { 
-            <NavLink href="add" ActiveClass="active">
+            <NavLink href="opretbruger" ActiveClass="active">
                 <div class="nav-item">
                     <img class="icons" src="icons/person-plus.svg"/>
                 </div>

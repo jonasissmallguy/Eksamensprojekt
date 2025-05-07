@@ -1,0 +1,91 @@
+﻿@page "/opretbruger"
+
+@inject NavigationManager navMan;
+@inject IHotel IHotelService;
+
+@using Core
+
+
+<div class="form-page-container">
+    <div class="form-wrapper">
+        <div class="form-card">
+            <div class="form-header">
+                <h1 class="form-title">Opret ny bruger</h1>
+                <p class="form-description">Udfyld nedenstående felter for at oprette en ny bruger i systemet.</p>
+            </div>
+            <EditForm Model="newUser" OnValidSubmit="@HandleNewUser">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label class="form-label required-field">Fornavn</label>
+                    <InputText class="form-control" @bind-Value="newUser.FrontName" placeholder="Indtast fornavn" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">Efternavn</label>
+                    <InputText class="form-control" @bind-Value="newUser.LastName" placeholder="Indtast efternavn" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">Email</label>
+                    <InputText class="form-control" @bind-Value="newUser.Email" placeholder="Indtast email" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">Mobil</label>
+                    <InputNumber class="form-control" @bind-Value="newUser.Mobile" placeholder="Indtast mobilnummer" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required-field">Rolle</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.Rolle">
+                        @foreach (var rolle in roller)
+                        {
+                            <option value="@rolle">@rolle</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required-field">Hotel</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.Hotel">
+                        @foreach (var x in hoteller)
+                        {
+                            <option value="@x.HotelName">@x.HotelName</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <button type="submit" class="submit-btn">Opret bruger</button>
+            </EditForm>
+        </div>
+    </div>
+
+    <div class="image-wrapper">
+        <img src="icons/chef-create.jpg"  class="form-image" />
+    </div>
+</div>
+
+@code {
+    private BrugerCreateDTO newUser = new();
+    private string[] roller = { "HR", "Køkkenchef", "Funktionær", "Elev" };
+    private List<HotelNameDTO> hoteller = new();
+
+    protected override async void OnInitialized()
+    {
+        newUser.Rolle = roller[3];
+        hoteller = await IHotelService.GetAllHotelNames();
+    }
+    
+    private void HandleNewUser()
+    {
+        if (newUser.Rolle.Equals("Elev"))
+        {
+            navMan.NavigateTo("opretelevplan");
+        }
+        else
+        {
+            navMan.NavigateTo("");
+        }
+    }
+}

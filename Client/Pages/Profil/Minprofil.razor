@@ -1,0 +1,102 @@
+﻿@page "/minprofil/{_currentUserId:int}"
+@inherits LayoutComponentBase
+
+@inject NavigationManager navMan;
+@inject IBruger IBrugerService;
+
+@using Core;
+
+
+<div class="min-profil">
+    <div class="profile-sidebar">
+        <div class="profile-image-container">
+            <img src="/api/placeholder/200/200" alt="Profilbillede" class="profile-image" />
+        </div>
+        <button class="change-password-btn" @onclick="() => NavigateToResetPassword()">Rediger adgangskode</button>
+    </div>
+
+    <div class="card">
+        <h2 class="title">Velkommen til din profil, @_minBruger.Navn</h2>
+        <EditForm Model="_minBruger" OnValidSubmit="@UpdateDetails">
+            <DataAnnotationsValidator/>
+            <ValidationSummary class="validation-summary"/>
+            <div class="form-control">
+                <div class="input-group">
+                    <label for="navn">Fulde navn</label>
+                    <InputText id="navn" @bind-Value="_minBruger.Navn"/>
+                </div>
+
+                <div class="input-group">
+                    <label for="telefon">Telefonnummer</label>
+                    <InputNumber id="telefon" @bind-Value="_minBruger.Telefon"/>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <InputText id="email" @bind-Value="@_minBruger.Email" disabled />
+                </div>
+
+                <div class="input-group">
+                    <label for="rolle">Rolle</label>
+                    <InputText id="rolle" @bind-Value="@_minBruger.Rolle" disabled />
+                </div>
+
+                @if (_minBruger.Rolle == "Elev")
+                {
+                    <div class="mentor-card">
+                        <h3 class="mentor-title">Din mentor</h3>
+                        <div class="mentor-info">
+                            <div class="input-group">
+                                <label for="mentor">Mentor</label>
+                                <InputText id="mentor" @bind-Value="@_minBruger.MentorNavn" disabled />
+                            </div>
+
+                            <div class="restaurant-info">
+                                <div class="input-group">
+                                    <label for="restaurant">Restaurant</label>
+                                    <InputText id="restaurant" @bind-Value="@_minBruger.RestaurantNavn" disabled />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-6 flex gap-3">
+                <button class="btn btn-primary" type="submit">Gem ændringer</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    
+    [Parameter]
+    public int _currentUserId { get; set; }
+
+    [CascadingParameter] 
+    private BrugerLoginDTO _currentUser { get; set; }
+
+    private BrugerProfilDTO _minBruger = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo($"login/minside{_currentUserId}");
+            return;
+        }
+        _minBruger = await IBrugerService.GetBrugerById(_currentUserId);
+    }
+    
+    private void NavigateToResetPassword()
+    {
+        navMan.NavigateTo("opdaterpassword");
+    }
+    
+    private async Task UpdateDetails()
+    {
+        await IBrugerService.OpdaterBruger(_currentUserId, _minBruger);
+    }
+
+}

@@ -9,5 +9,6 @@ namespace Client
         
         Task<bool> OpdaterBruger(int userId, BrugerProfilDTO updateBruger);
 
+        Task<List<ManagerDTO>> GetAllManagers();
     }
 }

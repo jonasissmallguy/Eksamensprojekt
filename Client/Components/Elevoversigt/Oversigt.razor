@@ -1,0 +1,122 @@
+﻿@inject IAuth AuthService
+@inject NavigationManager navMan
+@using Core
+
+<Tabs EnableFadeEffect="true">
+    <Tab Title="År 1" IsActive="true">
+        <Content>
+            <div class="mt-3">
+                <Accordion>
+                    <!--Overordnet mål -->
+                    <AccordionItem Title="1 - Velkommen til og introduktion til kolleaer - 27-01-2025">
+                        <Content>
+                            <Accordion>
+                                <!--Underliggende mål -->
+                                <AccordionItem Title="Udlever tøj og sikkerhedssko" IsCollapsed="false">
+                                    <!-- Kommentar spor -->
+                                    <Content>
+                                        <div class="comment-section mt-3 p-3 bg-light rounded">
+                                            <h6>Comments:</h6>
+                                            <div class="comment mb-2 p-2 bg-white rounded">
+                                                <div class="d-flex justify-content-between">
+                                                    <strong>John Doe</strong>
+                                                    <small class="text-muted">27-01-2025 14:30</small>
+                                                </div>
+                                                <p class="mb-0">All safety equipment has been delivered to the storage room.</p>
+                                            </div>
+
+                                            <div class="comment mb-2 p-2 bg-white rounded">
+                                                <div class="d-flex justify-content-between">
+                                                    <strong>Jane Smith</strong>
+                                                    <small class="text-muted">27-01-2025 15:45</small>
+                                                </div>
+                                                <p class="mb-0">Please remember to sign the equipment receipt form.</p>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <textarea class="form-control mb-2" placeholder="Add your comment..."></textarea>
+                                                <button class="btn btn-sm btn-primary">Post Comment</button>
+                                            </div>
+                                        </div>
+                                    </Content>
+                                </AccordionItem>
+                                <AccordionItem Title="Hvor er omklædning, personalekantine, toiletter?">
+                                </AccordionItem>
+                            </Accordion>
+                        </Content>
+                    </AccordionItem>
+
+                    <AccordionItem Title="2 - Neuroinstructure - 30-01-2025">
+                        <Content>
+                            <Accordion>
+                                <AccordionItem Title="Task 1: Study module">
+                                    <p>Neurostructure basics...</p>
+                                </AccordionItem>
+                            </Accordion>
+                        </Content>
+                    </AccordionItem>
+                </Accordion>
+            </div>
+        </Content>
+    </Tab>
+
+    <Tab Title="År 2">
+        <Content>
+            <div class="mt-3">
+                <Accordion>
+                    <AccordionItem Title="b Model 4 - Attachè">
+                        <p>Content for Model 4 room goes here...</p>
+                        <p>test</p>
+                    </AccordionItem>
+
+                    <AccordionItem Title="d Attractiva 1">
+                        <p>Content for Attractiva 1 room goes here...</p>
+                    </AccordionItem>
+
+                    <AccordionItem Title="e Attractiva">
+                        <p>Content for Attractiva room goes here...</p>
+                    </AccordionItem>
+
+                    <AccordionItem Title="f Bitter tests">
+                        <p>Content for Bitter tests room goes here...</p>
+                    </AccordionItem>
+                </Accordion>
+            </div>
+        </Content>
+    </Tab>
+
+    <Tab Title="År 3">
+        <Content>
+            <div class="mt-3">
+                <Accordion>
+                    <AccordionItem Title="g - Introduction till OOPI - 19-02-2025">
+                        <p>Content for OOPI introduction room goes here...</p>
+                    </AccordionItem>
+
+                    <AccordionItem Title="h - Introduction till OOPI - 13-02-2025">
+                        <p>Content for second OOPI introduction room goes here...</p>
+                    </AccordionItem>
+
+                    <AccordionItem Title="i - 7 - Avr. - 19-02-2025">
+                        <p>Content for Avr room goes here...</p>
+                    </AccordionItem>
+                </Accordion>
+            </div>
+        </Content>
+    </Tab>
+</Tabs>
+@code {
+    /*
+    [CascadingParameter]
+    private BrugerLoginDTO _currentUser { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/overview");
+            return;
+        }
+    }
+    */
+}

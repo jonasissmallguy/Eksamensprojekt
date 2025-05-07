@@ -36,6 +36,15 @@ namespace Client
                 Email = "tjoernevej53@gmail.com",
                 Password = "123456",
                 Rolle = "Mentor"
+            },
+            new User
+            {
+                FirstName = "Theis",
+                LastName = "Jones",
+                Id = 5,
+                Email = "test@gmail.com",
+                Password = "123456",
+                Rolle = "Køkkenchef"
             }
             
         };
@@ -69,9 +78,25 @@ namespace Client
             {
                 return false;
             }
-
             return true;
+        }
 
+        public async Task<List<ManagerDTO>> GetAllManagers()
+        {
+            List<ManagerDTO> alleManagers = new();
+
+            foreach (var user in _allUsers)
+            {
+                if (user.Rolle == "Køkkenchef")
+                {
+                    alleManagers.Add(new ManagerDTO
+                    {
+                        ManagerId = user.Id,
+                        ManagerName = user.FirstName + " " + user.LastName
+                    } );
+                }
+            }
+            return alleManagers;
         }
     }
 }
