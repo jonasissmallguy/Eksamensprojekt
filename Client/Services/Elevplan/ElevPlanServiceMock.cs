@@ -35,6 +35,11 @@ namespace Client
             return plan;
         }
 
+        public Task AddComment()
+        {
+            throw new NotImplementedException();
+        }
+
 
         //Simulerer vores template der kommer på db.. 
         private Plan CreateKokkeUddannelseTemplate()

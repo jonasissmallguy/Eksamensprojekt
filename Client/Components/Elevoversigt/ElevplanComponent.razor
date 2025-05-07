@@ -27,7 +27,7 @@
                                                         if (goal.Comments?.Any() == true)
                                                         {
                                                             <div class="comment-section mt-3 p-3 bg-light rounded">
-                                                                <h6>Comments:</h6>
+                                                                <h6>Kommentar:</h6>
                                                                 @foreach (var comment in goal.Comments)
                                                                 {
                                                                     <div class="comment mb-2 p-2 bg-white rounded">
@@ -40,18 +40,17 @@
                                                                 }
 
                                                                 <div class="mt-3">
-                                                                    <textarea class="form-control mb-2" placeholder="Add your comment..."></textarea>
-                                                                    <button class="btn btn-sm btn-primary">Post Comment</button>
+                                                                    <textarea class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                    <button @onclick="HandleAddCommentClicked" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                 </div>
                                                             </div>
                                                         }
                                                         else
                                                         {
                                                             <div class="comment-section mt-3 p-3 bg-light rounded">
-                                                                <h6>No comments yet.</h6>
                                                                 <div class="mt-3">
-                                                                    <textarea class="form-control mb-2" placeholder="Add your comment..."></textarea>
-                                                                    <button class="btn btn-sm btn-primary">Post Comment</button>
+                                                                    <textarea class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                    <button @onclick="HandleAddCommentClicked" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                 </div>
                                                             </div>
                                                         }
@@ -83,6 +82,14 @@
     [Parameter] public bool ShowSubmitButton { get; set; } = false; //Viser ikke Opret Elevplan knap ved visning
     
     [Parameter] public bool ShowComments { get; set; } = false; //Viser ikke kommentar spor ved oprettelse
+    
+    [Parameter]
+    public EventCallback OnAddCommentClick { get; set; }
+
+    private async Task HandleAddCommentClicked()
+    {
+        await OnAddCommentClick.InvokeAsync();
+    }
     
     [Parameter] 
     public EventCallback OnSubmitClicked { get; set; } 

@@ -18,7 +18,7 @@
 
                 <div class="form-group">
                     <label class="form-label required-field">Hotel navn</label>
-                    <InputText class="form-control" @bind-Value="newHotel.HotelNavn" placeholder="Indtast fornavn" />
+                    <InputText class="form-control" @bind-Value="newHotel.HotelNavn" placeholder="Indtast hotelnavn" />
                 </div>
 
                 <div class="form-group">
@@ -47,7 +47,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label required-field">Køkkenchef</label>
-                    <InputSelect class="form-select" @bind-Value="newHotel.HrId">
+                    <InputSelect class="form-select" @bind-Value="newHotel.KøkkenChefId">
                         @foreach (var manager in alleManagers)
                         {
                             <option value="@manager.ManagerId">@manager.ManagerName</option>
@@ -69,6 +69,7 @@
     
     protected override async void OnInitialized()
     {
+        newHotel.Region = regioner[0];
         alleManagers = await IBrugerService.GetAllManagers();
         
     }

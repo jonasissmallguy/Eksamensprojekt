@@ -17,7 +17,7 @@
     }
 @if (elev != null)
 {
-    <ElevplanComponent Plan="@elevPlan"ShowSubmitButton="false" ShowComments="true"/>
+    <ElevplanComponent Plan="@elevPlan"ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment"/>
 }
 else
 {
@@ -39,6 +39,12 @@ else
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan =  await IElevService.GetPlanByStudentId(studentId);
 
+    }
+
+    private async Task AddComment()
+    {
+        Console.WriteLine("Add cmment");
+        throw new NotImplementedException();
     }
 
 }
