@@ -13,8 +13,7 @@ namespace Core
         [Required(ErrorMessage = "Du skal udfylde et password")]
         public string Password { get; set; }
         public string Rolle { get; set; }
-        
-
+        public string FirstName { get; set; }
     }
 
 }

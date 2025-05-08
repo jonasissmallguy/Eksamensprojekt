@@ -17,6 +17,7 @@ namespace Client
             new User
             {
                 Id = 1,
+                FirstName = "Jane",
                 Email = "admin@admin.com",
                 Password = "123456",
                 Rolle = "HR"
@@ -24,20 +25,23 @@ namespace Client
             new User
             { 
                 Id = 2,
-            Email = "elev@elev.com",
-            Password = "123456",
-            Rolle = "Elev"
+                FirstName = "John",
+                Email = "elev@elev.com",
+                Password = "123456",
+                Rolle = "Elev"
             },
             new User
             {
                 Id = 3,
+                FirstName = "Theis",
                 Email = "elev1@admin.com",
                 Password = "123456",
-                Rolle = "Mentor"
+                Rolle = "Køkkenchef"
             },
             new User
             {
                 Id = 4,
+                FirstName = "Lars",
                 Email = "tjoernevej53@gmail.com",
                 Password = "123456",
                 Rolle = "Mentor"
@@ -58,7 +62,7 @@ namespace Client
         
         public async Task<BrugerLoginDTO?> GetBruger()
         {
-            User? loggedInBruger = await _localStorage.GetItemAsync<User>("bruger");
+            BrugerLoginDTO? loggedInBruger = await _localStorage.GetItemAsync<BrugerLoginDTO>("bruger");
 
             if (loggedInBruger == null)
             {
@@ -70,7 +74,8 @@ namespace Client
                 Id = loggedInBruger.Id,
                 Email = loggedInBruger.Email,
                 Password = loggedInBruger.Password,
-                Rolle = loggedInBruger.Rolle
+                Rolle = loggedInBruger.Rolle,
+                FirstName = loggedInBruger.FirstName
             };
         }
         
@@ -86,7 +91,8 @@ namespace Client
                         Id = bruger.Id,
                         Email = username,
                         Password = password,
-                        Rolle = bruger.Rolle
+                        Rolle = bruger.Rolle,
+                        FirstName  = bruger.FirstName
                     };
                 }
             }

@@ -1,4 +1,30 @@
-﻿
+﻿/*Elevoversigts midlertidig styling*/
+.page-title {
+    font-size: 4rem;
+    margin-bottom: 2rem;
+}
+
+.custom-card {
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    max-height: 250px; /* Maksimal højde på boksen */
+    overflow-y: auto;  /* Vertikal scrollbar vises hvis nødvendigt */
+}
+
+}
+
+.custom-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.card-text {
+    font-size: 1rem;
+}
 /* Update for the dashboard-container */
 .dashboard-container {
     padding: 0; /* Remove padding as the container is now inside the padded content */
