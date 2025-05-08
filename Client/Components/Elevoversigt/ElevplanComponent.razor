@@ -1,5 +1,4 @@
-﻿@inject IAuth AuthService
-@inject NavigationManager navMan
+﻿@inject NavigationManager navMan
 @using Core
 
 @using Core
@@ -40,8 +39,13 @@
                                                                 }
 
                                                                 <div class="mt-3">
-                                                                    <textarea class="form-control mb-2" placeholder="Skriv..."></textarea>
-                                                                    <button @onclick="HandleAddCommentClicked" class="btn btn-sm btn-primary">Tilføj kommentar</button>
+                                                                    @if (!comments.ContainsKey(goal.Id))
+                                                                    {
+                                                                        comments[goal.Id] = string.Empty;
+                                                                    }
+
+                                                                    <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                    <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                 </div>
                                                             </div>
                                                         }
@@ -49,8 +53,13 @@
                                                         {
                                                             <div class="comment-section mt-3 p-3 bg-light rounded">
                                                                 <div class="mt-3">
-                                                                    <textarea class="form-control mb-2" placeholder="Skriv..."></textarea>
-                                                                    <button @onclick="HandleAddCommentClicked" class="btn btn-sm btn-primary">Tilføj kommentar</button>
+                                                                    @if (!comments.ContainsKey(goal.Id))
+                                                                    {
+                                                                        comments[goal.Id] = string.Empty;
+                                                                    }
+
+                                                                    <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                    <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                 </div>
                                                             </div>
                                                         }
@@ -83,13 +92,29 @@
     
     [Parameter] public bool ShowComments { get; set; } = false; //Viser ikke kommentar spor ved oprettelse
     
-    [Parameter]
-    public EventCallback OnAddCommentClick { get; set; }
+    //Kommentar
 
-    private async Task HandleAddCommentClicked()
+    private Dictionary<int, string> comments = new();
+    
+    [Parameter]
+    public EventCallback<NewComment> OnAddCommentClick { get; set; }
+
+    private async Task HandleAddCommentClicked(Goal goal, string comment)
     {
-        await OnAddCommentClick.InvokeAsync();
+        if (!string.IsNullOrWhiteSpace(comment))
+        {
+            var newComment = new NewComment
+            {
+                GoalId = goal.Id,
+                Comment = comment
+            };
+            
+            await OnAddCommentClick.InvokeAsync(newComment);
+            comments[goal.Id] = string.Empty;
+        }
     }
+    
+    //Opret plan
     
     [Parameter] 
     public EventCallback OnSubmitClicked { get; set; } 
