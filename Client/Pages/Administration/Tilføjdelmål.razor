@@ -1,59 +1,83 @@
-﻿@using Core;
+﻿@using Core
+@using Core.DTO.Goal
 
 @inject NavigationManager navMan;
 
-@page "/tilføj delmål"
-<h3>Tilføjdelmål</h3>
-<!--
-<EditForm Model="nytDelmål" OnValidSubmit="@HandleNewDelMål">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+@page "/tilføjdelmål"
 
-    <div class="form-group">
-        <label class="form-label required-field">Type</label>
-        <InputText class="form-control" @bind-Value="nytDelmål.Type" placeholder="Indtast hotelnavn" />
-    </div>
-    
-    
+<div class="addGoal-topline">
+    <h3>Tilføj delmål</h3>
 
-    <div class="form-group">
-        <label class="form-label required-field">Addresse</label>
-        <InputText class="form-control" @bind-Value="nytDelmål.Address" placeholder="Indtast addresse" />
-    </div>
-
-    <div class="form-group">
-        <label class="form-label required-field">Post-nr</label>
-        <InputNumber class="form-control" @bind-Value="nytDelmål.Zip" placeholder="Indtast postkode" />
-    </div>
-
-    <div class="form-group">
-        <label class="form-label required-field">By</label>
-        <InputText class="form-control" @bind-Value="nytDelmål.City" placeholder="Indtast bynavn" />
-    </div>
-
-    <div class="form-group">
-        <label class="form-label required-field">Region</label>
-        <InputSelect class="form-select" @bind-Value="nytDelmål.Region">
-            @foreach (var region in regioner)
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton>@(selectedGoalId == null ? "Mål type": GetGoalName(selectedGoalId))</DropdownToggleButton>
+        <DropdownMenu>
+            @foreach (var y in alleTyper)
             {
-                <option value="@region">@region</option>
+                <DropdownItem @onclick="() => SelectType(y.GoalId)">@y.GoalName</DropdownItem>
             }
-        </InputSelect>
+        </DropdownMenu>
+    </Dropdown>
+</div>
+
+<EditForm Model="newGoal" class="row p-3">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-3">
+            <label for="Type">Type:</label>
+        </div>
     </div>
-
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-3">
+            <label for="Titel">Titel:</label>
+            <InputText id="Titel" @bind-Value="newGoal.Title"
+                       placeholder="Titel på delmål..." class="form-control"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-3">
+            <label for="Beskrivelse">Beskrivelse:</label>
+            <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                       placeholder="Beskrivelse" class="form-control"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-3">
+            <label for="Status">Status:</label>
+            <InputText id="Status" @bind-Value="newGoal.Status"
+                       placeholder="Status" class="form-control"/>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-3">
+            <label for="Semester">Semester:</label>
+            <InputNumber id="Semester" @bind-Value="newGoal.Semester"
+                         placeholder="Semester" class="form-control"/>
+        </div>
+    </div>
     
-    <button type="submit" class="submit-btn">Opret delmål</button>
+    
+
+
 </EditForm>
--->
-@code {
-    
-    private Goal nytDelmål { get; set; }
-    private string[] ansvarlig = { "HR", "Køkkenchef" };
-    private string[] goalTypes = { "Skole", "Kursus", "Kompetence" };
-    
-    private void HandleNewDelMål()
-    {
-        
-    }
 
+@code {
+
+    private GoalCreationDTO newGoal = new();
+    
+    private List<GoalNameDTO> alleTyper;
+    
+    private int? selectedGoalId = null;
+
+    private string GetGoalName(int? goalId)
+    {
+        var goal = alleTyper.FirstOrDefault(t => t.GoalId == goalId);
+        return goal?.GoalName ?? "Ukendt";
+    }
+    
+    private void SelectType(int? goalId)
+    {
+        selectedGoalId = goalId;
+    }
+    
 }

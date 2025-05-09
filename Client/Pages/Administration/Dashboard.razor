@@ -43,7 +43,7 @@
     
     <!-- Knap til at tilføje et delmål-->
     <div class="addgoal-button">
-        <Button class="btn btn-primary">Tilføj delmål</Button>
+        <Button class="btn btn-primary" @onclick="NavigateToAddGoal">Tilføj delmål</Button>
     </div>
 
     <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
@@ -121,6 +121,11 @@
     private void SelectHotel(int? hotelId)
     {
         selectedHotelId = hotelId;
+    }
+
+    private void NavigateToAddGoal()
+    {
+        navMan.NavigateTo("/tilføjdelmål");
     }
 
 }
