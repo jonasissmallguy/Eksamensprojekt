@@ -46,6 +46,65 @@ namespace Client
                 Email = "test@gmail.com",
                 Password = "123456",
                 Rolle = "Køkkenchef"
+            },
+            new User
+            {
+                Id = 6,
+                FirstName = "Hans",
+                Email = "elev2@admin.com",
+                Password = "123456",
+                Rolle = "Elev",
+                HotelId = 1
+                
+            },
+            new User
+            {
+                Id = 7,
+                FirstName = "Lene",
+                Email = "elev3@admin.com",
+                Password = "123456",
+                Rolle = "Elev",
+                HotelId = 2
+            },
+
+            new User
+            {
+                Id = 8,
+                FirstName = "Jens",
+                Email = "elev4@admin.com",
+                Password = "123456",
+                Rolle = "Elev",
+                HotelId = 2
+            },
+
+            new User
+            {
+                Id = 9,
+                FirstName = "Anna",
+                Email = "elev5@admin.com",
+                Password = "123456",
+                Rolle = "Elev",
+                HotelId = 1
+            },
+
+            new User
+            {
+                Id = 10,
+                FirstName = "Peter",
+                Email = "elev6@admin.com",
+                Password = "123456",
+                Rolle = "Elev",
+                HotelId = 1
+            },
+
+            new User
+            {
+                Id = 11,
+                FirstName = "Mette",
+                Email = "elev7@admin.com",
+                Password = "123456",
+                Rolle = "Elev",
+                HotelId = 1
             }
             
         };
@@ -149,6 +208,8 @@ namespace Client
                 {
                     Id = elev.Id,
                     Name = elev.FirstName + " " + elev.LastName,
+                    // Tilføjet af Rasmus
+                    HotelId = elev.HotelId,
                     Hotel = "test",
                     Roller = elev.Rolle,
                     Ansvarlig = "test ansvarlig"
