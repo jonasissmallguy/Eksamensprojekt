@@ -1,34 +1,126 @@
 ﻿
 @inject NavigationManager navMan;
 @inject IBruger IBrugerService;
+@inject IHotel IHotelService;
 @using Core
 
 @page "/dashboard"
 <h3>Dashboard</h3>
 
-@if (alleElever != null)
-{
-    @foreach (var x in alleElever)
-    {
-        <p @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</p>
-    }
-}
+<div class="dashboard-topline">
+    
+    <!-- Div med en søgebar, dropdown menuer og knap til eksport af lister -->
+    <div class="searchbar">
+        <TextInput @bind-value="@searchText" Placeholder="Søg ved navn..."></TextInput>
+    </div>
 
+    <!-- Dropdown til hotelvalg -->
+    <div class="dropdownmenu">
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>@(selectedHotelId == null ? "Hotel" :
+                GetHotelName(selectedHotelId))</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
+                @foreach (var y in alleHoteller)
+                {
+                    <DropdownItem @onclick="() => SelectHotel(y.HotelId)">@y.HotelName</DropdownItem>
+                }
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+
+    <!-- Dropdown til rolle -->
+    <div class="dropdownmenu">
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>Roller</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem To="#">Rolle 1</DropdownItem>
+                <DropdownItem To="#">Rolle 1</DropdownItem>
+                <DropdownItem To="#">Rolle 1</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+    
+    <!-- Knap til at tilføje et delmål-->
+    <div class="addgoal-button">
+        <Button class="btn btn-primary">Tilføj delmål</Button>
+    </div>
+
+    <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
+    <div class="export-button">
+        <Button class="btn btn-primary">Eksporter fil</Button>
+    </div>
+</div>
+
+<!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
+<table>
+    <tr>
+        <th>Navn</th>
+        <th>Hotel</th>
+        <th>Rolle</th>
+        <th>Ansvarlig</th>
+        <th>Status</th>
+    </tr>
+    
+    @if (alleElever != null)
+    {
+        @foreach (var x in FiltreredElever)
+        {
+            <tr>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Roller</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Ansvarlig</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">Status</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <p>Kan ikke hente elever...</p>
+    }
+</table>
 
 @code {
 
+// En variabel som gemmer det der bliver tastet ind i søgebaren
+    private string searchText = string.Empty;
+
+    private int? selectedHotelId = null;
+
     private List<ElevOversigtDTO> alleElever;
-    
-    
+    private List<HotelNameDTO> alleHoteller;
+
+    // Filter til søgetekst og til valg af hotel
+    private IEnumerable<ElevOversigtDTO> FiltreredElever =>
+        alleElever.Where((a =>
+            (string.IsNullOrWhiteSpace(searchText) ||
+             a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
+            (!selectedHotelId.HasValue || a.HotelId == selectedHotelId)));
+
     protected override async Task OnInitializedAsync()
     {
         alleElever = await IBrugerService.GetElevOversigt();
-        Console.WriteLine("længen af elever er: " +  alleElever.Count);
+        Console.WriteLine("længen af elever er: " + alleElever.Count);
+
+        alleHoteller = await IHotelService.GetAllHotelNames();
+        Console.WriteLine("Antal hoteller: " + alleHoteller.Count());
     }
 
     private async Task NavigateToElevPlan(int studentId)
     {
         navMan.NavigateTo($"minelevplan/{studentId}");
+    }
+
+    private string GetHotelName(int? hotelId)
+    {
+        var hotel = alleHoteller.FirstOrDefault(h => h.HotelId == hotelId);
+        return hotel?.HotelName ?? "Ukendt Hotel";
+    }
+
+    private void SelectHotel(int? hotelId)
+    {
+        selectedHotelId = hotelId;
     }
 
 }

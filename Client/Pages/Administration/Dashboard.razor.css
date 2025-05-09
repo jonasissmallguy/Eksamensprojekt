@@ -1,0 +1,53 @@
+﻿.searchbar {
+    width: 20%;
+    margin-right: 0.5%;
+}
+
+.dropdownmenu {
+    margin-right: 0.5%;
+}
+
+.dashboard-topline {
+    display: flex;
+    align-items: center;
+}
+
+/* Grundlæggende styling for tabellen */
+table {
+    width: 100%; /* Tabellen fylder hele bredden af dens container */
+    border-collapse: collapse; /* Fjerner mellemrum mellem celler */
+    margin: 20px 0; /* Tilføjer margin oven og under tabellen */
+    font-size: 18px; /* Justerer skriftstørrelsen */
+    text-align: left; /* Teksten i cellerne er venstrejusteret */
+}
+
+/* Styling for tabeloverskrifter (th) */
+th {
+    background-color: #4CAF50; /* Grøn baggrundsfarve */
+    color: white; /* Hvid tekstfarve */
+    padding: 12px; /* Tilføjer padding for bedre læselighed */
+}
+
+/* Styling for tabelceller (td) */
+td {
+    padding: 12px; /* Tilføjer padding for bedre læselighed */
+    border-bottom: 1px solid #ddd; /* Tilføjer en lys grå bundlinje */
+}
+
+/* Hover-effekt på tabelrækker */
+tr:hover {
+    background-color: #f5f5f5; /* Lys grå baggrundsfarve ved hover */
+}
+
+/* Styling for hver anden række for bedre læselighed */
+tr:nth-child(even) {
+    background-color: #f2f2f2; /* Lys grå baggrundsfarve for hver anden række */
+}
+
+.export-button {
+    margin-left: auto !important;
+}
+
+.export-button {
+    margin-right: 0.5%;
+}
