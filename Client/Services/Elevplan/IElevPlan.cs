@@ -5,13 +5,8 @@ namespace Client
 
     public interface IElevPlan
     {
-        Task<Plan> CreatePlanFromTemplate(int studentId);
         Task SavePlan(Plan plan);
-        
-        Task<List<Plan>> GetAllPlans();
-        
         Task<Plan> GetPlanByStudentId(int studentId);
-        
+        Task<List<Plan>> GetAllPlans(); //Used in mock to find the right plan.. maybe not nessecarry later on?
     }
-
 }

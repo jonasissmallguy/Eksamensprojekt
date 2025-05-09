@@ -5,18 +5,18 @@ namespace Core
 
     public class HotelCreationDTO
     {
-        [Required]
+        [Required(ErrorMessage = "Venligst intast et hotelnavn")]
         public string HotelNavn { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Venligst indtast en addresse")]
         public string Address { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Venligst indtast et postnummer")]
         public int? Zip { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Venligst indtast en by")]
         public string City { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Venligst indtast en region")]
         public string Region { get; set; }
         [Required]
-        public int HrId { get; set; }
+        public int KøkkenChefId { get; set; }
     }
 
 }

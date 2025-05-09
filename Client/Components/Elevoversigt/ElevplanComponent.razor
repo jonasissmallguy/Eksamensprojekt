@@ -1,5 +1,4 @@
-﻿@inject IAuth AuthService
-@inject NavigationManager navMan
+﻿@inject NavigationManager navMan
 @using Core
 
 @using Core
@@ -27,7 +26,7 @@
                                                         if (goal.Comments?.Any() == true)
                                                         {
                                                             <div class="comment-section mt-3 p-3 bg-light rounded">
-                                                                <h6>Comments:</h6>
+                                                                <h6>Kommentar:</h6>
                                                                 @foreach (var comment in goal.Comments)
                                                                 {
                                                                     <div class="comment mb-2 p-2 bg-white rounded">
@@ -40,18 +39,27 @@
                                                                 }
 
                                                                 <div class="mt-3">
-                                                                    <textarea class="form-control mb-2" placeholder="Add your comment..."></textarea>
-                                                                    <button class="btn btn-sm btn-primary">Post Comment</button>
+                                                                    @if (!comments.ContainsKey(goal.Id))
+                                                                    {
+                                                                        comments[goal.Id] = string.Empty;
+                                                                    }
+
+                                                                    <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                    <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                 </div>
                                                             </div>
                                                         }
                                                         else
                                                         {
                                                             <div class="comment-section mt-3 p-3 bg-light rounded">
-                                                                <h6>No comments yet.</h6>
                                                                 <div class="mt-3">
-                                                                    <textarea class="form-control mb-2" placeholder="Add your comment..."></textarea>
-                                                                    <button class="btn btn-sm btn-primary">Post Comment</button>
+                                                                    @if (!comments.ContainsKey(goal.Id))
+                                                                    {
+                                                                        comments[goal.Id] = string.Empty;
+                                                                    }
+
+                                                                    <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                    <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                 </div>
                                                             </div>
                                                         }
@@ -83,6 +91,30 @@
     [Parameter] public bool ShowSubmitButton { get; set; } = false; //Viser ikke Opret Elevplan knap ved visning
     
     [Parameter] public bool ShowComments { get; set; } = false; //Viser ikke kommentar spor ved oprettelse
+    
+    //Kommentar
+
+    private Dictionary<int, string> comments = new();
+    
+    [Parameter]
+    public EventCallback<NewComment> OnAddCommentClick { get; set; }
+
+    private async Task HandleAddCommentClicked(Goal goal, string comment)
+    {
+        if (!string.IsNullOrWhiteSpace(comment))
+        {
+            var newComment = new NewComment
+            {
+                GoalId = goal.Id,
+                Comment = comment
+            };
+            
+            await OnAddCommentClick.InvokeAsync(newComment);
+            comments[goal.Id] = string.Empty;
+        }
+    }
+    
+    //Opret plan
     
     [Parameter] 
     public EventCallback OnSubmitClicked { get; set; } 

@@ -6,25 +6,23 @@ namespace Core
     {
         
         public int Id { get; set; }
-        
         [Required(ErrorMessage = "Venligst indtast et fornavn")]
-        public string FirstName;
+        public string FirstName { get; set; }
         
         [Required(ErrorMessage = "Venligst indtast et efternavn")]
-        public string LastName;
+        public string LastName { get; set; }
         
         [Required(ErrorMessage = "Venligst indtast en e-mail")]
-        public string Email;
+        public string Email { get; set; }
         
         [Required(ErrorMessage = "Venligst et mobilnummer")]
-        [Range(8,8,ErrorMessage = "Skal ikke indeholde landekode")]
-        public int? Mobile;
+        public int? Mobile { get; set; }
         
         [Required(ErrorMessage = "Venligst indtast en rolle")]
-        public string Rolle;
+        public string Rolle { get; set; }
         
         [Required(ErrorMessage = "Venligst indtast et hotel")]
-        public int? HotelId;
+        public int HotelId { get; set; }
         [Required(ErrorMessage = "Venligst indtast en startdato")]
         public DateOnly? StartDate { get; set; }
 

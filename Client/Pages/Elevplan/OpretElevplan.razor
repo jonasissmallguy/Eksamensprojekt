@@ -1,9 +1,11 @@
 ﻿@using Core
 @using Client.Components.Elevoversigt
 
+
 @inject NavigationManager navMan;
 @inject IElevPlan IElevPlanService;
 @inject IBruger IBrugerService;
+@inject IGoalTemplate IGoalTemplate;
 
 
 @page "/opretelevplan/{studentId:int}"
@@ -13,13 +15,14 @@
     <h2>Du er ved at oprette en elevplan for @elev.Navn</h2>
     
     <ElevplanComponent Plan="@nyElevPlan"ShowSubmitButton="true"ShowComments="false" 
-                       OnSubmitClicked="HandleElevplanSubmit" />    
+                       OnSubmitClicked="HandleElevplanSubmit" />
+
+    <button @onclick="NavigateToCreateGoal" class="btn btn-primary">Opret delmål</button>
 }
 else
 {
     <p>Loading</p>
 }
-
 
 @code {
     [Parameter] public int studentId { get; set; }
@@ -30,15 +33,19 @@ else
     protected override async Task OnInitializedAsync()
     {
         elev = await IBrugerService.GetBrugerById(studentId);
-        nyElevPlan = await IElevPlanService.CreatePlanFromTemplate(studentId);
+        nyElevPlan = IGoalTemplate.CreateTemplate(); //skal være async... ved skift til live, kan ikke få til at virke i mock...
     }
     
-    //Bliver kaldt fra comoponent
     private async Task HandleElevplanSubmit()
     {
         
         //Gemmer planen
         await IElevPlanService.SavePlan(nyElevPlan);
         navMan.NavigateTo("/dashboard");
+    }
+    
+    private void NavigateToCreateGoal()
+    {
+        navMan.NavigateTo("tilføj delmål");
     }
 }
