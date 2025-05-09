@@ -3,10 +3,47 @@
 @page "/"
 @using Core
 
+<h3 class="page-title">Elevoversigt</h3>
 
-@code {
-    
-    
+<div class="row mt-4">
+    <div class="col-sm-6">
+        <div class="custom-card">
+            <div class="card-body">
+                <h5 class="card-title custom-title">Velkomst Boks</h5>
+                <p class="card-text">Velkommen til din side @_currentUser?.FirstName</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="custom-card">
+            <div class="card-body">
+                <h5 class="card-title custom-title">Kommende Deadlines</h5>
+                <p class="card-text">Du har nu følgende deadlines</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 mt-4">
+        <div class="custom-card">
+            <div class="card-body">
+                <h5 class="card-title custom-title">Kommende Kurser</h5>
+                <p class="card-text">Følgende kurser kommer i den næste periode</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 mt-4">
+        <div class="custom-card">
+            <div class="card-body">
+                <h5 class="card-title custom-title">Notifikationer</h5>
+                <p class="card-text">Du har følgende notofikationer</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code 
+
+{
     private BrugerLoginDTO _currentUser;
     
     protected override async Task OnInitializedAsync()
@@ -17,6 +54,21 @@
             navMan.NavigateTo("login/");
             return;
         }
+        else if (_currentUser.Rolle == "Elev")
+        {
+            navMan.NavigateTo("/");
+        }
+        else if (_currentUser.Rolle == "HR")
+        {
+            navMan.NavigateTo("/Dashboard");
+        }
+        else if (_currentUser.Rolle == "Køkkenchef")
+        {
+            navMan.NavigateTo("/Dashboard");
+        }
+        else if (_currentUser.Rolle == "Mentor")
+        {
+            navMan.NavigateTo("/Dashboard");
+        }
     }
- 
 }
