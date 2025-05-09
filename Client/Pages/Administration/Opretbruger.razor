@@ -79,8 +79,9 @@
     protected override async void OnInitialized()
     {
         newUser.Rolle = roller[0];
-        newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
         hoteller = await IHotelService.GetAllHotelNames();
+        newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
+
     }
     
     private async Task HandleNewUser()

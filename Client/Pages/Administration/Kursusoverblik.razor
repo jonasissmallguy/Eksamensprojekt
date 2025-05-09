@@ -1,0 +1,27 @@
+﻿@using Core;
+
+@inject IGoal GoalService;
+
+
+@page "/kursusoverblik/{kursusId:int}"
+<h3>Kursusoverblik</h3>
+
+
+<p>@_kursus.Description</p>
+
+<h3>Deltagerliste</h3>
+
+@code {
+
+    [Parameter] 
+    public int kursusId { get; set; }
+
+    private Goal _kursus;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _kursus = await GoalService.GetGoalByGoalId(kursusId);
+        
+    }
+
+}

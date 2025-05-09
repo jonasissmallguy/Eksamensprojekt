@@ -14,6 +14,8 @@ namespace Core
         public string Description { get; set; }
         public List<Forløb> Forløbs { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        
+        //Status her??
     }
 
 }

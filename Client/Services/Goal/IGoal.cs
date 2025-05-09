@@ -8,6 +8,8 @@ namespace Client
     {
         Task<Goal> GetGoalByGoalId(int goalId);
 
+        Task<List<Goal>> GetAllUncompletedCourses();
+        
     }
 
 }

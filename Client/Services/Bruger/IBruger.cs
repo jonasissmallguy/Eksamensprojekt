@@ -14,6 +14,7 @@ namespace Client
         Task<User> OpretBruger(BrugerCreateDTO nyBruger);
 
         Task<List<ElevOversigtDTO>> GetElevOversigt();
+        
 
 
     }
