@@ -1,0 +1,59 @@
+﻿@using Core;
+
+@inject NavigationManager navMan;
+
+@page "/tilføj delmål"
+<h3>Tilføjdelmål</h3>
+<!--
+<EditForm Model="nytDelmål" OnValidSubmit="@HandleNewDelMål">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label class="form-label required-field">Type</label>
+        <InputText class="form-control" @bind-Value="nytDelmål.Type" placeholder="Indtast hotelnavn" />
+    </div>
+    
+    
+
+    <div class="form-group">
+        <label class="form-label required-field">Addresse</label>
+        <InputText class="form-control" @bind-Value="nytDelmål.Address" placeholder="Indtast addresse" />
+    </div>
+
+    <div class="form-group">
+        <label class="form-label required-field">Post-nr</label>
+        <InputNumber class="form-control" @bind-Value="nytDelmål.Zip" placeholder="Indtast postkode" />
+    </div>
+
+    <div class="form-group">
+        <label class="form-label required-field">By</label>
+        <InputText class="form-control" @bind-Value="nytDelmål.City" placeholder="Indtast bynavn" />
+    </div>
+
+    <div class="form-group">
+        <label class="form-label required-field">Region</label>
+        <InputSelect class="form-select" @bind-Value="nytDelmål.Region">
+            @foreach (var region in regioner)
+            {
+                <option value="@region">@region</option>
+            }
+        </InputSelect>
+    </div>
+
+    
+    <button type="submit" class="submit-btn">Opret delmål</button>
+</EditForm>
+-->
+@code {
+    
+    private Goal nytDelmål { get; set; }
+    private string[] ansvarlig = { "HR", "Køkkenchef" };
+    private string[] goalTypes = { "Skole", "Kursus", "Kompetence" };
+    
+    private void HandleNewDelMål()
+    {
+        
+    }
+
+}

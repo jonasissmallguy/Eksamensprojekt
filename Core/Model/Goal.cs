@@ -14,6 +14,7 @@ namespace Core
         public string Status { get; set; } = "Active";
         //public bool IsTemplate { get; set; } = false;
         public int Semester { get; set; }
+        //ansvarlig?
         
         public int? StarterId { get; set; } 
         public string StarterName { get; set; } = String.Empty;

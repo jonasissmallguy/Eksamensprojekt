@@ -26,6 +26,8 @@ namespace Client
             {
                  hotelNames.Add(new HotelNameDTO
                  {
+                     // Tilføjet af Rasmus
+                     HotelId = hotel.Id,
                      HotelName = hotel.HotelNavn
                  });
             }

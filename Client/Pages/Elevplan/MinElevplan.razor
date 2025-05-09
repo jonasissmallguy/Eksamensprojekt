@@ -1,9 +1,9 @@
-﻿@using System.Runtime.Intrinsics.X86
-@using Core
+﻿@using Core
 @using Client.Components.Elevoversigt
 
 @inject IBruger IBrugerService;
-@inject IElevPlan IElevService;
+@inject IElevPlan IElevPlanService;
+@inject IComment ICommentService;
 
 @page "/minelevplan/{studentId:int}"
 <h3>Elevplan for @elev.Navn</h3>
@@ -29,7 +29,8 @@ else
     [CascadingParameter] 
     private BrugerLoginDTO _currentUser { get; set; }
     
-    [Parameter] public int studentId { get; set; }
+    [Parameter] 
+    public int studentId { get; set; }
     private BrugerProfilDTO elev;
     private Plan? elevPlan;
     
@@ -37,14 +38,14 @@ else
     {
         
         elev = await IBrugerService.GetBrugerById(studentId);
-        elevPlan =  await IElevService.GetPlanByStudentId(studentId);
+        elevPlan =  await IElevPlanService.GetPlanByStudentId(studentId);
 
     }
 
-    private async Task AddComment()
+    private async Task AddComment(NewComment comment)
     {
-        Console.WriteLine("Add cmment");
-        throw new NotImplementedException();
+        await ICommentService.AddComment(comment, _currentUser);
+        StateHasChanged(); 
     }
 
 }
