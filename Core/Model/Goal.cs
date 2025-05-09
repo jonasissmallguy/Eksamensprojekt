@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+﻿    using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Core
@@ -8,7 +8,7 @@ namespace Core
         [BsonId]
         [BsonRepresentation(BsonType.Int32)]
         public int Id { get; set; }
-        public string Type { get; set; }  // Kursus, delmål, kompetence
+        public string Type { get; set; }  // Kursus, Skole, Kompetence
         public string Title { get; set; }
         public string Description { get; set; }
         public string Status { get; set; } = "Active";

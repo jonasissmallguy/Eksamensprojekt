@@ -75,7 +75,7 @@ namespace Client
                         Type = "Kursus",
                         Title = "Model 4 - Attachè",
                         Description = "Avancerede teknikker for attachè i køkkenet",
-                        Status = "Template",
+                        Status = "Active",
                         Semester = 2,
                         SortOrder = 1,
                         DeadLineAt = DateTime.Now.AddDays(365)
@@ -109,7 +109,7 @@ namespace Client
                         Type = "Kursus",
                         Title = "Introduction til OOPI",
                         Description = "Object-Orienteret Principer i madlavning",
-                        Status = "Template",
+                        Status = "Active",
                         Semester = 3,
                         SortOrder = 1,
                         DeadLineAt = DateTime.Now.AddDays(730)

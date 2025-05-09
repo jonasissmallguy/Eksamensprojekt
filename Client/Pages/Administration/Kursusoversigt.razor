@@ -1,7 +1,40 @@
-﻿@page "/Kursusoversigt"
+﻿@using Core;
+
+@inject IGoal GoalServiceMock;
+@inject NavigationManager navMan;
+
+@page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
 
+<table>
+    <tr>
+        <th>Titel</th>
+        <th>Semester</th>
+        <th>Status</th>
+    </tr>
+    @foreach (var kursus in alleKurser)
+    {
+        <tr>
+            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Title</td>
+            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Semester</td>
+            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Status</td>
+
+        </tr>
+    }
+</table>
+
 @code {
-    
-    
+
+    private List<Goal> alleKurser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        alleKurser = await GoalServiceMock.GetAllUncompletedCourses();
+    }
+
+    private void NavigateToKursus(int kursusId)
+    {
+        navMan.NavigateTo($"kursusoverblik/{kursusId}");
+    }
+
 }
