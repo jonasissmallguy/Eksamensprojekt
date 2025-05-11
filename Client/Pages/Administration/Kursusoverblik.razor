@@ -3,7 +3,7 @@
 @inject IGoal GoalService;
 
 
-@page "/kursusoverblik/{kursusId:int}"
+@page "/kursusoverblik/{kursusId:}"
 <h3>Kursusoverblik</h3>
 
 
@@ -20,7 +20,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _kursus = await GoalService.GetGoalByGoalId(kursusId);
+        //_kursus = await GoalService.GetGoalByGoalId(kursusId);
         
     }
 

@@ -1,51 +1,67 @@
 ﻿@using Core
 @using Client.Components.Elevoversigt
+@using DotNetEnv.Extensions
+@using MongoDB.Bson
 
 @inject IBruger IBrugerService;
 @inject IElevPlan IElevPlanService;
-@inject IComment ICommentService;
+@inject IGoal IGoalService;
 
 @page "/minelevplan/{studentId:int}"
-<h3>Elevplan for @elev.Navn</h3>
+<h3>@elev.Navn</h3>
 
-@if (_currentUser.Rolle != "Elev")
-    {
-        <li>
-            <a>@elev.Email</a>
-            <a>@elev.Telefon</a>
-        </li>
-    }
 @if (elev != null)
 {
-    <ElevplanComponent Plan="@elevPlan"ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment"/>
+    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="true" OnMentorAssigned="AddMentor" 
+                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
 }
+
 else
 {
     <p>..Loading</p>
 }
 
 @code {
-    
-    [CascadingParameter] 
-    private BrugerLoginDTO _currentUser { get; set; }
-    
-    [Parameter] 
-    public int studentId { get; set; }
+
+    [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
+
+    [Parameter] public int studentId { get; set; }
     private BrugerProfilDTO elev;
     private Plan? elevPlan;
-    
+
+    private Dictionary<int, Goal> goals = new();
+
     protected override async Task OnInitializedAsync()
     {
-        
         elev = await IBrugerService.GetBrugerById(studentId);
-        elevPlan =  await IElevPlanService.GetPlanByStudentId(studentId);
+        elevPlan = await IElevPlanService.GetPlanByStudentId(studentId);
 
+        if (elevPlan != null)
+        {
+            goals = await IGoalService.GetAllGoalsByPlanId(studentId);
+        }
     }
 
     private async Task AddComment(NewComment comment)
     {
-        await ICommentService.AddComment(comment, _currentUser);
-        StateHasChanged(); 
+        await IGoalService.AddComment(comment, _currentUser);
+
+    }
+
+    private async Task AddMentor(ElevplanComponent.MentorAssignment newMentor)
+    {
+        await IGoalService.AddMentorToGoal(newMentor);
+    }
+
+    private async Task RemoveMentor(int goalId)
+    {
+        await IGoalService.RemoveMentorFromGoal(goalId);
+        
+    }
+
+    private async Task ConfirmGoal(int goalId)
+    {
+        await IGoalService.ConfirmGoal(goalId);
     }
 
 }

@@ -6,6 +6,8 @@ namespace Client
     {
         Task<List<HotelNameDTO>> GetAllHotelNames();
         Task<List<Hotel>> GetHotels();
+        
+        Task CreateHotel(HotelCreationDTO newHotel);
 
     }
 

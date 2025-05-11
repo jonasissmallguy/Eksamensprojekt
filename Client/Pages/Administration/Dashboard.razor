@@ -1,8 +1,9 @@
-﻿
+﻿@using Core
+
 @inject NavigationManager navMan;
 @inject IBruger IBrugerService;
 @inject IHotel IHotelService;
-@using Core
+
 
 @page "/dashboard"
 <h3>Dashboard</h3>
@@ -83,7 +84,7 @@
 
 @code {
 
-// En variabel som gemmer det der bliver tastet ind i søgebaren
+    // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
 
     private int? selectedHotelId = null;
@@ -101,10 +102,8 @@
     protected override async Task OnInitializedAsync()
     {
         alleElever = await IBrugerService.GetElevOversigt();
-        Console.WriteLine("længen af elever er: " + alleElever.Count);
 
         alleHoteller = await IHotelService.GetAllHotelNames();
-        Console.WriteLine("Antal hoteller: " + alleHoteller.Count());
     }
 
     private async Task NavigateToElevPlan(int studentId)

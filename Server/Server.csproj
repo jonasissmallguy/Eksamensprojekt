@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\Goal\" />
+      <Folder Include="Controllers\Hotel\" />
+      <Folder Include="Controllers\Plan\" />
+      <Folder Include="Controllers\Template\" />
+      <Folder Include="Controllers\User\" />
+      <Folder Include="Repositories\Goal\" />
+      <Folder Include="Repositories\Hotel\" />
+      <Folder Include="Repositories\Plan\" />
+      <Folder Include="Repositories\Template\" />
+      <Folder Include="Repositories\User\" />
+    </ItemGroup>
+
+</Project>

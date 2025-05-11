@@ -20,8 +20,7 @@ builder.Services.AddScoped<IAuth, AuthServiceMock>();
 builder.Services.AddScoped<IBruger, BrugerServiceMock>();
 builder.Services.AddScoped<IHotel, HotelServiceMock>();
 builder.Services.AddScoped<IElevPlan, ElevPlanServiceMock>();
-builder.Services.AddScoped<IComment, CommentServiceMock>();
 builder.Services.AddScoped<IGoal, GoalServiceMock>();
-builder.Services.AddScoped<IGoalTemplate, GoalTemplateServiceMock>();
+builder.Services.AddScoped<ITemplate, TemplateServiceMock>();
 
 await builder.Build().RunAsync();

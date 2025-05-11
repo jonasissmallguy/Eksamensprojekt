@@ -38,5 +38,25 @@ namespace Client
         {
             throw new NotImplementedException();
         }
+
+        public int GenerateHotelId()
+        {
+            Random random = new();
+            var id = random.Next(1,9999);
+            return id;
+        }
+
+        public async Task CreateHotel(HotelCreationDTO newHotel)
+        {
+            var hotel = new Hotel
+            {
+                Id = GenerateHotelId(),
+                HotelNavn = newHotel.HotelNavn,
+                Address = newHotel.Address,
+                Zip = newHotel.Zip,
+                City = newHotel.City,
+            };
+            hotels.Add(hotel);
+        }
     }
 }
