@@ -127,9 +127,9 @@ namespace Client
             }
         }
 
-        public Task DeleteComment(int goalId, int commentId)
+        public async Task DeleteComment(int goalId, int commentId)
         {
-            throw new NotImplementedException();
+
         }
     }
 
