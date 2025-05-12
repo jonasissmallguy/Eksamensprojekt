@@ -22,6 +22,28 @@ namespace Client
                 Password = "123456",
                 Rolle = "Køkkenchef",
                 FirstName = "Theis"
+            },
+            new User
+            {
+                Id = 3,
+                Email = "a@admin.com",
+                Password = "123456",
+                Rolle = "Elev",
+                FirstName = "Jane",
+                LastName = "Doe",
+                HotelId = 1,
+                Year = 1,
+            },
+            new User
+            {
+                Id = 4,
+                Email = "t@comwell.com",
+                Password = "123456",
+                Rolle = "Elev",
+                FirstName = "Theis",
+                LastName = "Doe",
+                HotelId = 1,
+                Year = 1
             }
         };
         
