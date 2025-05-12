@@ -21,6 +21,18 @@ namespace Client
             int id = rnd.Next(1,99999);
             return id;
         }
+
+        public async Task<List<GoalNameDTO>> GetAllGoalTypes()
+        {
+            var goalTypes = new List<GoalNameDTO>
+            {
+                new GoalNameDTO() { GoalId = 0, GoalName = "Ingen" },
+                new GoalNameDTO() { GoalId = 1, GoalName = "Kursus" },
+                new GoalNameDTO() { GoalId = 2, GoalName = "Skole" },
+                new GoalNameDTO() { GoalId = 3, GoalName = "Delmål" }
+            };
+            return goalTypes;
+        }
         
         public async Task<Goal> GetGoalByGoalId(int goalId)
         {
