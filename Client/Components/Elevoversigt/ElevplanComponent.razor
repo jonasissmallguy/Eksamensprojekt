@@ -36,7 +36,6 @@
                                                                     <img src="icons/check.svg" alt="Delete" style="width: 32px; height: 32px;"/>
                                                                 }
                                                             </span>
-                                                            
                                                             @if (ShowSubmitButton)
                                                             {
                                                                 <button
@@ -183,7 +182,9 @@
     
     
     [Parameter]
-    public EventCallback<MentorAssignment> OnMentorAssigned { get; set; } 
+    public EventCallback<MentorAssignment> OnMentorAssigned { get; set; }
+
+    public string[] semestre = { "År 1", "År 2", "År 3" };
     
     
     //ModalOversigt
