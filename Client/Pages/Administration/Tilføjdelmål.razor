@@ -2,6 +2,7 @@
 @using Core.DTO.Goal
 
 @inject NavigationManager navMan;
+@inject IGoal IGoalService;
 
 @page "/tilføjdelmål"
 
@@ -9,7 +10,7 @@
     <h3>Tilføj delmål</h3>
 
     <Dropdown Color="DropdownColor.Secondary">
-        <DropdownToggleButton>@(selectedGoalId == null ? "Mål type": GetGoalName(selectedGoalId))</DropdownToggleButton>
+        <DropdownToggleButton>Måltype:</DropdownToggleButton>
         <DropdownMenu>
             @foreach (var y in alleTyper)
             {
@@ -24,40 +25,124 @@
     <ValidationSummary/>
     <div class="row justify-content-center">
         <div class="col-md-6 mb-3">
-            <label for="Type">Type:</label>
+            <label for="Type">Type: @(GetGoalName(selectedGoalId))</label>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <div class="col-md-6 mb-3">
-            <label for="Titel">Titel:</label>
-            <InputText id="Titel" @bind-Value="newGoal.Title"
-                       placeholder="Titel på delmål..." class="form-control"/>
-        </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-md-6 mb-3">
-            <label for="Beskrivelse">Beskrivelse:</label>
-            <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
-                       placeholder="Beskrivelse" class="form-control"/>
-        </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-md-6 mb-3">
-            <label for="Status">Status:</label>
-            <InputText id="Status" @bind-Value="newGoal.Status"
-                       placeholder="Status" class="form-control"/>
-        </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-md-6 mb-3">
-            <label for="Semester">Semester:</label>
-            <InputNumber id="Semester" @bind-Value="newGoal.Semester"
-                         placeholder="Semester" class="form-control"/>
-        </div>
-    </div>
+    <!-- Herunder har vi et if statement der forbinder den valgte måltype med en bestemt editfor. -->
+    <!-- 1 er kursus, 2 er skole, 3 er delmål -->
     
-    
-
+    @if (selectedGoalId == 1)
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Titel">Titel:</label>
+                <InputText id="Titel" @bind-Value="newGoal.Title"
+                           placeholder="Titel på delmål..." class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Beskrivelse">Beskrivelse:</label>
+                <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                               placeholder="Beskrivelse" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Status">Status:</label>
+                <InputText id="Status" @bind-Value="newGoal.Status"
+                           placeholder="Status" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Semester">Semester:</label>
+                <InputNumber id="Semester" @bind-Value="newGoal.Semester"
+                             placeholder="Semester" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary">Tilføj</button>
+            </div>
+        </div>
+    }
+    else if (selectedGoalId == 2) 
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Titel">Titel:</label>
+                <InputText id="Titel" @bind-Value="newGoal.Title"
+                           placeholder="Titel på delmål..." class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Beskrivelse">Beskrivelse:</label>
+                <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                               placeholder="Beskrivelse" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Status">Status:</label>
+                <InputText id="Status" @bind-Value="newGoal.Status"
+                           placeholder="Status" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Semester">Semester:</label>
+                <InputNumber id="Semester" @bind-Value="newGoal.Semester"
+                             placeholder="Semester" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary">Tilføj</button>
+            </div>
+        </div>
+    }
+    else if (selectedGoalId == 3)
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Titel">Titel:</label>
+                <InputText id="Titel" @bind-Value="newGoal.Title"
+                           placeholder="Titel på delmål..." class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Beskrivelse">Beskrivelse:</label>
+                <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                               placeholder="Beskrivelse" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Status">Status:</label>
+                <InputText id="Status" @bind-Value="newGoal.Status"
+                           placeholder="Status" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Semester">Semester:</label>
+                <InputNumber id="Semester" @bind-Value="newGoal.Semester"
+                             placeholder="Semester" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary">Tilføj</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Vælg en måltype for at få den passende skabelon.</p>
+    }
 
 </EditForm>
 
@@ -78,6 +163,12 @@
     private void SelectType(int? goalId)
     {
         selectedGoalId = goalId;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        alleTyper = await IGoalService.GetAllGoalTypes();
+        
     }
     
 }

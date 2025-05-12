@@ -33,11 +33,11 @@
     <!-- Dropdown til rolle -->
     <div class="dropdownmenu">
         <Dropdown Color="DropdownColor.Secondary">
-            <DropdownToggleButton>Roller</DropdownToggleButton>
+            <DropdownToggleButton>År</DropdownToggleButton>
             <DropdownMenu>
-                <DropdownItem To="#">Rolle 1</DropdownItem>
-                <DropdownItem To="#">Rolle 1</DropdownItem>
-                <DropdownItem To="#">Rolle 1</DropdownItem>
+                <DropdownItem To="#">År 1</DropdownItem>
+                <DropdownItem To="#">År 2</DropdownItem>
+                <DropdownItem To="#">År 3</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     </div>
@@ -88,6 +88,8 @@
     private string searchText = string.Empty;
 
     private int? selectedHotelId = null;
+    private bool isSelected(int id) => selectedStudentId == id;
+    private int? selectedStudentId = null;
 
     private List<ElevOversigtDTO> alleElever;
     private List<HotelNameDTO> alleHoteller;

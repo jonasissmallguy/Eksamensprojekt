@@ -26,6 +26,8 @@ namespace Client
         Task AddComment(NewComment comment, BrugerLoginDTO currentUser);
         Task DeleteComment(int goalId, int commentId);
         
+        Task<List<GoalNameDTO>> GetAllGoalTypes();
+        
     }
 
 }
