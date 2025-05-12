@@ -29,7 +29,9 @@ namespace Client
                 Email = "elev@comwell.com",
                 Password = "123456",
                 Rolle = "Elev",
-                FirstName = "Charles"
+                FirstName = "Charles",
+                HotelId = 1,
+                HotelName = "Comwell Aarhus"
             },
             new User
             {
@@ -176,6 +178,17 @@ namespace Client
         public async Task<List<User>> GetAllUsers()
         {
             return _allUsers;
+        }
+
+        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds) 
+        {
+            List<User> usersToReturn = new();
+            
+            studentIds.ForEach(x => usersToReturn.Add(_allUsers.FirstOrDefault(u => u.Id == x)));
+            Console.WriteLine(usersToReturn.Count);
+
+            return usersToReturn.ToList();
+
         }
     }
 }

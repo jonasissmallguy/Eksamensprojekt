@@ -18,7 +18,6 @@ namespace Client
         private static Dictionary<string, (string Kode, DateTime Expiry)> verificeringsKoder = new();
 
         List<User> _allUsers = new();
-
         
         private  ILocalStorageService _localStorage;
 
