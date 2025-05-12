@@ -17,7 +17,8 @@
                         <Accordion>
                             <AccordionItem IsCollapsed="false">
                                 <TitleTemplate>
-                                        <span>@($"{forløb.Title} - {forløb.StartDate:dd-MM-yyyy}")</span>
+                                    <span>@($"{forløb.Title} - {forløb.StartDate:dd-MM-yyyy}")
+                                        </span>
                                 </TitleTemplate>
                                 <Content>
                                     <Accordion>
@@ -28,7 +29,14 @@
                                                 <AccordionItem>
                                                     <TitleTemplate>
                                                         <div class="d-flex justify-content-between align-items-center w-100">
-                                                            <span>@goal.Title</span>
+                                                            <span class="d-flex justify-content-between align-items-center w-100">
+                                                                @goal.Title
+                                                                @if (HasGoalFinished(goal.Id))
+                                                                {
+                                                                    <img src="icons/check.svg" alt="Delete" style="width: 32px; height: 32px;"/>
+                                                                }
+                                                            </span>
+                                                            
                                                             @if (ShowSubmitButton)
                                                             {
                                                                 <button
@@ -43,18 +51,20 @@
                                                     <Content>
                                                         <div class="d-flex justify-content-between align-items-center w-100">
                                                             <p>@goal.Description</p>
-                                                            @if (AddMentor && !HasMentorAssigned(goal.Id))
+                                                            @if (!HasGoalFinished(goal.Id))
                                                             {
-                                                                <button class="btn btn-sm btn-primary" @onclick="() => AddMentorToGoal(goal.Id)">Tildel mentor</button>
-                                                            }
-                                                            else if (HasMentorAssigned(goal.Id))
-                                                            {
-                                                                <div class="mentor-display d-flex align-items-center">
-                                                                    <button class="btn btn-success" @onclick="() => ConfirmGoalFinished(goal.Id)">Godkend delmål</button>
-                                                                    <button class="btn btn-danger" @onclick="() => RemoveMentorFromGoal(goal.Id)">Fjern mentor</button>
-                                                                    <small><strong>MentorId:</strong> @goal.MentorId</small>
-
-                                                                </div>
+                                                                @if (AddMentor && !HasMentorAssigned(goal.Id))
+                                                                {
+                                                                    <button class="btn btn-sm btn-primary" @onclick="() => AddMentorToGoal(goal.Id)">Tildel mentor</button>
+                                                                }
+                                                                else if (HasMentorAssigned(goal.Id))
+                                                                {
+                                                                    <div class="mentor-display d-flex align-items-center">
+                                                                        <button class="btn btn-success" @onclick="() => ConfirmGoalFinished(goal.Id)">Godkend delmål</button>
+                                                                        <button class="btn btn-danger" @onclick="() => RemoveMentorFromGoal(goal.Id)">Fjern mentor</button>
+                                                                        <small><strong>MentorId:</strong> @goal.MentorId</small>
+                                                                    </div>
+                                                                }   
                                                             }
                                                         </div>
                                                         @if (ShowComments)
@@ -171,6 +181,7 @@
 
     [Parameter] public bool AddMentor { get; set; } = false; //Viser tildelmentor til køkkenchef
     
+    
     [Parameter]
     public EventCallback<MentorAssignment> OnMentorAssigned { get; set; } 
     
@@ -203,6 +214,19 @@
         }
         return false;
     }
+
+    private bool HasGoalFinished(int goalId)
+    {
+        if (Goals.TryGetValue(goalId, out var goal))
+        {
+            if (goal.Status == "Completed")
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
     
     private void AddMentorToGoal(int goalId)
     {
@@ -221,9 +245,9 @@
     
     private List<MentorViewModel> mentors = new List<MentorViewModel>
     {
-        new MentorViewModel { Id = 1, Name = "Anders Jensen", Role = "Køkkenchef", AvatarUrl = "" },
-        new MentorViewModel { Id = 2, Name = "Marie Nielsen", Role = "Souschef", AvatarUrl = "" },
-        new MentorViewModel { Id = 3, Name = "Peter Hansen", Role = "Instruktør", AvatarUrl = "" }
+        new MentorViewModel { Id = 1, Name = "Anders Jensen", Role = "Kok", AvatarUrl = "" },
+        new MentorViewModel { Id = 2, Name = "Marie Nielsen", Role = "Kok", AvatarUrl = "" },
+        new MentorViewModel { Id = 3, Name = "Peter Hansen", Role = "Kok", AvatarUrl = "" }
     };
     
     // Hjælpe klasse skal laves om
@@ -240,6 +264,7 @@
     {
         public int GoalId { get; set; }
         public int MentorId { get; set; }
+        public string MentorName { get; set; }
     }
     
     

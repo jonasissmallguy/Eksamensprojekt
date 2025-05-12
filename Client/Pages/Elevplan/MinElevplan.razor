@@ -35,7 +35,13 @@ else
     {
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = await IElevPlanService.GetPlanByStudentId(studentId);
-
+        
+        //Dette er bare brugt til visning til COmwell - dette skal slettes!!!!!!
+        if (elevPlan == null)
+        {
+            elevPlan = await IElevPlanService.CreateElevPlan(studentId);
+        }
+        
         if (elevPlan != null)
         {
             goals = await IGoalService.GetAllGoalsByPlanId(studentId);
@@ -62,6 +68,8 @@ else
     private async Task ConfirmGoal(int goalId)
     {
         await IGoalService.ConfirmGoal(goalId);
+        StateHasChanged();
+        
     }
 
 }
