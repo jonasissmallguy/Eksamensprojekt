@@ -18,7 +18,7 @@
     <ElevplanComponent Plan="@nyElevPlan" Goals="@goals" ShowSubmitButton="true"ShowComments="false" 
                        OnDelteClicked="HandleDeleteGoal" OnSubmitClicked="HandleElevplanSubmit" />
 
-    <button @onclick="NavigateToCreateGoal" class="btn btn-primary">Opret delmål</button>
+    <button class="btn btn-primary">Opret delmål</button>
 }
 else
 {
@@ -46,7 +46,7 @@ else
     private async Task HandleDeleteGoal(Goal goal)
     {
         await IGoalService.DeleteGoal(goal);
-        await IElevPlanService.RemoveGoalIdFromForløb(goal);
+        //await IElevPlanService.RemoveGoalIdFromForløb(goal);
 
         if (goal != null)
         {

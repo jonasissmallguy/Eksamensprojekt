@@ -3,7 +3,7 @@
 @page "/"
 @using Core
 
-<h3 class="page-title">Elevoversigt</h3>
+<h3 class="page-title">Oversigt</h3>
 
 <div class="row mt-4">
     <div class="col-sm-6">
@@ -54,19 +54,11 @@
             navMan.NavigateTo("login/");
             return;
         }
-        else if (_currentUser.Rolle == "Elev")
+        else if (_currentUser.Rolle == "Elev" || _currentUser.Rolle == "Køkkenchef" || _currentUser.Rolle == "Mentor")
         {
             navMan.NavigateTo("/");
         }
         else if (_currentUser.Rolle == "HR")
-        {
-            navMan.NavigateTo("/Dashboard");
-        }
-        else if (_currentUser.Rolle == "Køkkenchef")
-        {
-            navMan.NavigateTo("/Dashboard");
-        }
-        else if (_currentUser.Rolle == "Mentor")
         {
             navMan.NavigateTo("/Dashboard");
         }
