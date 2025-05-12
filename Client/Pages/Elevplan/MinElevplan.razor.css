@@ -1,0 +1,35 @@
+
+.bio{
+    height:  30%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 30px ;
+    gap: 10px;
+}
+
+.piccontainer{
+    flex: 0 0 300px;
+}
+
+.piccontainer img{
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+
+.textcontainer{
+    flex: 1;
+}
+
+.telefon{
+ font-size: larger;   
+}
+
+.mail{
+    font-size: larger;
+}
+
+.restaurant{
+    font-size: larger;
+}
