@@ -10,6 +10,8 @@
         public string Hotel { get; set; }
         public string Roller { get; set; }
         public string Ansvarlig  {get; set;}
+        
+        public int Year { get; set; }
 
     }
 

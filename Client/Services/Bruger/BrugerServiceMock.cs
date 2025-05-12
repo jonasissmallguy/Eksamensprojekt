@@ -128,7 +128,8 @@ namespace Client
                     Mobile = nyBruger.Mobile,
                     Rolle = nyBruger.Rolle,
                     HotelId = nyBruger.HotelId,
-                    StartDate = nyBruger.StartDate
+                    StartDate = nyBruger.StartDate,
+                    Year = nyBruger.Year
                 });
             
              _allUsers.Add(bruger);
@@ -150,7 +151,8 @@ namespace Client
                     HotelId = elev.HotelId,
                     Hotel = "test",
                     Roller = elev.Rolle,
-                    Ansvarlig = "test ansvarlig"
+                    Ansvarlig = "test ansvarlig",
+                    Year = elev.Year
                 });
             }
             
