@@ -37,7 +37,15 @@
                     <label class="form-label required-field">Mobil</label>
                     <InputNumber class="form-control" @bind-Value="newUser.Mobile" placeholder="Indtast mobilnummer" />
                 </div>
-
+                <div class="form-group">
+                    <label class="form-label required-field">Køn</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.Køn">
+                        @foreach (var g in køn)
+                        {
+                            <option value="@g">@g</option>
+                        }
+                    </InputSelect>
+                </div>
                 <div class="form-group">
                     <label class="form-label required-field">Rolle</label>
                     <InputSelect class="form-select" @bind-Value="newUser.Rolle">
@@ -72,13 +80,16 @@
 
 @code {
     private BrugerCreateDTO newUser = new();
-    private string[] roller = { "Elev", "Køkkenchef", "Funktionær", "HR" };
-    private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
     private List<HotelNameDTO> hoteller = new();
+    private string[] roller = { "Elev", "Køkkenchef", "Funktionær", "HR" };
+    private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
+    private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
+
 
     protected override async void OnInitialized()
     {
         newUser.Rolle = roller[0];
+        newUser.Køn = køn[2]; //prefixed til "Ikke angivet"
         hoteller = await IHotelService.GetAllHotelNames();
         newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
 

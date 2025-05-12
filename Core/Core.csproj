@@ -10,4 +10,10 @@
       <PackageReference Include="MongoDB.Bson" Version="3.4.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Model\Administration\Region.cs" />
+      <Compile Remove="Model\Administration\Hotel.cs" />
+      <Compile Remove="Model\Template\ElevPlanTemplate.cs" />
+    </ItemGroup>
+
 </Project>

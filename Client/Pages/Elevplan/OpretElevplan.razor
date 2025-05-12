@@ -1,11 +1,12 @@
 ﻿@using Core
 @using Client.Components.Elevoversigt
+@using MongoDB.Bson
 
 
 @inject NavigationManager navMan;
 @inject IElevPlan IElevPlanService;
 @inject IBruger IBrugerService;
-@inject IGoalTemplate IGoalTemplate;
+@inject IGoal IGoalService;
 
 
 @page "/opretelevplan/{studentId:int}"
@@ -14,8 +15,8 @@
 {
     <h2>Du er ved at oprette en elevplan for @elev.Navn</h2>
     
-    <ElevplanComponent Plan="@nyElevPlan"ShowSubmitButton="true"ShowComments="false" 
-                       OnSubmitClicked="HandleElevplanSubmit" />
+    <ElevplanComponent Plan="@nyElevPlan" Goals="@goals" ShowSubmitButton="true"ShowComments="false" 
+                       OnDelteClicked="HandleDeleteGoal" OnSubmitClicked="HandleElevplanSubmit" />
 
     <button @onclick="NavigateToCreateGoal" class="btn btn-primary">Opret delmål</button>
 }
@@ -29,23 +30,42 @@ else
 
     private Plan? nyElevPlan = new();
     private BrugerProfilDTO elev = new();
+    private Dictionary<int, Goal> goals = new();
 
     protected override async Task OnInitializedAsync()
     {
         elev = await IBrugerService.GetBrugerById(studentId);
-        nyElevPlan = IGoalTemplate.CreateTemplate(); //skal være async... ved skift til live, kan ikke få til at virke i mock...
+        nyElevPlan = await IElevPlanService.CreateElevPlan(elev.Id);
+
+        if (nyElevPlan != null)
+        {
+             goals = await IGoalService.GetAllGoalsByPlanId(nyElevPlan.Id);
+        }
+    }
+    
+    private async Task HandleDeleteGoal(Goal goal)
+    {
+        await IGoalService.DeleteGoal(goal);
+        await IElevPlanService.RemoveGoalIdFromForløb(goal);
+
+        if (goal != null)
+        {
+            goals = goals.Where(x => x.Value.Id != goal.Id).ToDictionary();
+        }
     }
     
     private async Task HandleElevplanSubmit()
     {
-        
         //Gemmer planen
         await IElevPlanService.SavePlan(nyElevPlan);
         navMan.NavigateTo("/dashboard");
     }
     
+    
     private void NavigateToCreateGoal()
     {
         navMan.NavigateTo("tilføj delmål");
     }
+
+
 }

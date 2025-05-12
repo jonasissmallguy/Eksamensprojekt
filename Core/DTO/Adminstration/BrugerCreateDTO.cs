@@ -21,6 +21,9 @@ namespace Core
         [Required(ErrorMessage = "Venligst indtast en rolle")]
         public string Rolle { get; set; }
         
+        [Required(ErrorMessage = "Venligst angiv et køn")]
+        public string Køn { get; set; }
+        
         [Required(ErrorMessage = "Venligst indtast et hotel")]
         public int HotelId { get; set; }
         [Required(ErrorMessage = "Venligst indtast en startdato")]
