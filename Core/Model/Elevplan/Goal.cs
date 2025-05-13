@@ -22,14 +22,14 @@ namespace Core
         
         public int? StarterId { get; set; } 
         public string StarterName { get; set; } = String.Empty;
-        public DateTime StartedAt { get; set; } //Starter sætter
+        public DateTime? StartedAt { get; set; } //Starter sætter
 
         
         public int? ConfirmerId { get; set; }
         public string ConfirmerName { get; set; } = String.Empty;
-        public DateTime ConfirmedAt { get; set; } //Kok sæltter / Leder
+        public DateTime? ConfirmedAt { get; set; } //Kok sæltter / Leder
 
-        public DateTime CompletedAt { get; set; } //Leder sætter
+        public DateTime? CompletedAt { get; set; } //Leder sætter
         
         public DateTime DeadLineAt { get; set; }
         public int SortOrder { get; set; }

@@ -108,13 +108,7 @@ namespace Client
             goal.StartedAt = DateTime.Now;
             goal.Status = "InProgress";
 
-            goal.Comments.Add(
-                new Comment
-                {
-                    CreatorName = "System",
-                    CreatorId = mentor.MentorId,
-                    Text = $"Dette er lært af {mentor.MentorName} og sat InProgress"
-                });
+
         }
         
         public async Task ProcessGoal(ElevplanComponent.MentorAssignment mentor)
@@ -125,14 +119,7 @@ namespace Client
             goal.ConfirmedAt = DateTime.Now;
             goal.Status = "AwaitingApproval";
             
-            goal.Comments.Add(
-                new Comment
-                {
-                    CreatorName = "System",
-                    CreatorId = mentor.MentorId,
-                    Text = $"Dette er lært af {mentor.MentorName} og afventer leder"
-                });
-            
+
         }
         
         public async Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
@@ -140,15 +127,7 @@ namespace Client
             var goal = _goals.FirstOrDefault(x => x.Id == leder.GoalId);
             goal.CompletedAt = DateTime.Now;
             goal.Status = "Completed";
-
-            goal.Comments.Add(
-                new Comment
-                {
-                    CreatorName = "System",
-                    CreatorId = leder.MentorId,
-                    Text = $"Denne opgave er bekræftet af din nærmeste leder"
-
-                });
+            
 
         }
 

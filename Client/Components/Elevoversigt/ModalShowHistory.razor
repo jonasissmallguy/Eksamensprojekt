@@ -25,14 +25,6 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
     
-    [Parameter]
-    public EventCallback<string> OnRolleSelected { get; set; }
-    public async Task SelectRolle(string rolle)
-    {
-        await OnRolleSelected.InvokeAsync(rolle);
-        Close();
-    }
-    
 
     private string modalDisplay = "none;";
     private string modalClass = string.Empty;

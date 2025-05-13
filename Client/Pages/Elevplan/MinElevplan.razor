@@ -88,7 +88,6 @@
     }
     
     
-    
     private async Task ConfirmGoal(ElevplanComponent.MentorAssignment bruger)
     {
         @if (_currentUser.Rolle == "Kok")
@@ -99,9 +98,5 @@
         {
             await IGoalService.ConfirmGoal(bruger);
         }
-        
-        //StateHasChanged();
-        
     }
-
 }

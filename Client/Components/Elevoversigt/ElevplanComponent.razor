@@ -1,5 +1,6 @@
 ﻿@using Core
 @using System.Linq
+@using Client.Components.Administration
 @inject NavigationManager navMan
 
 
@@ -61,7 +62,10 @@
                                                             <div class="d-flex justify-content-between align-items-center w-100">
                                                                 <div>
                                                                 <p>@goal.Description</p>
-                                                                <img src="icons/info-circle.svg" onclick="" alt="Historik" style="width:16px; height: 16px"/>
+                                                                @if (goal.Status != "Active")
+                                                                {
+                                                                    <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
+                                                                }
                                                                 </div>
                                                                 @if (goal.Status != "Completed")
                                                                 {
@@ -145,6 +149,39 @@
     {
         <button class="btn btn-success mt-3" @onclick="HandleSubmitButtonClicked">Opret Elevplan</button>
     }
+    
+    
+    //Dette skal ændres, når vi går til fuld embedding
+    <ModalShowHistory @ref=_goalHistoryModal Title="Historie">
+        <div class="hotel-list">
+            @if (_currentGoal != null)
+            {
+                @if (_currentGoal.StartedAt != null && _currentGoal.StarterName != null)
+                {
+                    <p>Tidspunkt for start: @_currentGoal.StartedAt</p>
+                    <p>Starter: @_currentGoal.StarterName</p>
+                    <br/>
+                    @if (_currentGoal.ConfirmedAt != null && _currentGoal.ConfirmerName != null)
+                    {
+                        <p>Tidspunkt for afsluttet: @_currentGoal.ConfirmedAt </p>
+                        <p>Bekræfter: @_currentGoal.ConfirmerName</p>
+                        <br/>
+                    }
+                    @if (_currentGoal.CompletedAt != null)
+                    {
+                        <p>Godkendt af leder den: @_currentGoal.CompletedAt</p>
+                    }
+                }
+            }
+            else
+            {
+                <p>Ingen information tilgængelig</p>
+            }
+        </div>
+    </ModalShowHistory>
+
+    
+    
 }
 
 @code 
@@ -166,11 +203,13 @@
 
     [CascadingParameter] 
     private BrugerLoginDTO _currentUser { get; set; }
+    
+    private ModalShowHistory _goalHistoryModal { get; set; }
+    
 
     public string[] semestre = { "År 1", "År 2", "År 3" };
-    
-    private int currentGoalId;
-    
+
+    private Goal _currentGoal;
     
     // // Hjælpe klasse skal laves om
     public class MentorAssignment
@@ -179,8 +218,6 @@
         public int MentorId { get; set; }
         public string MentorName { get; set; }
     }
-    
-    
     
     //Kommentar
     private Dictionary<int, string> comments = new();
@@ -264,4 +301,10 @@
         await OnFinishGoal.InvokeAsync(goalId);
     }
 
+    private void OpenModal(Goal goal)
+    {
+        _currentGoal = goal;
+        _goalHistoryModal.Open();
+        
+    }
 }
