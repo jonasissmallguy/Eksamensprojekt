@@ -16,10 +16,18 @@ namespace Client
         Task<List<ElevOversigtDTO>> GetElevOversigt();
 
         Task <List<User>> GetAllUsers();
+
+        Task<List<User>> GetAllUsersWithOutCurrent(int userId);
         
         Task<List<User>> GetAllUsersByStudentId(List<int> studentIds);
+        
+        Task DeleteUser(int userId);
 
+        Task ChangeRolle(string newRolle);
+        
+        Task DeActivateUser(int userId);
 
+        Task ActivateUser(int userId);
 
     }
 }

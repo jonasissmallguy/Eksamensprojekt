@@ -146,8 +146,7 @@ namespace Client
                     Mobile = nyBruger.Mobile,
                     Rolle = nyBruger.Rolle,
                     HotelId = nyBruger.HotelId,
-                    StartDate = nyBruger.StartDate,
-                    Year = nyBruger.Year
+                    StartDate = nyBruger.StartDate
                 });
             
              _allUsers.Add(bruger);
@@ -169,8 +168,7 @@ namespace Client
                     HotelId = elev.HotelId,
                     Hotel = "test",
                     Roller = elev.Rolle,
-                    Ansvarlig = "test ansvarlig",
-                    Year = elev.Year
+                    Ansvarlig = "test ansvarlig"
                 });
             }
             
@@ -182,15 +180,43 @@ namespace Client
             return _allUsers;
         }
 
+        public async Task<List<User>> GetAllUsersWithOutCurrent(int userId)
+        {
+            var liste = _allUsers.Where(x => x.Id != userId).ToList();
+            return liste;
+        }
+
         public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds) 
         {
             List<User> usersToReturn = new();
             
             studentIds.ForEach(x => usersToReturn.Add(_allUsers.FirstOrDefault(u => u.Id == x)));
-            Console.WriteLine(usersToReturn.Count);
 
             return usersToReturn.ToList();
 
+        }
+
+        public async Task DeleteUser(int userId)
+        {
+            _allUsers.RemoveAll(x => x.Id == userId);
+        }
+
+        public async Task ChangeRolle(string newRolle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task DeActivateUser(int userId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+            user.Status = "Deactivated";
+            
+        }
+
+        public async Task ActivateUser(int userId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+            user.Status = "Active";
         }
     }
 }

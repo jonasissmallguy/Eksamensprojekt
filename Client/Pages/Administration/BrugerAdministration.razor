@@ -1,6 +1,133 @@
-﻿@page "/brugeradministration"
-<h3>BrugerAdministration</h3>
+﻿@using Client.Components.Rolle
+@using Core;
+
+@inject IBruger IBrugerService;
+@inject NavigationManager navMan;
+
+@page "/brugeradministration"
+<h3>Bruger administration</h3>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Navn</th>
+        <th>Hotel</th>
+        <th>Rolle</th>
+        <th>Status</th>
+        <th>Rediger rolle</th>
+        <th>Ændrer status</th>
+        <th>Slet bruger</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (_allUsers != null)
+    {
+        @foreach (var x in _allUsers)
+        {
+            <tr>
+                <td>@x.FirstName</td>
+                <td>@x.HotelName</td>
+                <td>@x.Rolle</td>
+                <td>@x.Status</td>
+                <td>
+                    <button @onclick="() => ChangeRolle(x)" class="btn btn-primary">
+                        Rediger rolle
+                    </button>
+                </td>
+                <td>
+                    @if (x.Status == "Active")
+                    {
+                        <button @onclick="() => DeActivateUser(x.Id)" class="btn btn-primary">
+                            Deaktiver bruger
+                        </button>
+                    }
+                    @if (x.Status == "Deactivated")
+                    {
+                        <button @onclick="() => AktiverUser(x.Id)" class="btn btn-primary">
+                            Aktiver bruger
+                        </button>   
+                    }
+                </td>
+                <td>
+                    <button @onclick="() => DeleteUser(x.Id)" class="btn btn-primary">
+                    Slet bruger    
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+
+<ModalRolle @ref=rolleModal Title="Opdater Rolle" OnRolleSelected="HandleNewRolle">
+    <div class="rolle-list">
+        @foreach (var rolle in roller)
+        {
+            <p @onclick="() => rolleModal.SelectRolle(rolle)">@rolle</p>
+        }
+    </div>
+
+</ModalRolle>
+
+
+
 
 @code {
+
+
+    List<User> _allUsers = new();
+
+    [CascadingParameter] 
+    private BrugerLoginDTO _currentUser { get; set; }
     
+    //ModalRolle.razor
+    private ModalRolle rolleModal { get; set; }
+    
+    //Roller
+    private string[] roller = { "HR", "Kok", "Køkkenchef" };
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/brugeradministration");
+            return;
+        }
+
+        _allUsers = await IBrugerService.GetAllUsersWithOutCurrent(_currentUser.Id);
+    }
+
+    private async Task ChangeRolle(User userChange)
+    {
+        rolleModal.Open();
+
+    }
+
+    private async Task DeleteUser(int userId)
+    {
+        await IBrugerService.DeleteUser(userId);
+
+        if (userId != null)
+        {
+            _allUsers = _allUsers.Where(x => x.Id != userId).ToList();
+        }
+    }
+
+    private async Task DeActivateUser(int userId)
+    {
+        await IBrugerService.DeActivateUser(userId);
+    }
+
+    private async Task HandleNewRolle(string rolle)
+    {
+        await IBrugerService.ChangeRolle(rolle);
+    }
+
+    private async Task AktiverUser(int userId)
+    {
+        await IBrugerService.ActivateUser(userId);
+    }
+
 }
