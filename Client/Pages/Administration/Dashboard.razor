@@ -33,12 +33,12 @@
     <!-- Dropdown til rolle -->
     <div class="dropdownmenu">
         <Dropdown Color="DropdownColor.Secondary">
-            <DropdownToggleButton>@(selectedYear.HasValue ? $"År {selectedYear}" : "År")</DropdownToggleButton>
+            <DropdownToggleButton>@(string.IsNullOrEmpty(selectedYear) ? "År" : selectedYear)</DropdownToggleButton>
             <DropdownMenu>
-                <DropdownItem @onclick="() => SelectYear(null)">Alle år</DropdownItem>
-                <DropdownItem @onclick="() => SelectYear(1)">År 1</DropdownItem>
-                <DropdownItem @onclick="() => SelectYear(2)">År 2</DropdownItem>
-                <DropdownItem @onclick="() => SelectYear(3)">År 3</DropdownItem>
+                <DropdownItem @onclick="() => SelectYear(String.Empty)">Alle år</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectYear("År 1"))">År 1</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectYear("År 2"))">År 2</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectYear("År 3"))">År 3</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     </div>
@@ -100,7 +100,7 @@
     // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
 
-    private int? selectedYear = null;
+    private string selectedYear = String.Empty;
     private int? selectedHotelId = null;
     private bool isSelected(int id) => selectedStudentId == id;
     private int? selectedStudentId = null;
@@ -119,7 +119,7 @@
             (string.IsNullOrWhiteSpace(searchText) ||
              a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
             (!selectedHotelId.HasValue || a.HotelId == selectedHotelId) &&
-            (!selectedYear.HasValue || a.Year == selectedYear)));
+            (string.IsNullOrEmpty(selectedYear) || a.Year == selectedYear)));
 
     protected override async Task OnInitializedAsync()
     {
@@ -149,7 +149,7 @@
         navMan.NavigateTo("/tilføjdelmål");
     }
 
-    private void SelectYear(int? year)
+    private void SelectYear(string year)
     {
         selectedYear = year;
     }

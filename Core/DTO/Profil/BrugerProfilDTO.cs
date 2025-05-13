@@ -11,7 +11,7 @@
         public string MentorNavn { get; set; }
         public string RestaurantNavn { get; set;}
         public string RegionNavn { get; set; }
-        public int Year { get; set; }
+        public string Year { get; set; }
         
     }
 }

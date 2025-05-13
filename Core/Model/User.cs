@@ -19,6 +19,6 @@ namespace Core
         public string HotelName { get; set; }
         
         public DateOnly? StartDate { get; set; }
-        public int Year { get; set; }
+        public string Year { get; set; }
     }
 }

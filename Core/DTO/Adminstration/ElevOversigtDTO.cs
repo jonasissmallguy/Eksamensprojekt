@@ -11,7 +11,7 @@
         public string Roller { get; set; }
         public string Ansvarlig  {get; set;}
         
-        public int Year { get; set; }
+        public string Year { get; set; }
 
     }
 
