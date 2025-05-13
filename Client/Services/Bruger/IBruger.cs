@@ -23,11 +23,13 @@ namespace Client
         
         Task DeleteUser(int userId);
 
-        Task ChangeRolle(string newRolle);
+        Task ChangeRolle(string newRolle, int userId);
         
         Task DeActivateUser(int userId);
 
         Task ActivateUser(int userId);
+        
+        Task UpdateHotel(Hotel hotel, int userId);
 
     }
 }

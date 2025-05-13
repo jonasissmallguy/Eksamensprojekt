@@ -20,12 +20,18 @@ namespace Core
         public string Status { get; set; } = "Active";
         public string Semester { get; set; } // denne skal måske være på forløb?
         
-        public int? MentorId { get; set; } 
-        public string MentorName { get; set; } = String.Empty;
+        public int? StarterId { get; set; } 
+        public string StarterName { get; set; } = String.Empty;
+        public DateTime StartedAt { get; set; } //Starter sætter
+
         
-        public DateTime StartedAt { get; set; } //når mentor bliver sat
+        public int? ConfirmerId { get; set; }
+        public string ConfirmerName { get; set; } = String.Empty;
+        public DateTime ConfirmedAt { get; set; } //Kok sæltter / Leder
+
+        public DateTime CompletedAt { get; set; } //Leder sætter
+        
         public DateTime DeadLineAt { get; set; }
-        public DateTime CompletedAt { get; set; } //når køkkenchef siger go
         public int SortOrder { get; set; }
         
         public List<Comment> Comments { get; set; } 

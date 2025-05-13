@@ -20,25 +20,26 @@
 
 @code {
     [Parameter]
-    public string? Title { get; set; } = "Vis Historik";
+    public string? Title { get; set; } = "Ændrer Rolle";
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
-
-    [Parameter] 
-    public EventCallback<int> OnMentorSelected { get; set; }
+    
+    [Parameter]
+    public EventCallback<string> OnRolleSelected { get; set; }
+    public async Task SelectRolle(string rolle)
+    {
+        await OnRolleSelected.InvokeAsync(rolle);
+        Close();
+    }
+    
 
     private string modalDisplay = "none;";
     private string modalClass = string.Empty;
     private bool showBackdrop = false;
+    
 
-    public async Task SelectMentor(int mentorId)
-    {
-        await OnMentorSelected.InvokeAsync(mentorId);
-        Close();
-    }
-
-    public void Open(int goalId)
+    public void Open()
     {
         modalDisplay = "block";
         modalClass = "show";

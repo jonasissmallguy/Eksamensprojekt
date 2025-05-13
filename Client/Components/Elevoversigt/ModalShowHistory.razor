@@ -20,14 +20,13 @@
 
 @code {
     [Parameter]
-    public string? Title { get; set; } = "Ændrer Rolle";
+    public string? Title { get; set; } = "Historik";
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
     
     [Parameter]
     public EventCallback<string> OnRolleSelected { get; set; }
-
     public async Task SelectRolle(string rolle)
     {
         await OnRolleSelected.InvokeAsync(rolle);

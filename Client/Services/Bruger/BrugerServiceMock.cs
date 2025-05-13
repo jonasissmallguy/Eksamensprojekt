@@ -154,6 +154,7 @@ namespace Client
 
         }
 
+        
         public async Task<List<ElevOversigtDTO>> GetElevOversigt()
         {
             List<ElevOversigtDTO> alleElevOversigts = new();
@@ -201,9 +202,9 @@ namespace Client
             _allUsers.RemoveAll(x => x.Id == userId);
         }
 
-        public async Task ChangeRolle(string newRolle)
+        public async Task ChangeRolle(string newRolle, int userId)
         {
-            throw new NotImplementedException();
+            _allUsers.FirstOrDefault(x => x.Id == userId).Rolle = newRolle;
         }
 
         public async Task DeActivateUser(int userId)
@@ -217,6 +218,13 @@ namespace Client
         {
             var user = _allUsers.FirstOrDefault(x => x.Id == userId);
             user.Status = "Active";
+        }
+
+        public async Task UpdateHotel(Hotel hotel, int userId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+            user.HotelId = hotel.Id;
+            user.HotelName = hotel.HotelNavn;
         }
     }
 }
