@@ -10,9 +10,12 @@ namespace Client
 
         private List<Goal> _goals;
         
-        public GoalServiceMock()
+        private IBruger _bruger;
+        
+        public GoalServiceMock(IBruger bruger)
         {
             _goals = new List<Goal>();
+            _bruger = bruger;
         }
         
         public int GenerateId()
@@ -50,13 +53,22 @@ namespace Client
             return _goals.Where(x => x.Type == "Kursus" && x.Status == "Active").ToList();
         }
 
+        public async Task<List<User>> GetUsersByGoalId(int goalId)
+        {
+            var allStudentIds = _goals.Where(x => x.Id == goalId).ToList().Select(x => x.StudentId).ToList(); //Hmm vi selctor jo egentlig et random, er det ok?
+            var allUsers = await _bruger.GetAllUsersByStudentId(allStudentIds);
+            
+            return allUsers;
+            
+        }
+
         public async Task DeleteGoal(Goal goal)
         {
             
             //Opdater vores goal collection
             _goals.RemoveAll(x => x.Id == goal.Id);
             
-            //Sletter goal fra forløb collection
+            //Sletter goal fra forløb collection // FK
             //await _elevPlan.RemoveGoalIdFromForløb(goal);
         }
 
@@ -91,7 +103,7 @@ namespace Client
             var goal = _goals.FirstOrDefault(x => x.Id == goalId);
             goal.Status = "Completed";
         }
-
+        
         public async Task AddMentorToGoal(ElevplanComponent.MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
@@ -129,7 +141,8 @@ namespace Client
 
         public async Task DeleteComment(int goalId, int commentId)
         {
-
+            var goal = _goals.FirstOrDefault(x => x.Id == goalId);
+            goal.Comments.Remove(goal.Comments.FirstOrDefault(x => x.Id == commentId));
         }
     }
 

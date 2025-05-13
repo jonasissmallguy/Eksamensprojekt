@@ -16,6 +16,8 @@ namespace Client
         Task<List<ElevOversigtDTO>> GetElevOversigt();
 
         Task <List<User>> GetAllUsers();
+        
+        Task<List<User>> GetAllUsersByStudentId(List<int> studentIds);
 
 
 
