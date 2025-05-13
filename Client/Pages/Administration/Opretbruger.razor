@@ -3,6 +3,7 @@
 @inject NavigationManager navMan;
 @inject IHotel IHotelService;
 @inject IBruger IBrugerService;
+@inject ISkole ISkoleService;
 
 @using Core
 
@@ -69,10 +70,20 @@
                     </InputSelect>
                 </div>
                 <div class="form-group">
+                    <label class="form-label required-field">År</label>
                     <InputSelect class="form-select" @bind-Value="newUser.Year">
                         @foreach (var yy in år)
                         {
                             <option value="@yy">@yy</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required-field">Skole</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.SkoleId">
+                        @foreach (var sk in skoler)
+                        {
+                            <option value="@sk.SkoleId">@sk.SkoleNavn</option>
                         }
                     </InputSelect>
                 </div>
@@ -93,15 +104,18 @@
     private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
     private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
     private string[] år = { "År 1", "År 2", "År 3" };
-
+    private List<SkoleDTO> skoler = new();
+    
 
     protected override async void OnInitialized()
     {
         newUser.Rolle = roller[0];
         newUser.Køn = køn[2]; //prefixed til "Ikke angivet"
+        newUser.Year = år[0];
         hoteller = await IHotelService.GetAllHotelNames();
         newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
-
+        skoler = await ISkoleService.GetAllSkoleNames();
+        newUser.SkoleId = skoler.Select(sl => sl.SkoleId).FirstOrDefault();
     }
     
     private async Task HandleNewUser()

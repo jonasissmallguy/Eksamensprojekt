@@ -3,6 +3,7 @@
 @inject NavigationManager navMan;
 @inject IBruger IBrugerService;
 @inject IHotel IHotelService;
+@inject ISkole ISkoleService;
 
 
 @page "/dashboard"
@@ -42,6 +43,21 @@
             </DropdownMenu>
         </Dropdown>
     </div>
+
+    <!-- Dropdown til skolevalg -->
+    <div class="dropdownmenu">
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>@(selectedSkoleId == null ? "Skole" :
+                GetSkoleName(selectedSkoleId))</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem @onclick="() => SelectSkole(null)">Alle skoler</DropdownItem>
+                @foreach (var sk in alleSkoler)
+                {
+                    <DropdownItem @onclick="() => SelectSkole(sk.SkoleId)">@sk.SkoleNavn</DropdownItem>
+                }
+            </DropdownMenu>
+        </Dropdown>
+    </div>
     
     @if (selectedStudentIds.Any())
     {
@@ -69,6 +85,7 @@
         <th>Hotel</th>
         <th>Status</th>
         <th>År</th>
+        <th>Skole</th>
     </tr>
     
     @if (alleElever != null)
@@ -85,6 +102,7 @@
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">11/47</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetSkoleName(x.SkoleId))</td>
 
             </tr>
         }
@@ -105,6 +123,7 @@
     private bool isSelected(int id) => selectedStudentId == id;
     private int? selectedStudentId = null;
     private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
+    private int? selectedSkoleId = null;
 
 
     private bool isChecked;
@@ -112,6 +131,7 @@
     private List<ElevOversigtDTO> alleElever;
     private List<HotelNameDTO> alleHoteller;
     private HashSet<int> selectedStudentIds = new();
+    private List<SkoleDTO> alleSkoler;
 
     // Filter til søgetekst og til valg af hotel
     private IEnumerable<ElevOversigtDTO> FiltreredElever =>
@@ -119,13 +139,16 @@
             (string.IsNullOrWhiteSpace(searchText) ||
              a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
             (!selectedHotelId.HasValue || a.HotelId == selectedHotelId) &&
-            (string.IsNullOrEmpty(selectedYear) || a.Year == selectedYear)));
+            (string.IsNullOrEmpty(selectedYear) || a.Year == selectedYear) &&
+            (!selectedSkoleId.HasValue || a.SkoleId == selectedSkoleId)));
 
     protected override async Task OnInitializedAsync()
     {
         alleElever = await IBrugerService.GetElevOversigt();
 
         alleHoteller = await IHotelService.GetAllHotelNames();
+
+        alleSkoler = await ISkoleService.GetAllSkoleNames();
     }
 
     private async Task NavigateToElevPlan(int studentId)
@@ -142,6 +165,17 @@
     private void SelectHotel(int? hotelId)
     {
         selectedHotelId = hotelId;
+    }
+
+    private string GetSkoleName(int? skoleId)
+    {
+        var skole = alleSkoler.FirstOrDefault(sk => sk.SkoleId == skoleId);
+        return skole?.SkoleNavn ?? "Ukendt skole";
+    }
+
+    private void SelectSkole(int? skoleId)
+    {
+        selectedSkoleId = skoleId;
     }
 
     private void NavigateToAddGoal()

@@ -22,5 +22,6 @@ builder.Services.AddScoped<IHotel, HotelServiceMock>();
 builder.Services.AddScoped<IElevPlan, ElevPlanServiceMock>();
 builder.Services.AddScoped<IGoal, GoalServiceMock>();
 builder.Services.AddScoped<ITemplate, TemplateServiceMock>();
+builder.Services.AddScoped<ISkole, SkoleServiceMock>();
 
 await builder.Build().RunAsync();

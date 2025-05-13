@@ -30,6 +30,8 @@ namespace Core
         public DateOnly? StartDate { get; set; }
         [Required(ErrorMessage = "Venligst indtast et semester år")]
         public string Year { get; set; }
+        [Required(ErrorMessage = "Venligst indtast en skole")]
+        public int SkoleId { get; set; }
 
     }
 }

@@ -12,6 +12,7 @@
         public string Ansvarlig  {get; set;}
         
         public string Year { get; set; }
+        public int SkoleId { get; set; }
 
     }
 

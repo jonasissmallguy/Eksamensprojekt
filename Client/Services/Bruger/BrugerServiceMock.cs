@@ -49,7 +49,9 @@ namespace Client
                 Rolle = "Elev",
                 FirstName = "Peter",
                 HotelId = 1,
-                HotelName = "Comwell Aarhus"
+                HotelName = "Comwell Aarhus",
+                Year = "År 1",
+                SkoleId = 1
             }
         };
         
@@ -157,7 +159,8 @@ namespace Client
                     Rolle = nyBruger.Rolle,
                     HotelId = nyBruger.HotelId,
                     StartDate = nyBruger.StartDate,
-                    Year = nyBruger.Year
+                    Year = nyBruger.Year,
+                    SkoleId = nyBruger.SkoleId
                 });
             
              _allUsers.Add(bruger);
@@ -180,7 +183,8 @@ namespace Client
                     Hotel = "test",
                     Roller = elev.Rolle,
                     Ansvarlig = "test ansvarlig",
-                    Year = elev.Year
+                    Year = elev.Year,
+                    SkoleId = elev.SkoleId
                 });
             }
             

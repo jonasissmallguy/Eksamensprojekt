@@ -12,6 +12,6 @@
         public string RestaurantNavn { get; set;}
         public string RegionNavn { get; set; }
         public string Year { get; set; }
-        
+        public string Skole { get; set; }
     }
 }
