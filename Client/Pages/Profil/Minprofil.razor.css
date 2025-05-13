@@ -29,6 +29,23 @@
     object-fit: cover;
 }
 
+.change-pic-btn{
+    background-color: rgb(24,43,57);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    padding: 10px 16px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.2s;
+}
+
+.change-pic-btn:hover{
+    background-color: rgb(34, 53, 67);
+}
 .change-password-btn {
     background-color: rgb(24,43,57);
     color: white;

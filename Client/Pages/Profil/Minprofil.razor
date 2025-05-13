@@ -9,12 +9,13 @@
 
 <div class="min-profil">
     <div class="profile-sidebar">
-        <div class="profile-image-container">
-            <img src="/api/placeholder/200/200" alt="Profilbillede" class="profile-image" />
-        </div>
-        <button class="change-password-btn" @onclick="() => NavigateToResetPassword()">Rediger adgangskode</button>
+            <div class="profile-image-container">
+                <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profil billede" class="profile-image"/> 
+            </div>
+        <button class="change-pic-btn"> Ret billede</button>
+        <button class="change-password-btn" @onclick="() => NavigateToResetPassword()">Rediger adgangskode</button>     
     </div>
-
+    
     <div class="card">
         <h2 class="title">Velkommen til din profil, @_minBruger.Navn</h2>
         <EditForm Model="_minBruger" OnValidSubmit="@UpdateDetails">
