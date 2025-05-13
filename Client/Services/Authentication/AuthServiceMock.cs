@@ -11,53 +11,26 @@ namespace Client
 
     public class AuthServiceMock : IAuth
     {
-
-        private List<User> _allUsers = new List<User>
-        {
-            new User
-            {
-                Id = 1,
-                FirstName = "Jane",
-                Email = "admin@admin.com",
-                Password = "123456",
-                Rolle = "HR"
-            },
-            new User
-            { 
-                Id = 2,
-                FirstName = "John",
-                Email = "elev@elev.com",
-                Password = "123456",
-                Rolle = "Elev"
-            },
-            new User
-            {
-                Id = 3,
-                FirstName = "Theis",
-                Email = "elev1@admin.com",
-                Password = "123456",
-                Rolle = "Køkkenchef"
-            },
-            new User
-            {
-                Id = 4,
-                FirstName = "Lars",
-                Email = "tjoernevej53@gmail.com",
-                Password = "123456",
-                Rolle = "Mentor"
-            }
-            
-        };
+        
+        private IBruger _brugerService;
         
         //Verificeringskoder
         private static Dictionary<string, (string Kode, DateTime Expiry)> verificeringsKoder = new();
 
+        List<User> _allUsers = new();
         
         private  ILocalStorageService _localStorage;
 
-        public AuthServiceMock(ILocalStorageService localStorage)
+        public AuthServiceMock(ILocalStorageService localStorage, IBruger brugerService)
         {
             _localStorage = localStorage;
+            _brugerService = brugerService;
+            OnInitialized();
+        }
+
+        public async Task OnInitialized()
+        {
+            _allUsers = await _brugerService.GetAllUsers();
         }
         
         public async Task<BrugerLoginDTO?> GetBruger()

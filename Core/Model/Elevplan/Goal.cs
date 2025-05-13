@@ -12,13 +12,13 @@ namespace Core
         public int PlanId { get; set; }
         public int ForløbId { get; set; }
         
+        public int StudentId { get; set; }
+        
         public string Type { get; set; }  // Kursus, Skole, Kompetence
         public string Title { get; set; }
         public string Description { get; set; }
         public string Status { get; set; } = "Active";
         public string Semester { get; set; } // denne skal måske være på forløb?
-        
-        //Skal jeg have ansvarlig med??
         
         public int? MentorId { get; set; } 
         public string MentorName { get; set; } = String.Empty;

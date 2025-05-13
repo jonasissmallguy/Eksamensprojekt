@@ -22,7 +22,25 @@ namespace Client
                 Password = "123456",
                 Rolle = "Køkkenchef",
                 FirstName = "Theis"
-            }
+            },
+            new User
+            {
+                Id = 3,
+                Email = "elev@comwell.com",
+                Password = "123456",
+                Rolle = "Elev",
+                FirstName = "Charles",
+                HotelId = 1,
+                HotelName = "Comwell Aarhus"
+            },
+            new User
+            {
+                Id = 4,
+                Email = "kok@comwell.com",
+                Password = "123456",
+                Rolle = "Kok",
+                FirstName = "Kok"
+            }   
         };
         
         
@@ -157,6 +175,22 @@ namespace Client
             }
             
             return alleElevOversigts;
+        }
+
+        public async Task<List<User>> GetAllUsers()
+        {
+            return _allUsers;
+        }
+
+        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds) 
+        {
+            List<User> usersToReturn = new();
+            
+            studentIds.ForEach(x => usersToReturn.Add(_allUsers.FirstOrDefault(u => u.Id == x)));
+            Console.WriteLine(usersToReturn.Count);
+
+            return usersToReturn.ToList();
+
         }
     }
 }

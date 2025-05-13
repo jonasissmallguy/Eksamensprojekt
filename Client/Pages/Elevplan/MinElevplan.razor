@@ -10,9 +10,19 @@
 @page "/minelevplan/{studentId:int}"
 <h3>@elev.Navn</h3>
 
-@if (elev != null)
+@if (elev != null && _currentUser.Rolle == "HR")
+{
+    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="false" OnMentorAssigned="AddMentor" 
+                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
+}
+else if (elev != null && _currentUser.Rolle == "Køkkenchef")
 {
     <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="true" OnMentorAssigned="AddMentor" 
+                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
+}
+else if (elev != null && _currentUser.Rolle == "Elev")
+{
+    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="false" OnMentorAssigned="AddMentor" 
                        OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
 }
 
@@ -35,7 +45,14 @@ else
     {
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = await IElevPlanService.GetPlanByStudentId(studentId);
-
+        
+        //Dette er bare brugt til visning til COmwell - dette skal slettes!!!!!!
+        if (elevPlan == null)
+        {
+            elevPlan = await IElevPlanService.CreateElevPlan(studentId);
+        }
+        //SLET DET OVENO
+        
         if (elevPlan != null)
         {
             goals = await IGoalService.GetAllGoalsByPlanId(studentId);
@@ -62,6 +79,8 @@ else
     private async Task ConfirmGoal(int goalId)
     {
         await IGoalService.ConfirmGoal(goalId);
+        StateHasChanged();
+        
     }
 
 }
