@@ -40,7 +40,17 @@ namespace Client
                 Password = "123456",
                 Rolle = "Kok",
                 FirstName = "Kok"
-            }   
+            },
+            new User
+            {
+                Id = 5,
+                Email = "elev2@comwell.com",
+                Password = "123456",
+                Rolle = "Elev",
+                FirstName = "Peter",
+                HotelId = 1,
+                HotelName = "Comwell Aarhus"
+            }
         };
         
         

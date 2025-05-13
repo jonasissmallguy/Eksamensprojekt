@@ -49,22 +49,26 @@
         <div class="addgoal-button">
             <Button class="btn btn-primary" @onclick="NavigateToAddGoal">Tilføj delmål</Button>
         </div>
+        <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
+        <div class="export-button">
+            <Button class="btn btn-primary">Eksporter fil</Button>
+        </div>
     }
-
-    <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
-    <div class="export-button">
-        <Button class="btn btn-primary">Eksporter fil</Button>
-    </div>
+    
 </div>
 
 <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
 <table>
     <tr>
+        <th>
+            <input type="checkbox"
+                   @onchange="ToggleSelectAll"
+                   checked="@AreAllFilteredSelected" />
+        </th>
         <th>Navn</th>
         <th>Hotel</th>
         <th>Status</th>
         <th>År</th>
-        <th>Vælg:</th>
     </tr>
     
     @if (alleElever != null)
@@ -72,16 +76,16 @@
         @foreach (var x in FiltreredElever)
         {
             <tr>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">Status</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
                 <td>
                     <input type="checkbox"
                            checked="@selectedStudentIds.Contains(x.Id)"
                            @onchange="(e) => CheckboxValueChanged(x.Id, (bool) ((ChangeEventArgs)e).Value)"/>
                 </td>
-                
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">11/47</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
+
             </tr>
         }
     }
@@ -100,6 +104,8 @@
     private int? selectedHotelId = null;
     private bool isSelected(int id) => selectedStudentId == id;
     private int? selectedStudentId = null;
+    private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
+
 
     private bool isChecked;
 
@@ -160,4 +166,24 @@
         }
     }
 
+    private void ToggleSelectAll(ChangeEventArgs e)
+    {
+        bool shouldSelectAll = (bool)e.Value;
+        
+        if (shouldSelectAll)
+        {
+            foreach (var elev in FiltreredElever)
+            {
+                selectedStudentIds.Add(elev.Id);
+            }
+        }
+        else
+        {
+            foreach (var elev in FiltreredElever)
+            {
+                selectedStudentIds.Remove(elev.Id);
+            }
+        }
+    }
+    
 }
