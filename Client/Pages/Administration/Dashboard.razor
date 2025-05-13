@@ -33,19 +33,23 @@
     <!-- Dropdown til rolle -->
     <div class="dropdownmenu">
         <Dropdown Color="DropdownColor.Secondary">
-            <DropdownToggleButton>År</DropdownToggleButton>
+            <DropdownToggleButton>@(selectedYear.HasValue ? $"År {selectedYear}" : "År")</DropdownToggleButton>
             <DropdownMenu>
-                <DropdownItem To="#">År 1</DropdownItem>
-                <DropdownItem To="#">År 2</DropdownItem>
-                <DropdownItem To="#">År 3</DropdownItem>
+                <DropdownItem @onclick="() => SelectYear(null)">Alle år</DropdownItem>
+                <DropdownItem @onclick="() => SelectYear(1)">År 1</DropdownItem>
+                <DropdownItem @onclick="() => SelectYear(2)">År 2</DropdownItem>
+                <DropdownItem @onclick="() => SelectYear(3)">År 3</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     </div>
     
-    <!-- Knap til at tilføje et delmål-->
-    <div class="addgoal-button">
-        <Button class="btn btn-primary" @onclick="NavigateToAddGoal">Tilføj delmål</Button>
-    </div>
+    @if (selectedStudentIds.Any())
+    {
+        <!-- Knap til at tilføje et delmål-->
+        <div class="addgoal-button">
+            <Button class="btn btn-primary" @onclick="NavigateToAddGoal">Tilføj delmål</Button>
+        </div>
+    }
 
     <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
     <div class="export-button">
@@ -58,9 +62,9 @@
     <tr>
         <th>Navn</th>
         <th>Hotel</th>
-        <th>Rolle</th>
-        <th>Ansvarlig</th>
         <th>Status</th>
+        <th>År</th>
+        <th>Vælg:</th>
     </tr>
     
     @if (alleElever != null)
@@ -70,9 +74,14 @@
             <tr>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Roller</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Ansvarlig</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">Status</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
+                <td>
+                    <input type="checkbox"
+                           checked="@selectedStudentIds.Contains(x.Id)"
+                           @onchange="(e) => CheckboxValueChanged(x.Id, (bool) ((ChangeEventArgs)e).Value)"/>
+                </td>
+                
             </tr>
         }
     }
@@ -87,19 +96,24 @@
     // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
 
+    private int? selectedYear = null;
     private int? selectedHotelId = null;
     private bool isSelected(int id) => selectedStudentId == id;
     private int? selectedStudentId = null;
 
+    private bool isChecked;
+
     private List<ElevOversigtDTO> alleElever;
     private List<HotelNameDTO> alleHoteller;
+    private HashSet<int> selectedStudentIds = new();
 
     // Filter til søgetekst og til valg af hotel
     private IEnumerable<ElevOversigtDTO> FiltreredElever =>
         alleElever.Where((a =>
             (string.IsNullOrWhiteSpace(searchText) ||
              a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
-            (!selectedHotelId.HasValue || a.HotelId == selectedHotelId)));
+            (!selectedHotelId.HasValue || a.HotelId == selectedHotelId) &&
+            (!selectedYear.HasValue || a.Year == selectedYear)));
 
     protected override async Task OnInitializedAsync()
     {
@@ -127,6 +141,23 @@
     private void NavigateToAddGoal()
     {
         navMan.NavigateTo("/tilføjdelmål");
+    }
+
+    private void SelectYear(int? year)
+    {
+        selectedYear = year;
+    }
+
+    private void CheckboxValueChanged(int studentId, bool value)
+    {
+        if (value)
+        {
+            selectedStudentIds.Add(studentId);
+        }
+        else
+        {
+            selectedStudentIds.Remove(studentId);
+        }
     }
 
 }

@@ -13,10 +13,11 @@ namespace Client
         Task<Goal> GetGoalByGoalId(int goalId);
         Task<Dictionary<int, Goal>> GetAllGoalsByPlanId(int planId);
         Task<List<Goal>> GetAllUncompletedCourses();
+        Task<List<User>> GetUsersByGoalId(int goalId);
         Task DeleteGoal(Goal goal);
         Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates);
-        
         Task ConfirmGoal(int goalId);
+        
         
         //Mentor
         Task AddMentorToGoal(ElevplanComponent.MentorAssignment mentor);

@@ -1,12 +1,12 @@
 ﻿@using Core;
 
-@inject IGoal GoalServiceMock;
+@inject IGoal IGoalService;
 @inject NavigationManager navMan;
 
 @page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
 
-<!--
+
 <table>
     <tr>
         <th>Titel</th>
@@ -19,18 +19,17 @@
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Title</td>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Semester</td>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Status</td>
-
         </tr>
     }
 </table>
--->
+
 @code {
 
     private List<Goal> alleKurser;
 
     protected override async Task OnInitializedAsync()
     {
-        alleKurser = await GoalServiceMock.GetAllUncompletedCourses();
+        alleKurser = await IGoalService.GetAllUncompletedCourses();
     }
 
     private void NavigateToKursus(int kursusId)

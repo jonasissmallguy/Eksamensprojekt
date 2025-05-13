@@ -23,9 +23,19 @@
 </div>
 
 
-@if (elev != null)
+@if (elev != null && _currentUser.Rolle == "HR")
+{
+    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="false" OnMentorAssigned="AddMentor" 
+                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
+}
+else if (elev != null && _currentUser.Rolle == "Køkkenchef")
 {
     <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="true" OnMentorAssigned="AddMentor" 
+                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
+}
+else if (elev != null && _currentUser.Rolle == "Elev")
+{
+    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="false" OnMentorAssigned="AddMentor" 
                        OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
 }
 
@@ -54,6 +64,7 @@ else
         {
             elevPlan = await IElevPlanService.CreateElevPlan(studentId);
         }
+        //SLET DET OVENO
         
         if (elevPlan != null)
         {
