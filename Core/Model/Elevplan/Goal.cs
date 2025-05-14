@@ -23,7 +23,6 @@ namespace Core
         public int? StarterId { get; set; } 
         public string StarterName { get; set; } = String.Empty;
         public DateTime? StartedAt { get; set; } //Starter sætter
-
         
         public int? ConfirmerId { get; set; }
         public string ConfirmerName { get; set; } = String.Empty;

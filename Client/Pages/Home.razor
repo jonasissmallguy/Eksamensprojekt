@@ -1,7 +1,10 @@
-﻿@inject IAuth AuthService;
+﻿@using Core
+
+@inject IAuth AuthService;
 @inject NavigationManager navMan;
+@inject IGoal IGoalService;
+
 @page "/"
-@using Core
 
 <h3 class="page-title">Oversigt</h3>
 
@@ -38,6 +41,65 @@
             </div>
         </div>
     </div>
+    <div class="col-sm-6 mt-4">
+        <div class="custom-card">
+            <div class="card-body">
+                <h5 class="card-title custom-title">Elvers mål der afventer dine godkendelser</h5>
+                <p class="card-text">Du har følgende notofikationer</p>
+                @if (_awaitingApproval != null)
+                {
+                    <div class="mt-4">
+                        <ul>
+                            @foreach (var g in _awaitingApproval)
+                            {
+                                <p>@g.StudentId</p>
+                                <li>Delmål: @g.Title <button @onclick="() => ApproveGoal(g) ">Godkend mål</button> </li>
+                                
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 mt-4">
+        <div class="custom-card">
+            <div class="card-body">
+                <h5 class="card-title custom-title">Manglende kurser</h5>
+                @if (_missingCourses != null)
+                {
+                    <div class="mt-4">
+                        <ul>
+                            @foreach (var g in _missingCourses)
+                            {
+                                <p>@g.StudentId</p>
+                                <li>Kursus: @g.Title</li>
+                            }
+                        </ul>
+                    </div>   
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 mt-4">
+        <div class="custom-card">
+            <div class="card-body">
+                <h5 class="card-title custom-title">Elever ude af houset</h5>
+                @if (_missingCourses != null)
+                {
+                    <div class="mt-4">
+                        <ul>
+                            @foreach (var g in _outOfHouse)
+                            {
+                                <p>@g.StudentId</p>
+                                <li>Kursus: @g.Title</li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -45,6 +107,10 @@
 
 {
     private BrugerLoginDTO _currentUser;
+
+    private List<Goal> _awaitingApproval;
+    private List<Goal> _missingCourses;
+    private List<Goal> _outOfHouse;
     
     protected override async Task OnInitializedAsync()
     {
@@ -54,7 +120,13 @@
             navMan.NavigateTo("login/");
             return;
         }
-        else if (_currentUser.Rolle == "Elev" || _currentUser.Rolle == "Køkkenchef" || _currentUser.Rolle == "Mentor")
+        
+        else if (_currentUser.Rolle == "Køkkenchef")
+        {
+            navMan.NavigateTo("");
+        }
+        
+        else if (_currentUser.Rolle == "Elev" ||  _currentUser.Rolle == "Mentor")
         {
             navMan.NavigateTo("/");
         }
@@ -62,5 +134,21 @@
         {
             navMan.NavigateTo("/Dashboard");
         }
+
+        _awaitingApproval =  await IGoalService.GetAwaitingApproval();
+        _missingCourses = await IGoalService.GetMissingCourses();
+        _outOfHouse = await IGoalService.GetOutOfHouse();
+
+    }
+
+    private async Task ApproveGoal(Goal goal)
+    {
+        await IGoalService.ConfirmGoalFromHomePage(goal);
+
+        if (goal.Id != null)
+        {
+            _awaitingApproval = _awaitingApproval.Where(g => g.Id != goal.Id).ToList();
+        }
+        
     }
 }

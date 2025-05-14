@@ -12,7 +12,7 @@ public class KursusServiceMock : IKursus
         {
             Id = 1,
             Title = "ESG og Bæredygtighed",
-        }
+        } 
     };
     
     public async Task<List<Kursus>> GetAllCourses()
