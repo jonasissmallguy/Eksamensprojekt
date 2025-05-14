@@ -29,7 +29,7 @@ namespace Core
         [Required(ErrorMessage = "Venligst indtast en startdato")]
         public DateOnly? StartDate { get; set; }
         [Required(ErrorMessage = "Venligst indtast et semester år")]
-        public int Year { get; set; }
+        public string Year { get; set; }
 
     }
 }

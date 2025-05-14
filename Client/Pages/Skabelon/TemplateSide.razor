@@ -1,0 +1,48 @@
+﻿@using Core;
+@using Client.Components.Elevoversigt
+
+@inject ITemplate ITemplateService;
+
+@inject NavigationManager navMan;
+
+@page "/templateside/{templateId:int}"
+
+<!--
+@if (_template != null)
+{
+    <h3>@_template.Title</h3>
+
+    <ElevplanComponent PlanTemplate="@_template" ShowSubmitButton="true"ShowComments="false"/>
+
+}
+
+else
+{
+    <p>Loading...</p>
+}
+-->
+
+@code {
+    
+    [Parameter]
+    public int templateId { get; set; }
+    
+    [CascadingParameter] 
+    private BrugerLoginDTO _currentUser { get; set; }
+    
+    private PlanTemplate _template;
+    private Dictionary<int, Goal> _goals = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo($"login/templateside/{templateId}");
+        }
+
+        _template = await ITemplateService.GetTemplateById(templateId);
+
+    }
+    
+    
+}
