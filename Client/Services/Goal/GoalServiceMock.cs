@@ -37,74 +37,51 @@ namespace Client
             return goalTypes;
         }
         
-        public async Task<Goal> GetGoalByGoalId(int goalId)
-        {
-            return _goals.FirstOrDefault(x => x.Id == goalId);
-        }
 
-        public async Task<Dictionary<int, Goal>> GetAllGoalsByPlanId(int planId)
-        {
-            var result = _goals.ToDictionary(x => x.Id, x => x);
-            return result;
-        }
-
-        public async Task<List<Goal>> GetAllUncompletedCourses()
-        {
-            return _goals.Where(x => x.Type == "Kursus" && x.Status == "Active").ToList();
-        }
-
-        public async Task<List<User>> GetUsersByGoalId(int goalId)
-        {
-            var allStudentIds = _goals.Where(x => x.Id == goalId).ToList().Select(x => x.StudentId).ToList(); //Hmm vi selctor jo egentlig et random, er det ok?
-            var allUsers = await _bruger.GetAllUsersByStudentId(allStudentIds);
-            
-            return allUsers;
-            
-        }
 
         public async Task DeleteGoal(Goal goal)
         {
             
             //Opdater vores goal collection
-            _goals.RemoveAll(x => x.Id == goal.Id);
             
             //Sletter goal fra forløb collection // FK
             //await _elevPlan.RemoveGoalIdFromForløb(goal);
         }
 
-        public async Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates)
+        
+        public async Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløb, List<GoalTemplate> goalTemplates)
         {
             var newGoals = new List<Goal>();
 
-            foreach (var goal in goalTemplates)
+            // Initialize Goals collection if it's null
+            if (forløb.Goals == null)
             {
-                var nytGoal = new Goal
+                forløb.Goals = new List<Goal>();
+            }
+
+            foreach (var template in goalTemplates)
+            {
+                var newGoal = new Goal
                 {
                     Id = GenerateId(),
-                    PlanId = planId,
-                    ForløbId = forløbs.Id,
-                    Type = goal.Type,
-                    Title = goal.Title,
-                    Description = goal.Description,
-                    Semester = "test",
+                    Type = template.Type,
+                    Title = template.Title,
+                    Description = template.Description,
+                    Semester = forløb.Semester, 
                     Status = "Active",
                     Comments = new List<Comment>()
                 };
-                _goals.Add(nytGoal);
-                forløbs.GoalIds.Add(nytGoal.Id);
-                newGoals.Add(nytGoal);
+        
+                _goals.Add(newGoal);        
+                forløb.Goals.Add(newGoal);  
+                newGoals.Add(newGoal);      
             }
-            
+    
             return newGoals;
         }
 
-        public async Task<List<Goal>> GetAwaitingApproval()
-        {
-            var afventergodkendelse = _goals.Where(x => x.Status == "AwaitingApproval").ToList();
-            return afventergodkendelse;
-        }
-
-
+        
+        
         public async Task StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
@@ -123,6 +100,8 @@ namespace Client
             goal.ConfirmerName = mentor.MentorName;
             goal.ConfirmedAt = DateTime.Now;
             goal.Status = "AwaitingApproval";
+            
+
         }
         
         public async Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
@@ -132,27 +111,6 @@ namespace Client
             goal.Status = "Completed";
             
 
-        }
-
-        public async Task ConfirmGoalFromHomePage(Goal goal)
-        {
-            var approvalGoal = _goals.FirstOrDefault(x => x.Id == goal.Id);
-            goal.CompletedAt = DateTime.Now;
-            goal.Status = "Completed";
-        }
-
-        //VI vil kune have ledernes!
-        public async Task<List<Goal>> GetMissingCourses()
-        {
-            var goal = _goals.Where(x => x.Type == "Kursus" && x.Status == "Active").ToList();
-            return goal;
-        }
-
-        //Mangler at få noget dato ind
-        public async Task<List<Goal>> GetOutOfHouse()
-        {
-            var goal = _goals.Where(x => x.Type == "Kursus" || x.Type == "Skole" && x.Status == "Active" || x.Status == "InProgress" ).ToList();
-            return goal;
         }
 
         public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)

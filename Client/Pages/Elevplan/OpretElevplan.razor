@@ -13,9 +13,9 @@
 
 @if (elev != null)
 {
-    <h2>Du er ved at oprette en elevplan for @elev.Navn</h2>
+    <h2>Du er ved at oprette en elevplan for @elev.FirstName</h2>
     
-    <ElevplanComponent Plan="@nyElevPlan" Goals="@goals" ShowSubmitButton="true"ShowComments="false" 
+    <ElevplanComponent Plan="@nyElevPlan"ShowSubmitButton="true"ShowComments="false" 
                        OnDelteClicked="HandleDeleteGoal" OnSubmitClicked="HandleElevplanSubmit" />
 
     <button class="btn btn-primary">Opret delmål</button>
@@ -29,29 +29,18 @@ else
     [Parameter] public int studentId { get; set; }
 
     private Plan? nyElevPlan = new();
-    private BrugerProfilDTO elev = new();
-    private Dictionary<int, Goal> goals = new();
+    private User elev = new();
 
     protected override async Task OnInitializedAsync()
     {
         elev = await IBrugerService.GetBrugerById(studentId);
         nyElevPlan = await IElevPlanService.CreateElevPlan(elev.Id);
-
-        if (nyElevPlan != null)
-        {
-             goals = await IGoalService.GetAllGoalsByPlanId(nyElevPlan.Id);
-        }
+        
     }
     
     private async Task HandleDeleteGoal(Goal goal)
     {
         await IGoalService.DeleteGoal(goal);
-        //await IElevPlanService.RemoveGoalIdFromForløb(goal);
-
-        if (goal != null)
-        {
-            goals = goals.Where(x => x.Value.Id != goal.Id).ToDictionary();
-        }
     }
     
     private async Task HandleElevplanSubmit()
