@@ -1,10 +1,16 @@
 ﻿@using Core;
 
 @inject IGoal IGoalService;
+@inject IKursus IKursusService;
 @inject NavigationManager navMan;
 
 @page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
+
+@foreach (var x in alleKurser)
+{
+    <p>@x.Title</p>
+}
 
 <!--
 <table>
@@ -27,14 +33,15 @@
 
 @code {
 
-    /*
-    private List<Goal> alleKurser;
-
+    
+    private List<Kursus> alleKurser;
+    
     protected override async Task OnInitializedAsync()
     {
-        alleKurser = await IGoalService.GetAllUncompletedCourses();
+        alleKurser = await IKursusService.GetAllCourses();
     }
 
+    /*
     private void NavigateToKursus(int kursusId)
     {
         navMan.NavigateTo($"kursusoverblik/{kursusId}");
