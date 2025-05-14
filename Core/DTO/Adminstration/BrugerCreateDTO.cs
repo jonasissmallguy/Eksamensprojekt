@@ -32,6 +32,8 @@ namespace Core
         public string Year { get; set; }
         [Required(ErrorMessage = "Venligst indtast en skole")]
         public int SkoleId { get; set; }
+        [Required(ErrorMessage = "Venligst indtast forløb")]
+        public int UddannelseId { get; set; }
 
     }
 }

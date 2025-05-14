@@ -21,5 +21,6 @@ namespace Core
         public DateOnly? StartDate { get; set; }
         public string Year { get; set; }
         public int SkoleId { get; set; }
+        public int UddannelseId { get; set; }
     }
 }

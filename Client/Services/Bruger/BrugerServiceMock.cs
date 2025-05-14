@@ -160,7 +160,8 @@ namespace Client
                     HotelId = nyBruger.HotelId,
                     StartDate = nyBruger.StartDate,
                     Year = nyBruger.Year,
-                    SkoleId = nyBruger.SkoleId
+                    SkoleId = nyBruger.SkoleId,
+                    UddannelseId = nyBruger.UddannelseId
                 });
             
              _allUsers.Add(bruger);
@@ -184,7 +185,8 @@ namespace Client
                     Roller = elev.Rolle,
                     Ansvarlig = "test ansvarlig",
                     Year = elev.Year,
-                    SkoleId = elev.SkoleId
+                    SkoleId = elev.SkoleId,
+                    UddannelseId = elev.UddannelseId
                 });
             }
             

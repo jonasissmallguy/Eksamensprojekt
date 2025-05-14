@@ -7,6 +7,7 @@
 @inject IHotel IHotelService;
 @inject ISkole ISkoleService;
 @inject IGoal IGoalService;
+@inject IUddannelse IUddannelseService;
 
 
 @page "/dashboard"
@@ -51,12 +52,27 @@
     <div class="dropdownmenu">
         <Dropdown Color="DropdownColor.Secondary">
             <DropdownToggleButton>@(selectedSkoleId == null ? "Skole" :
-                GetSkoleName(selectedSkoleId))</DropdownToggleButton>
+                                      GetSkoleName(selectedSkoleId))</DropdownToggleButton>
             <DropdownMenu>
                 <DropdownItem @onclick="() => SelectSkole(null)">Alle skoler</DropdownItem>
                 @foreach (var sk in alleSkoler)
                 {
                     <DropdownItem @onclick="() => SelectSkole(sk.SkoleId)">@sk.SkoleNavn</DropdownItem>
+                }
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+
+    <!-- Dropdown til uddannelsesvalg -->
+    <div class="dropdownmenu">
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>@(selectedUddannelseId == null ? "Uddannelse" :
+                GetUddanelseName(selectedUddannelseId))</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem @onclick="() => SelectUddannelse(null)">Alle uddannelser</DropdownItem>
+                @foreach (var u in alleUddannelser)
+                {
+                    <DropdownItem @onclick="() => SelectUddannelse(u.UddannelseId)">@u.UddannelseNavn</DropdownItem>
                 }
             </DropdownMenu>
         </Dropdown>
@@ -89,6 +105,7 @@
         <th>Status</th>
         <th>År</th>
         <th>Skole</th>
+        <th>Uddannelse</th>
     </tr>
     
     @if (alleElever != null)
@@ -106,6 +123,7 @@
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">11/47</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetSkoleName(x.SkoleId))</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetUddanelseName(x.UddannelseId))</td>
 
             </tr>
         }
@@ -282,6 +300,7 @@
     private int? selectedStudentId = null;
     private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
     private int? selectedSkoleId = null;
+    private int? selectedUddannelseId = null;
 
 
     private bool isChecked;
@@ -290,6 +309,7 @@
     private List<HotelNameDTO> alleHoteller;
     private HashSet<int> selectedStudentIds = new();
     private List<SkoleDTO> alleSkoler;
+    private List<UddannelseDTO> alleUddannelser;
 
     // Filter til søgetekst og til valg af hotel
     private IEnumerable<ElevOversigtDTO> FiltreredElever =>
@@ -298,7 +318,8 @@
              a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
             (!selectedHotelId.HasValue || a.HotelId == selectedHotelId) &&
             (string.IsNullOrEmpty(selectedYear) || a.Year == selectedYear) &&
-            (!selectedSkoleId.HasValue || a.SkoleId == selectedSkoleId)));
+            (!selectedSkoleId.HasValue || a.SkoleId == selectedSkoleId) &&
+            (!selectedUddannelseId.HasValue || a.UddannelseId == selectedUddannelseId)));
 
     protected override async Task OnInitializedAsync()
     {
@@ -309,6 +330,8 @@
         alleSkoler = await ISkoleService.GetAllSkoleNames();
         
         alleTyper = await IGoalService.GetAllGoalTypes();
+
+        alleUddannelser = await IUddannelseService.GetAllUddannelseNames();
     }
 
     private async Task NavigateToElevPlan(int studentId)
@@ -336,6 +359,17 @@
     private void SelectSkole(int? skoleId)
     {
         selectedSkoleId = skoleId;
+    }
+    
+    private string GetUddanelseName(int? uddannelseId)
+    {
+        var uddannelse = alleUddannelser.FirstOrDefault(u => u.UddannelseId == uddannelseId);
+        return uddannelse?.UddannelseNavn ?? "Ukendt uddanelse";
+    }
+
+    private void SelectUddannelse(int? uddannelseId)
+    {
+        selectedUddannelseId = uddannelseId;
     }
 
     private void NavigateToAddGoal()

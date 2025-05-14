@@ -4,6 +4,7 @@
 @inject IHotel IHotelService;
 @inject IBruger IBrugerService;
 @inject ISkole ISkoleService;
+@inject IUddannelse IUddannelseService;
 
 @using Core
 
@@ -87,6 +88,15 @@
                         }
                     </InputSelect>
                 </div>
+                <div class="form-group">
+                    <label class="form-label required-field">Uddannelse</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.UddannelseId">
+                        @foreach (var u in uddannelser)
+                        {
+                            <option value="@u.UddannelseId">@u.UddannelseNavn</option>
+                        }
+                    </InputSelect>
+                </div>
                 <button type="submit" class="submit-btn">Opret bruger</button>
             </EditForm>
         </div>
@@ -105,6 +115,7 @@
     private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
     private string[] år = { "År 1", "År 2", "År 3" };
     private List<SkoleDTO> skoler = new();
+    private List<UddannelseDTO> uddannelser = new();
     
 
     protected override async void OnInitialized()
@@ -116,6 +127,8 @@
         newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
         skoler = await ISkoleService.GetAllSkoleNames();
         newUser.SkoleId = skoler.Select(sl => sl.SkoleId).FirstOrDefault();
+        uddannelser = await IUddannelseService.GetAllUddannelseNames();
+        newUser.UddannelseId = uddannelser.Select(u => u.UddannelseId).FirstOrDefault();
     }
     
     private async Task HandleNewUser()
