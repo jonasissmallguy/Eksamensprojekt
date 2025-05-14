@@ -98,27 +98,37 @@ namespace Client
             return newGoals;
         }
 
-        public async Task ConfirmGoal(int goalId)
-        {
-            var goal = _goals.FirstOrDefault(x => x.Id == goalId);
-            goal.Status = "Completed";
-        }
         
-        public async Task AddMentorToGoal(ElevplanComponent.MentorAssignment mentor)
+        
+        public async Task StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
-            
-            goal.MentorId = mentor.MentorId;
-            Console.WriteLine("denne opgave er nu assigned til" + goal.MentorId);
-        }
+            goal.StarterId = mentor.MentorId;
+            goal.StarterName = mentor.MentorName;
+            goal.StartedAt = DateTime.Now;
+            goal.Status = "InProgress";
 
-        public async Task RemoveMentorFromGoal(int goalId)
+
+        }
+        
+        public async Task ProcessGoal(ElevplanComponent.MentorAssignment mentor)
         {
-            var goalRemove = _goals.FirstOrDefault(x => x.Id == goalId);
+            var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
+            goal.ConfirmerId = mentor.MentorId;
+            goal.ConfirmerName = mentor.MentorName;
+            goal.ConfirmedAt = DateTime.Now;
+            goal.Status = "AwaitingApproval";
             
-            goalRemove.MentorId = null;
-            goalRemove.MentorName = string.Empty;
+
+        }
+        
+        public async Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        {
+            var goal = _goals.FirstOrDefault(x => x.Id == leder.GoalId);
+            goal.CompletedAt = DateTime.Now;
+            goal.Status = "Completed";
             
+
         }
 
         public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)

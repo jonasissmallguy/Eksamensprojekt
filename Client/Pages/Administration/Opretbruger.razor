@@ -69,8 +69,13 @@
                     </InputSelect>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">År</label>
-                    <InputNumber class="form-control" @bind-Value="newUser.Year" placeholder="Indtast semester år"/>
+                    <label class="form-label required-field">Årgang</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.Year">
+                        @foreach (var x in år)
+                        {
+                            <option value="@x">@x</option>
+                        }
+                    </InputSelect>
                 </div>
                 <button type="submit" class="submit-btn">Opret bruger</button>
             </EditForm>
@@ -88,12 +93,14 @@
     private string[] roller = { "Elev", "Køkkenchef", "Funktionær", "HR" };
     private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
     private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
+    private string[] år = { "År 1", "År 2", "År 3" };
 
 
     protected override async void OnInitialized()
     {
         newUser.Rolle = roller[0];
         newUser.Køn = køn[2]; //prefixed til "Ikke angivet"
+        newUser.Year = år[0];
         hoteller = await IHotelService.GetAllHotelNames();
         newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
 

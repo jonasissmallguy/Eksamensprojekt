@@ -20,5 +20,6 @@ namespace Core
         
         public DateOnly? StartDate { get; set; }
         public int Year { get; set; }
+        public string Status { get; set; } = "Active";
     }
 }

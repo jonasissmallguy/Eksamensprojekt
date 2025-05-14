@@ -1,6 +1,5 @@
 ﻿using Client.Components.Elevoversigt;
 using Core;
-using MongoDB.Bson;
 
 
 namespace Client
@@ -16,12 +15,11 @@ namespace Client
         Task<List<User>> GetUsersByGoalId(int goalId);
         Task DeleteGoal(Goal goal);
         Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates);
-        Task ConfirmGoal(int goalId);
         
-        
-        //Mentor
-        Task AddMentorToGoal(ElevplanComponent.MentorAssignment mentor);
-        Task RemoveMentorFromGoal(int goalId);
+        //Goal progress
+        Task StartGoal(ElevplanComponent.MentorAssignment mentor); //goal.status -> InProgress
+        Task ProcessGoal(ElevplanComponent.MentorAssignment bruger); //goal.status -> AwaitingApproval
+        Task ConfirmGoal(ElevplanComponent.MentorAssignment leder); //goal.status -> Finished
         
         //Comments
         Task AddComment(NewComment comment, BrugerLoginDTO currentUser);
