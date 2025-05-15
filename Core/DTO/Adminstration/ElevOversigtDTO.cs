@@ -11,8 +11,8 @@
         public string Roller { get; set; }
         public string Ansvarlig  {get; set;}
         public string Year { get; set; }
-        public int SkoleId { get; set; }
-        public int UddannelseId { get; set; }
+        public string Skole { get; set; }
+        public string Uddannelse { get; set; }
 
     }
 

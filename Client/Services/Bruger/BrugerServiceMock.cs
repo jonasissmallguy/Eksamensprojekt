@@ -38,7 +38,10 @@ namespace Client
                 {
                     Id = 1,
                     HotelNavn = "Aarhus"
-                }
+                },
+                Year = "År 1",
+                Skole = "Kold Kollege",
+                Uddannelse = "EUX"
             },
             new User
             {
@@ -77,6 +80,9 @@ namespace Client
             user.Mobile = updatedBruger.Mobile;
             user.Rolle = updatedBruger.Rolle;
             user.Status = updatedBruger.Status;
+            user.Year = updatedBruger.Year;
+            user.Skole = updatedBruger.Skole;
+            user.Uddannelse = updatedBruger.Uddannelse;
 
             return true;
         }
@@ -148,7 +154,11 @@ namespace Client
                 {
                     Id = nyBruger.Id,
                     HotelNavn = "Aarhus"
-                }
+                },
+                Year = nyBruger.Year,
+                Skole = nyBruger.Skole,
+                Uddannelse = nyBruger.Uddannelse
+                
             };
 
             _allUsers.Add(newUser);
@@ -171,7 +181,11 @@ namespace Client
                     HotelId = elev.Hotel.Id,
                     Hotel = "test",
                     Roller = elev.Rolle,
-                    Ansvarlig = "test ansvarlig"
+                    Ansvarlig = "test ansvarlig",
+                    Year = elev.Year,
+                    Skole = elev.Skole,
+                    Uddannelse = elev.Uddannelse
+                    
                 });
             }
 
