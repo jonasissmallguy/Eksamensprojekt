@@ -50,7 +50,8 @@ namespace Client
 
         public async Task<List<Goal>> GetOutOfHouse()
         {
-            throw new NotImplementedException();
+            var outOfHouse = _goals.Where(g => g.Status == "OutOfHouse").ToList();
+            return outOfHouse;
         }
 
         public async Task ConfirmGoalFromHomePage(Goal goal)

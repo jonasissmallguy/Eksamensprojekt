@@ -78,6 +78,7 @@
     private User _bruger;
     private List<Goal> _awaitingApproval;
     private List<Goal> _missingCourses;
+    private List<Goal> _outOfHouse;
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,9 +103,7 @@
             {
                 _awaitingApproval = await IGoalService.GetAwaitingApproval();
                 _missingCourses = await IGoalService.GetMissingCourses(_bruger);
-                
-                
-                
+                _outOfHouse = await IGoalService.GetOutOfHouse();
             }
         }
        
