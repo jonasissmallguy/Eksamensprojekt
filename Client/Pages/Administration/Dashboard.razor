@@ -193,6 +193,20 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-6 mb-3">
+                    <label for="SkoleStart">Skolestart</label>
+                    <InputDate class="form-select" @bind-Value="newGoal.SkoleStart">
+                    </InputDate>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="SkoleStart">Skoleafslutning</label>
+                    <InputDate class="form-select" @bind-Value="newGoal.SkoleEnd">
+                    </InputDate>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
                     <button class="btn btn-primary">Tilføj</button>
                 </div>
             </div>
@@ -258,6 +272,8 @@
     private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
     private string selectedSkole = String.Empty;
     private string selectedUddannelse = String.Empty;
+    private DateOnly SkoleStart = DateOnly.MinValue;
+    private DateOnly SkoleEnd = DateOnly.MinValue;
 
 
     private bool isChecked;
