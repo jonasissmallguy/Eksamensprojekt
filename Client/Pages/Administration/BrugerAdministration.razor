@@ -1,6 +1,188 @@
-﻿@page "/brugeradministration"
-<h3>BrugerAdministration</h3>
+﻿@using Client.Components.Administration
+@using Core;
+
+@inject IBruger IBrugerService;
+@inject IHotel IHotelService;
+@inject NavigationManager navMan;
+
+@page "/brugeradministration"
+<h3>Bruger administration</h3>
+
+
+@if (_allUsers != null)
+{
+    <div class="searchbar">
+        <TextInput @bind-value="_searchText" Placeholder="Søg efter en medarbejders navn..."></TextInput>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Navn</th>
+            <th>Hotel</th>
+            <th>Rolle</th>
+            <th>Status</th>
+            <th>Rediger rolle</th>
+            <th>Skift hotel</th>
+            <th>Ændrer status</th>
+            <th>Slet bruger</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if (_filteredUsers != null)
+        {
+            @foreach (var x in _filteredUsers)
+            {
+                <tr>
+                    <td>@x.FirstName</td>
+                    <td>@x.Hotel.HotelNavn</td>
+                    <td>@x.Rolle</td>
+                    <td>@x.Status</td>
+                    <td>
+                        <button @onclick="() => ChangeRolle(x)" class="btn btn-primary">
+                            Rediger rolle
+                        </button>
+                    </td>
+                    <td>
+                        <button @onclick="() => ChangeHotel(x)" class="btn btn-primary">
+                            Ændrer hotel
+                        </button>
+                    </td>
+                    <td>
+                        @if (x.Status == "Active")
+                        {
+                            <button @onclick="() => DeActivateUser(x.Id)" class="btn btn-primary">
+                                Deaktiver bruger
+                            </button>
+                        }
+                        @if (x.Status == "Deactivated")
+                        {
+                            <button @onclick="() => AktiverUser(x.Id)" class="btn btn-primary">
+                                Aktiver bruger
+                            </button>
+                        }
+                    </td>
+                    <td>
+                        <button @onclick="() => DeleteUser(x.Id)" class="btn btn-primary">
+                            Slet bruger
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+}
+
+else
+{
+    <p>...Loading</p>
+}
+
+
+<ModalRolle @ref=rolleModal Title="Opdater Rolle" OnRolleSelected="HandleNewRolle">
+    <div class="rolle-list">
+        @foreach (var rolle in _roller)
+        {
+            <p @onclick="() => rolleModal.SelectRolle(rolle)" style="cursor: pointer" >@rolle</p>
+        }
+    </div>
+</ModalRolle>
+
+<ModalHotel @ref=hotelModal Title="Opdater Hotel" OnHotelChange="HandleNewHotel">
+    <div class="hotel-list">
+        @foreach (var x in _allHotels)
+        {
+            <p @onclick="() => hotelModal.SelectHotel(x)" style="cursor: pointer" >@x.HotelNavn</p>
+        }
+    </div>
+</ModalHotel>
+
 
 @code {
     
+    //En liste af alle brugere
+    List<User> _allUsers = new();
+    
+    //En liste af alle vores hoteller
+    List<Hotel> _allHotels = new();
+
+    //Brugeren der er logget in
+    [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
+
+    //En ModalRolle  variabel
+    private ModalRolle rolleModal { get; set; }
+    
+    //En ModalHotel variabel
+    private ModalHotel hotelModal { get; set; }
+    
+    //En bruger, som vi ønsker at ændre rolle på
+    private User _userToChange { get; set; }
+
+    //Et array af mulige roller
+    private string[] _roller = { "HR", "Kok", "Køkkenchef" };
+
+    //E
+    private string _searchText;
+
+    //En IEnumerable liste, der er brugt til filtering   
+    private IEnumerable<User> _filteredUsers => _allUsers.Where(b =>
+        (string.IsNullOrWhiteSpace(_searchText) || b.FirstName.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/brugeradministration");
+            return;
+        }
+
+        _allUsers = await IBrugerService.GetAllUsersWithOutCurrent(_currentUser.Id);
+        _allHotels = await IHotelService.GetHotels();
+    }
+
+    private void ChangeRolle(User userChange)
+    {
+        rolleModal.Open();
+        _userToChange = userChange;
+    }
+    
+    private async Task ChangeHotel(User user)
+    {
+        hotelModal.Open();
+        _userToChange = user;
+    }
+    
+
+    private async Task DeleteUser(int userId)
+    {
+        await IBrugerService.DeleteUser(userId);
+
+        if (userId != null)
+        {
+            _allUsers = _allUsers.Where(x => x.Id != userId).ToList();
+        }
+    }
+
+    private async Task DeActivateUser(int userId)
+    {
+        await IBrugerService.DeActivateUser(userId);
+    }
+
+    private async Task HandleNewRolle(string rolle)
+    {
+        await IBrugerService.ChangeRolle(rolle, _userToChange.Id);
+    }
+
+    private async Task AktiverUser(int userId)
+    {
+        await IBrugerService.ActivateUser(userId);
+    }
+
+
+    private async Task HandleNewHotel(Hotel newHotel)
+    {
+        await IBrugerService.UpdateHotel(newHotel, _userToChange.Id);
+    }
+
 }

@@ -2,7 +2,6 @@
 
 namespace Client
 {
-
     public class BrugerServiceMock : IBruger
     {
         private List<User> _allUsers = new List<User>
@@ -13,7 +12,7 @@ namespace Client
                 Email = "admin@admin.com",
                 Password = "123456",
                 Rolle = "HR",
-                FirstName = "Jane",
+                FirstName = "Jane"
             },
             new User
             {
@@ -21,7 +20,12 @@ namespace Client
                 Email = "theis@comwell.com",
                 Password = "123456",
                 Rolle = "Køkkenchef",
-                FirstName = "Theis"
+                FirstName = "Theis",
+                Hotel = new Hotel
+                {
+                    Id = 1,
+                    HotelNavn = "Aarhus"
+                }
             },
             new User
             {
@@ -30,8 +34,11 @@ namespace Client
                 Password = "123456",
                 Rolle = "Elev",
                 FirstName = "Charles",
-                HotelId = 1,
-                HotelName = "Comwell Aarhus"
+                Hotel = new Hotel
+                {
+                    Id = 1,
+                    HotelNavn = "Aarhus"
+                }
             },
             new User
             {
@@ -39,174 +46,226 @@ namespace Client
                 Email = "kok@comwell.com",
                 Password = "123456",
                 Rolle = "Kok",
-                FirstName = "Kok"
-            },
-            new User
-            {
-                Id = 5,
-                Email = "elev2@comwell.com",
-                Password = "123456",
-                Rolle = "Elev",
-                FirstName = "Peter",
-                HotelId = 1,
-                HotelName = "Comwell Aarhus",
-                Year = "År 1",
-                SkoleId = 1
+                FirstName = "Kok",
+                Hotel = new Hotel
+                {
+                    Id = 1,
+                    HotelNavn = "Aarhus"
+                }
             }
         };
-        
-        
-        public async Task<BrugerProfilDTO> GetBrugerById(int userId)
+
+        public async Task<User> GetBrugerById(int userId)
         {
-            User? bruger = _allUsers.FirstOrDefault(x => x.Id == userId);
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
 
-            if (bruger == null)
-            {
-                return null;
-            }
-
-            return new BrugerProfilDTO
-            {
-                Id = bruger.Id,
-                Email = bruger.Email,
-                MentorNavn = "Martin",
-                Navn = bruger.FirstName ,
-                RegionNavn = "Fyn",
-                RestaurantNavn = "Comwell Aarhus",
-                Rolle = bruger.Rolle
-            };
+            return user;
         }
 
-        public async Task<bool> OpdaterBruger(int brugerId, BrugerProfilDTO updatedBruger)
+        public async Task<bool> OpdaterBruger(int brugerId, User updatedBruger)
         {
-            User? bruger = _allUsers.FirstOrDefault(x => x.Id == brugerId);
+            var user = _allUsers.FirstOrDefault(x => x.Id == brugerId);
 
-            if (bruger == null)
+            if (user == null)
             {
                 return false;
             }
+
+            user.FirstName = updatedBruger.FirstName;
+            user.LastName = updatedBruger.LastName;
+            user.Email = updatedBruger.Email;
+            user.Mobile = updatedBruger.Mobile;
+            user.Rolle = updatedBruger.Rolle;
+            user.Status = updatedBruger.Status;
+
             return true;
         }
 
         public async Task<List<ManagerDTO>> GetAllManagers()
         {
-            List<ManagerDTO> alleManagers = new();
+            var managers = new List<ManagerDTO>();
 
             foreach (var user in _allUsers)
             {
                 if (user.Rolle == "Køkkenchef")
                 {
-                    alleManagers.Add(new ManagerDTO
+                    managers.Add(new ManagerDTO
                     {
                         ManagerId = user.Id,
                         ManagerName = user.FirstName + " " + user.LastName
-                    } );
+                    });
                 }
             }
-            return alleManagers;
+
+            return managers;
         }
 
         public string GeneratePassword()
         {
-            Random rnd = new();
-            string password = String.Empty;
-            
-            string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
-            int size = 8;
+            var random = new Random();
+            var chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            var password = "";
 
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < 8; i++)
             {
-                int x = rnd.Next(bogstaver.Length);
-                password = password + bogstaver[x];
+                var index = random.Next(chars.Length);
+                password += chars[index];
             }
-            Console.WriteLine(password);
+
             return password;
         }
 
         public int GenerateId()
         {
-            Random rnd = new();
-            return rnd.Next(1,9999);
+            var random = new Random();
+            return random.Next(1000, 9999);
         }
 
-        //Hjælpefunktion til at tjekke, at mail er unik
         public bool CheckUniqueMail(string email)
         {
-            if (_allUsers.Any(x => x.Email == email))
-            {
-                return false;
-            }
-
-            return true;
+            var exists = _allUsers.Any(x => x.Email == email);
+            return !exists;
         }
 
         public async Task<User> OpretBruger(BrugerCreateDTO nyBruger)
         {
-
             if (!CheckUniqueMail(nyBruger.Email))
             {
                 
             }
-            
-            var bruger = (new User
-                {
-                    Id = GenerateId(),
-                    FirstName = nyBruger.FirstName,
-                    LastName = nyBruger.LastName,
-                    Email = nyBruger.Email,
-                    Password = GeneratePassword(),
-                    Mobile = nyBruger.Mobile,
-                    Rolle = nyBruger.Rolle,
-                    HotelId = nyBruger.HotelId,
-                    StartDate = nyBruger.StartDate,
-                    Year = nyBruger.Year,
-                    SkoleId = nyBruger.SkoleId,
-                    UddannelseId = nyBruger.UddannelseId
-                });
-            
-             _allUsers.Add(bruger);
-             return bruger;
 
+            var newUser = new User
+            {
+                Id = GenerateId(),
+                FirstName = nyBruger.FirstName,
+                LastName = nyBruger.LastName,
+                Email = nyBruger.Email,
+                Password = GeneratePassword(),
+                Mobile = nyBruger.Mobile,
+                Rolle = nyBruger.Rolle,
+                StartDate = nyBruger.StartDate,
+                Hotel = new Hotel
+                {
+                    Id = nyBruger.Id,
+                    HotelNavn = "Aarhus"
+                }
+            };
+
+            _allUsers.Add(newUser);
+
+            return newUser;
         }
 
         public async Task<List<ElevOversigtDTO>> GetElevOversigt()
         {
-            List<ElevOversigtDTO> alleElevOversigts = new();
+            var elevOversigt = new List<ElevOversigtDTO>();
+
             var elever = _allUsers.Where(x => x.Rolle == "Elev").ToList();
 
             foreach (var elev in elever)
             {
-                alleElevOversigts.Add(new ElevOversigtDTO
+                elevOversigt.Add(new ElevOversigtDTO
                 {
                     Id = elev.Id,
-                    Name = elev.FirstName + " " + elev.LastName,
-                    HotelId = elev.HotelId,
+                    Name = elev.FirstName,
+                    HotelId = elev.Hotel.Id,
                     Hotel = "test",
                     Roller = elev.Rolle,
-                    Ansvarlig = "test ansvarlig",
-                    Year = elev.Year,
-                    SkoleId = elev.SkoleId,
-                    UddannelseId = elev.UddannelseId
+                    Ansvarlig = "test ansvarlig"
                 });
             }
-            
-            return alleElevOversigts;
+
+            return await Task.FromResult(elevOversigt);
         }
 
         public async Task<List<User>> GetAllUsers()
         {
-            return _allUsers;
+            return  _allUsers;
         }
 
-        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds) 
+        public async Task<List<User>> GetAllUsersWithOutCurrent(int userId)
         {
-            List<User> usersToReturn = new();
+            var list = _allUsers.Where(x => x.Id != userId).ToList();
+            return list;
+        }
+
+        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
+        {
+            var users = new List<User>();
+
+            foreach (var id in studentIds)
+            {
+                var user = _allUsers.FirstOrDefault(x => x.Id == id);
+
+                if (user != null)
+                {
+                    users.Add(user);
+                }
+            }
+            return users;
+
+        }
+
+        public async Task DeleteUser(int userId)
+        {
+            _allUsers.RemoveAll(x => x.Id == userId);
+        }
+
+        public async Task ChangeRolle(string newRolle, int userId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+
+            if (user != null)
+            {
+                user.Rolle = newRolle;
+            }
+
+        }
+
+        public async Task DeActivateUser(int userId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+
+            if (user != null)
+            {
+                user.Status = "Deactivated";
+            }
+
+        }
+
+        public async Task ActivateUser(int userId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+
+            if (user != null)
+            {
+                user.Status = "Active";
+            }
             
-            studentIds.ForEach(x => usersToReturn.Add(_allUsers.FirstOrDefault(u => u.Id == x)));
-            Console.WriteLine(usersToReturn.Count);
+        }
 
-            return usersToReturn.ToList();
+        public async Task UpdateHotel(Hotel hotel, int userId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == userId);
 
+            if (user != null)
+            {
+                user.Hotel.Id = hotel.Id;
+                user.Hotel.HotelNavn = hotel.HotelNavn;
+            }
+
+   
+        }
+
+        public async Task SaveStudentPlan(int studentId, Plan plan)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == studentId);
+
+            if (user != null)
+            {
+                user.ElevPlan = plan;
+            }
+            
         }
     }
 }

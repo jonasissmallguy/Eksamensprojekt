@@ -6,6 +6,14 @@ namespace Client
 
     public class TemplateServiceMock : ITemplate
     {
+        
+        private List<PlanTemplate> _templates;
+
+        public TemplateServiceMock()
+        {
+            _templates = new List<PlanTemplate>();
+            _templates.Add(CreateTemplate());
+        }
 
 
         public int GenerateId()
@@ -15,15 +23,19 @@ namespace Client
             return id;
         }
         
-        public Task<List<Goal>> GetGoals()
+        public Task<Dictionary<int,Goal>> GetGoals()
         {
-            //Ryk logik her
             throw new NotImplementedException();
         }
 
-        public Task<PlanTemplate> GetTemplateById(int templateId)
+        public async Task<PlanTemplate> GetTemplateById(int templateId)
         {
-            return Task.FromResult(CreateTemplate());
+            return (CreateTemplate());
+        }
+
+        public async Task<List<PlanTemplate>> GetAllTemplates()
+        {
+            return _templates;
         }
 
         public PlanTemplate CreateTemplate()

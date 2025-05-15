@@ -3,8 +3,6 @@
 @inject NavigationManager navMan;
 @inject IHotel IHotelService;
 @inject IBruger IBrugerService;
-@inject ISkole ISkoleService;
-@inject IUddannelse IUddannelseService;
 
 @using Core
 
@@ -71,29 +69,11 @@
                     </InputSelect>
                 </div>
                 <div class="form-group">
-                    <label class="form-label required-field">År</label>
+                    <label class="form-label required-field">Årgang</label>
                     <InputSelect class="form-select" @bind-Value="newUser.Year">
-                        @foreach (var yy in år)
+                        @foreach (var x in år)
                         {
-                            <option value="@yy">@yy</option>
-                        }
-                    </InputSelect>
-                </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Skole</label>
-                    <InputSelect class="form-select" @bind-Value="newUser.SkoleId">
-                        @foreach (var sk in skoler)
-                        {
-                            <option value="@sk.SkoleId">@sk.SkoleNavn</option>
-                        }
-                    </InputSelect>
-                </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Uddannelse</label>
-                    <InputSelect class="form-select" @bind-Value="newUser.UddannelseId">
-                        @foreach (var u in uddannelser)
-                        {
-                            <option value="@u.UddannelseId">@u.UddannelseNavn</option>
+                            <option value="@x">@x</option>
                         }
                     </InputSelect>
                 </div>
@@ -114,9 +94,7 @@
     private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
     private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
     private string[] år = { "År 1", "År 2", "År 3" };
-    private List<SkoleDTO> skoler = new();
-    private List<UddannelseDTO> uddannelser = new();
-    
+
 
     protected override async void OnInitialized()
     {
@@ -125,10 +103,7 @@
         newUser.Year = år[0];
         hoteller = await IHotelService.GetAllHotelNames();
         newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
-        skoler = await ISkoleService.GetAllSkoleNames();
-        newUser.SkoleId = skoler.Select(sl => sl.SkoleId).FirstOrDefault();
-        uddannelser = await IUddannelseService.GetAllUddannelseNames();
-        newUser.UddannelseId = uddannelser.Select(u => u.UddannelseId).FirstOrDefault();
+
     }
     
     private async Task HandleNewUser()

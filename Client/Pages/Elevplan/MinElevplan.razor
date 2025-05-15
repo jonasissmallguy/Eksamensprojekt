@@ -1,7 +1,6 @@
 ﻿@using Core
 @using Client.Components.Elevoversigt
-@using DotNetEnv.Extensions
-@using MongoDB.Bson
+
 
 @inject IBruger IBrugerService;
 @inject IElevPlan IElevPlanService;
@@ -9,50 +8,54 @@
 
 @page "/minelevplan/{studentId:int}"
 
-<div class="bio">
-    <div class="piccontainer">
-        <img class="biopic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"/>   
-    </div>
-    <div class="textcontainer">
-        <h3 class="navn">@elev.Navn </h3>
-        <p class="telefon">Telefon: @elev.Telefon </p>
-        <p class="mail">Mail: @elev.Email</p>
-        <p class="restaurant">Restaurant: @elev.RestaurantNavn</p>
-    </div>
+<div class="page-wrapper">
     
+    @if (elev != null)
+    {
+        <div class="bio">
+            <div class="piccontainer">
+                <img class="biopic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"/>
+            </div>
+            <div class="textcontainer">
+                <h3 class="navn">@elev.FirstName </h3>
+                <p class="telefon">Telefon: @elev.Mobile </p>
+                <p class="mail">Mail: @elev.Email</p>
+                <p class="restaurant">Restaurant: @elev.Hotel.HotelNavn</p>
+            </div>
+        </div>
+    }
+
+    <div class="content-scroll">
+        @if (elev != null && _currentUser.Rolle == "HR")
+        {
+            <ElevplanComponent Plan="@elevPlan" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+        }
+        else if (elev != null && _currentUser.Rolle == "Køkkenchef")
+        {
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+        }
+        else if (elev != null && _currentUser.Rolle == "Kok")
+        {
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+        }
+        else if (elev != null && _currentUser.Rolle == "Elev")
+        {
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+        }
+        else
+        {
+            <p>..Loading</p>
+        }
+    </div>
 </div>
-
-
-@if (elev != null && _currentUser.Rolle == "HR")
-{
-    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="false" OnMentorAssigned="AddMentor" 
-                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
-}
-else if (elev != null && _currentUser.Rolle == "Køkkenchef")
-{
-    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="true" OnMentorAssigned="AddMentor" 
-                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
-}
-else if (elev != null && _currentUser.Rolle == "Elev")
-{
-    <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" AddMentor="false" OnMentorAssigned="AddMentor" 
-                       OnMentorRemove="RemoveMentor" OnConfirmedGoal="ConfirmGoal"/>
-}
-
-else
-{
-    <p>..Loading</p>
-}
-
 @code {
 
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
 
     [Parameter] public int studentId { get; set; }
-    private BrugerProfilDTO elev;
+    private User elev;
     private Plan? elevPlan;
-
-    private Dictionary<int, Goal> goals = new();
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,12 +67,6 @@ else
         {
             elevPlan = await IElevPlanService.CreateElevPlan(studentId);
         }
-        //SLET DET OVENO
-        
-        if (elevPlan != null)
-        {
-            goals = await IGoalService.GetAllGoalsByPlanId(studentId);
-        }
     }
 
     private async Task AddComment(NewComment comment)
@@ -78,22 +75,21 @@ else
 
     }
 
-    private async Task AddMentor(ElevplanComponent.MentorAssignment newMentor)
+    private async Task HandlingGoalStart(ElevplanComponent.MentorAssignment newMentor)
     {
-        await IGoalService.AddMentorToGoal(newMentor);
+        await IGoalService.StartGoal(newMentor);
     }
-
-    private async Task RemoveMentor(int goalId)
+    
+    
+    private async Task ConfirmGoal(ElevplanComponent.MentorAssignment bruger)
     {
-        await IGoalService.RemoveMentorFromGoal(goalId);
-        
+        @if (_currentUser.Rolle == "Kok")
+        {
+            await IGoalService.ProcessGoal(bruger);
+        }
+        else if (_currentUser.Rolle == "Køkkenchef")
+        {
+            await IGoalService.ConfirmGoal(bruger);
+        }
     }
-
-    private async Task ConfirmGoal(int goalId)
-    {
-        await IGoalService.ConfirmGoal(goalId);
-        StateHasChanged();
-        
-    }
-
 }

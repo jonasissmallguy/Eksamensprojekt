@@ -37,88 +37,80 @@ namespace Client
             return goalTypes;
         }
         
-        public async Task<Goal> GetGoalByGoalId(int goalId)
-        {
-            return _goals.FirstOrDefault(x => x.Id == goalId);
-        }
 
-        public async Task<Dictionary<int, Goal>> GetAllGoalsByPlanId(int planId)
-        {
-            var result = _goals.ToDictionary(x => x.Id, x => x);
-            return result;
-        }
 
-        public async Task<List<Goal>> GetAllUncompletedCourses()
-        {
-            return _goals.Where(x => x.Type == "Kursus" && x.Status == "Active").ToList();
-        }
-
-        public async Task<List<User>> GetUsersByGoalId(int goalId)
-        {
-            var allStudentIds = _goals.Where(x => x.Id == goalId).ToList().Select(x => x.StudentId).ToList(); //Hmm vi selctor jo egentlig et random, er det ok?
-            var allUsers = await _bruger.GetAllUsersByStudentId(allStudentIds);
-            
-            return allUsers;
-            
-        }
-
-        public async Task DeleteGoal(Goal goal)
+        public async Task DeleteGoal(Goal goal, int studentID)
         {
             
-            //Opdater vores goal collection
-            _goals.RemoveAll(x => x.Id == goal.Id);
-            
-            //Sletter goal fra forløb collection // FK
-            //await _elevPlan.RemoveGoalIdFromForløb(goal);
+            //Sletter goal
+            var user = await _bruger.GetBrugerById(studentID);
+            var forløb = user.ElevPlan.Forløbs.FirstOrDefault(f => f.Id == goal.ForløbId);
+            var deleteGoal = forløb.Goals.FirstOrDefault(x => x.Id == goal.Id);
         }
 
-        public async Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates)
+        
+        public async Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløb, List<GoalTemplate> goalTemplates)
         {
             var newGoals = new List<Goal>();
 
-            foreach (var goal in goalTemplates)
+            // Initialize Goals collection if it's null
+            if (forløb.Goals == null)
             {
-                var nytGoal = new Goal
+                forløb.Goals = new List<Goal>();
+            }
+
+            foreach (var template in goalTemplates)
+            {
+                var newGoal = new Goal
                 {
                     Id = GenerateId(),
-                    PlanId = planId,
-                    ForløbId = forløbs.Id,
-                    Type = goal.Type,
-                    Title = goal.Title,
-                    Description = goal.Description,
-                    Semester = "test",
+                    Type = template.Type,
+                    Title = template.Title,
+                    Description = template.Description,
+                    Semester = forløb.Semester, 
                     Status = "Active",
                     Comments = new List<Comment>()
                 };
-                _goals.Add(nytGoal);
-                forløbs.GoalIds.Add(nytGoal.Id);
-                newGoals.Add(nytGoal);
+        
+                _goals.Add(newGoal);        
+                forløb.Goals.Add(newGoal);  
+                newGoals.Add(newGoal);      
             }
-            
+    
             return newGoals;
         }
 
-        public async Task ConfirmGoal(int goalId)
-        {
-            var goal = _goals.FirstOrDefault(x => x.Id == goalId);
-            goal.Status = "Completed";
-        }
         
-        public async Task AddMentorToGoal(ElevplanComponent.MentorAssignment mentor)
+        
+        public async Task StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
-            
-            goal.MentorId = mentor.MentorId;
-            Console.WriteLine("denne opgave er nu assigned til" + goal.MentorId);
-        }
+            goal.StarterId = mentor.MentorId;
+            goal.StarterName = mentor.MentorName;
+            goal.StartedAt = DateTime.Now;
+            goal.Status = "InProgress";
 
-        public async Task RemoveMentorFromGoal(int goalId)
+
+        }
+        
+        public async Task ProcessGoal(ElevplanComponent.MentorAssignment mentor)
         {
-            var goalRemove = _goals.FirstOrDefault(x => x.Id == goalId);
+            var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
+            goal.ConfirmerId = mentor.MentorId;
+            goal.ConfirmerName = mentor.MentorName;
+            goal.ConfirmedAt = DateTime.Now;
+            goal.Status = "AwaitingApproval";
             
-            goalRemove.MentorId = null;
-            goalRemove.MentorName = string.Empty;
+
+        }
+        
+        public async Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        {
+            var goal = _goals.FirstOrDefault(x => x.Id == leder.GoalId);
+            goal.CompletedAt = DateTime.Now;
+            goal.Status = "Completed";
             
+
         }
 
         public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)

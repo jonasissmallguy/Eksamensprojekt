@@ -14,13 +14,12 @@ namespace Core
         public int? Mobile { get; set; }
         public string Email { get; set; }
         public string Rolle { get; set; } 
-        public int? HotelId { get; set; } 
         
-        public string HotelName { get; set; }
+        public Hotel Hotel { get; set; }
         
         public DateOnly? StartDate { get; set; }
-        public string Year { get; set; }
-        public int SkoleId { get; set; }
-        public int UddannelseId { get; set; }
+        public int Year { get; set; }
+        public string Status { get; set; } = "Active";
+        public Plan ElevPlan { get; set; }
     }
 }

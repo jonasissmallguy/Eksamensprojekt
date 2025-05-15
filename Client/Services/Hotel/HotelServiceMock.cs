@@ -34,9 +34,9 @@ namespace Client
             return hotelNames;
         }
 
-        public Task<List<Hotel>> GetHotels()
+        public async Task<List<Hotel>> GetHotels()
         {
-            throw new NotImplementedException();
+            return hotels;
         }
 
         public int GenerateHotelId()

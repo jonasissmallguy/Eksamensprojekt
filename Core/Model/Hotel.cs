@@ -13,7 +13,7 @@ namespace Core
         public string Address { get; set; }
         public int? Zip { get; set; }
         public string City { get; set; }
-        public int RegionId { get; set; }
-        public int HrId { get; set; }
+        public Region Region { get; set; } // hvad skal det her?
+        public User KøkkenChef { get; set; } // hvad skal det her?
     }
 }

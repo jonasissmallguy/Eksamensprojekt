@@ -1,12 +1,11 @@
 ﻿@using Core
 @using System.Linq
-@using Components.Mentoroversigt
-@using Client.Components.Mentoroversigt
+@using Client.Components.Administration
 @inject NavigationManager navMan
 
 
 
-@if (Plan != null)
+@if (Plan != null || PlanTemplate != null)
 {
     <Tabs EnableFadeEffect="true">
         @foreach (var semester in semestre)
@@ -19,100 +18,118 @@
                             {
                                 <AccordionItem IsCollapsed="false">
                                     <TitleTemplate>
-                                        <span>@forløb.Title</span>
+                                        <div class="d-flex justify-content-between align-items-center w-100">
+                                            <span>@forløb.Title</span>
+                                            <!--Her skal progress bar være, når vi får -->
+                                        </div>
                                     </TitleTemplate>
                                     <Content>
                                         <Accordion>
-                                            @foreach (var id in forløb.GoalIds)
+                                            @foreach (var goal in forløb.Goals)
                                             {
-                                                @if (Goals != null && Goals.TryGetValue(id, out var goal))
-                                                {
-                                                    <AccordionItem>
-                                                        <TitleTemplate>
-                                                            <div class="d-flex justify-content-between align-items-center w-100">
-                                                                <span class="d-flex justify-content-between align-items-center w-100">
-                                                                    @goal.Title
-                                                                    @if (HasGoalFinished(goal.Id))
-                                                                    {
-                                                                        <img src="icons/check.svg" alt="Delete" style="width: 32px; height: 32px;"/>
-                                                                    }
-                                                                </span>
-                                                                @if (ShowSubmitButton)
+                                                <AccordionItem>
+                                                    <TitleTemplate>
+                                                        <div class="d-flex justify-content-between align-items-center w-100">
+                                                            <span class="d-flex justify-content-between align-items-center w-100">
+                                                                @goal.Title
+                                                                @if (goal.Status == "Completed")
                                                                 {
-                                                                    <button
-                                                                        @onclick="() => HandleDeleteGoal(goal)"
-                                                                        @onclick:stopPropagation="true"
-                                                                        style="border: none; background: none; padding: 0; margin-right: 10px; cursor: pointer;">
-                                                                        <img src="icons/delete.png" alt="Delete" style="width: 16px; height: 16px;"/>
-                                                                    </button>
+                                                                    <img src="icons/check.svg" alt="Delete" style="width: 32px; height: 32px;"/>
                                                                 }
-                                                            </div>
-                                                        </TitleTemplate>
-                                                        <Content>
-                                                            <div class="d-flex justify-content-between align-items-center w-100">
-                                                                <p>@goal.Description</p>
-                                                                @if (!HasGoalFinished(goal.Id))
+                                                                @if (goal.Status == "InProgress")
                                                                 {
-                                                                    @if (AddMentor && !HasMentorAssigned(goal.Id))
-                                                                    {
-                                                                        <button class="btn btn-sm btn-primary" @onclick="() => AddMentorToGoal(goal.Id)">Tildel mentor</button>
-                                                                    }
-                                                                    else if (HasMentorAssigned(goal.Id))
-                                                                    {
-                                                                        <div class="mentor-display d-flex align-items-center">
-                                                                            <button class="btn btn-success" @onclick="() => ConfirmGoalFinished(goal.Id)">Godkend delmål</button>
-                                                                            <button class="btn btn-danger" @onclick="() => RemoveMentorFromGoal(goal.Id)">Fjern mentor</button>
-                                                                            <small><strong>Mentor:</strong> @GetMentorName(goal.MentorId)</small>
-                                                                        </div>
-                                                                    }
+                                                                    <img src="icons/arrow-clockwise.svg" alt="Delete" style="width: 16px; height: 16px;"/>
                                                                 }
-                                                            </div>
-                                                            @if (ShowComments)
+                                                                @if (goal.Status == "AwaitingApproval")
+                                                                {
+                                                                    <img src="icons/hourglass.svg" alt="Delete" style="width: 16px; height: 16px;"/>
+                                                                }
+                                                            </span>
+                                                            @if (ShowSubmitButton)
                                                             {
-                                                                if (goal.Comments?.Any() == true)
+                                                                <button
+                                                                    @onclick="() => HandleDeleteGoal(goal)"
+                                                                    @onclick:stopPropagation="true"
+                                                                    style="border: none; background: none; padding: 0; margin-right: 10px; cursor: pointer;">
+                                                                    <img src="icons/delete.png" alt="Delete" style="width: 16px; height: 16px;"/>
+                                                                </button>
+                                                            }
+                                                        </div>
+                                                    </TitleTemplate>
+                                                    <Content>
+                                                        <div class="d-flex justify-content-between align-items-center w-100">
+                                                            <div>
+                                                            <p>@goal.Description</p>
+                                                            @if (goal.Status != "Active")
+                                                            {
+                                                                <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
+                                                            }
+                                                            </div>
+                                                            @if (goal.Status != "Completed")
+                                                            {
+                                                                @if (StartGoal && goal.Status == "Active")
                                                                 {
-                                                                    <div class="comment-section mt-3 p-3 bg-light rounded">
-                                                                        <h6>Kommentar:</h6>
-                                                                        @foreach (var comment in goal.Comments)
-                                                                        {
-                                                                            <div class="comment mb-2 p-2 bg-white rounded">
-                                                                                <div class="d-flex justify-content-between">
-                                                                                    <strong>@comment.CreatorName</strong>
-                                                                                    <small class="text-muted">@DateTime.Now.ToString("dd-MM-yyyy HH:mm")</small>
-                                                                                </div>
-                                                                                <p class="mb-0">@comment.Text</p>
-                                                                            </div>
-                                                                        }
-
-                                                                        <div class="mt-3">
-                                                                            @if (!comments.ContainsKey(goal.Id))
-                                                                            {
-                                                                                comments[goal.Id] = string.Empty;
-                                                                            }
-
-                                                                            <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
-                                                                            <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
-                                                                        </div>
+                                                                    <button class="btn btn-sm btn-primary" @onclick="() => StartGoalNow(goal.Id)">Påbegynd</button>
+                                                                }
+                                                                else if (StartGoal && goal.Status == "InProgress")
+                                                                {
+                                                                    <div class="mentor-display d-flex align-items-center">
+                                                                        <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>
                                                                     </div>
                                                                 }
-                                                                else
+                                                                else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef")
                                                                 {
-                                                                    <div class="comment-section mt-3 p-3 bg-light rounded">
-                                                                        <div class="mt-3">
-                                                                            @if (!comments.ContainsKey(goal.Id))
-                                                                            {
-                                                                                comments[goal.Id] = string.Empty;
-                                                                            }
-
-                                                                            <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
-                                                                            <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
-                                                                        </div>
+                                                                    <div class="mentor-display d-flex align-items-center">
+                                                                        <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>
                                                                     </div>
                                                                 }
                                                             }
-                                                        </Content>
-                                                    </AccordionItem>
-                                                }
+                                                        </div>
+                                                        @if (ShowComments)
+                                                        {
+                                                            if (goal.Comments?.Any() == true)
+                                                            {
+                                                                <div class="comment-section mt-3 p-3 bg-light rounded">
+                                                                    <h6>Kommentar:</h6>
+                                                                    @foreach (var comment in goal.Comments)
+                                                                    {
+                                                                        <div class="comment mb-2 p-2 bg-white rounded">
+                                                                            <div class="d-flex justify-content-between">
+                                                                                <strong>@comment.CreatorName</strong>
+                                                                                <small class="text-muted">@DateTime.Now.ToString("dd-MM-yyyy HH:mm")</small>
+                                                                            </div>
+                                                                            <p class="mb-0">@comment.Text</p>
+                                                                        </div>
+                                                                    }
+
+                                                                    <div class="mt-3">
+                                                                        @if (!comments.ContainsKey(goal.Id))
+                                                                        {
+                                                                            comments[goal.Id] = string.Empty;
+                                                                        }
+
+                                                                        <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                        <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="comment-section mt-3 p-3 bg-light rounded">
+                                                                    <div class="mt-3">
+                                                                        @if (!comments.ContainsKey(goal.Id))
+                                                                        {
+                                                                            comments[goal.Id] = string.Empty;
+                                                                        }
+
+                                                                        <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
+                                                                        <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </Content>
+                                                </AccordionItem>
                                             }
                                         </Accordion>
                                     </Content>
@@ -129,43 +146,38 @@
     {
         <button class="btn btn-success mt-3" @onclick="HandleSubmitButtonClicked">Opret Elevplan</button>
     }
-
-    <ModalOversigt @ref="mentorModal" Title="Tildel Mentor" OnMentorSelected="HandleMentorSelected">
-        @if (mentors != null)
-        {
-            <div class="mentor-list">
-                @foreach (var mentor in mentors)
+    
+    
+    <ModalShowHistory @ref=_goalHistoryModal Title="Historie">
+        <div class="hotel-list">
+            @if (_currentGoal != null)
+            {
+                @if (_currentGoal.StartedAt != null && _currentGoal.StarterName != null)
                 {
-                    <div class="mentor-item p-2 my-2 border rounded" @onclick="() => mentorModal.SelectMentor(mentor.Id)">
-                        <div class="d-flex align-items-center">
-                            <div class="mentor-avatar me-3">
-                                @if (!string.IsNullOrEmpty(mentor.AvatarUrl))
-                                {
-                                    <img src="@mentor.AvatarUrl" alt="@mentor.Name" class="rounded-circle" style="width: 50px; height: 50px;"/>
-                                }
-                                else
-                                {
-                                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                        @mentor.Name.Substring(0, 1)
-                                    </div>
-                                }
-                            </div>
-                            <div>
-                                <h6 class="mb-0">@mentor.Name</h6>
-                                <small class="text-muted">@mentor.Role</small>
-                            </div>
-                        </div>
-                    </div>
+                    <p>Tidspunkt for start: @_currentGoal.StartedAt</p>
+                    <p>Starter: @_currentGoal.StarterName</p>
+                    <br/>
+                    @if (_currentGoal.ConfirmedAt != null && _currentGoal.ConfirmerName != null)
+                    {
+                        <p>Tidspunkt for afsluttet: @_currentGoal.ConfirmedAt </p>
+                        <p>Bekræfter: @_currentGoal.ConfirmerName</p>
+                        <br/>
+                    }
+                    @if (_currentGoal.CompletedAt != null)
+                    {
+                        <p>Godkendt af leder den: @_currentGoal.CompletedAt</p>
+                    }
                 }
-            </div>
-        }
-        else
-        {
-            <p>Indlæser mentorer...</p>
-        }
-    </ModalOversigt>
+            }
+            else
+            {
+                <p>Ingen information tilgængelig</p>
+            }
+        </div>
+    </ModalShowHistory>
 
-
+    
+    
 }
 
 @code 
@@ -174,102 +186,24 @@
     
         
     [Parameter] public Plan Plan { get; set; }
-
-    [Parameter] public Dictionary<int, Goal> Goals { get; set; } = new();
+    
+    [Parameter] public PlanTemplate PlanTemplate { get; set; }
     
     [Parameter] public bool ShowSubmitButton { get; set; } = false; //Viser ikke Opret Elevplan knap og Delete Goal ved visning
     
     [Parameter] public bool ShowComments { get; set; } = false; //Viser ikke kommentar spor ved oprettelse
 
-    [Parameter] public bool AddMentor { get; set; } = false; //Viser tildelmentor til køkkenchef
+    [Parameter] public bool StartGoal { get; set; } = false; //Viser hvem der kan starte et mål for en elev
+
+    [CascadingParameter] 
+    private BrugerLoginDTO _currentUser { get; set; }
     
+    private ModalShowHistory _goalHistoryModal { get; set; }
     
-    [Parameter]
-    public EventCallback<MentorAssignment> OnMentorAssigned { get; set; }
 
     public string[] semestre = { "År 1", "År 2", "År 3" };
-    
-    
-    //ModalOversigt 
-    private ModalOversigt mentorModal { get; set; }
-    
-    private int currentGoalId;
-    
-    private string GetMentorName(int? mentorId)
-    {
-    
-        var mentor = mentors.FirstOrDefault(m => m.Id == mentorId.Value);
-        return mentor.Name;
-    }
-    
 
-    private async Task HandleMentorSelected(int mentorId)
-    {
-        var assignment = new MentorAssignment
-        {
-            GoalId = currentGoalId,
-            MentorId = mentorId,
-            MentorName = GetMentorName(mentorId)
-        };
-        
-        await OnMentorAssigned.InvokeAsync(assignment);
-    }
-
-    private bool HasMentorAssigned(int goalId)
-    {
-        if (Goals.TryGetValue(goalId, out var goal))
-        {
-            if (goal.MentorId.HasValue)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private bool HasGoalFinished(int goalId)
-    {
-        if (Goals.TryGetValue(goalId, out var goal))
-        {
-            if (goal.Status == "Completed")
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
-    private void AddMentorToGoal(int goalId)
-    {
-        currentGoalId = goalId;
-        mentorModal.Open(goalId);
-    }
-    
-    [Parameter] public EventCallback<int> OnMentorRemove { get; set; } 
-    private async Task RemoveMentorFromGoal(int goalId)
-    {
-        await OnMentorRemove.InvokeAsync(goalId);
-    }
-    
-   
-    //Nendestående skal flyttes ud af componenten
-    
-    private List<MentorViewModel> mentors = new List<MentorViewModel>
-    {
-        new MentorViewModel { Id = 1, Name = "Anders Jensen", Role = "Kok", AvatarUrl = "" },
-        new MentorViewModel { Id = 2, Name = "Marie Nielsen", Role = "Kok", AvatarUrl = "" },
-        new MentorViewModel { Id = 3, Name = "Peter Hansen", Role = "Kok", AvatarUrl = "" }
-    };
-    
-    // Hjælpe klasse skal laves om
-    public class MentorViewModel
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Role { get; set; }
-        public string AvatarUrl { get; set; }
-    }
+    private Goal _currentGoal;
     
     // // Hjælpe klasse skal laves om
     public class MentorAssignment
@@ -278,8 +212,6 @@
         public int MentorId { get; set; }
         public string MentorName { get; set; }
     }
-    
-    
     
     //Kommentar
     private Dictionary<int, string> comments = new();
@@ -320,15 +252,53 @@
         await OnDelteClicked.InvokeAsync(goal);
     }
     
-    
-    //Confirm goal
-    [Parameter]
-    public EventCallback<int> OnConfirmedGoal { get; set; }
 
-    private async Task ConfirmGoalFinished(int goalId)
+    //Active -> InProgress
+    [Parameter]
+    public EventCallback<MentorAssignment> OnStartGoal { get; set; }
+    private async Task StartGoalNow(int goalId)
     {
-        await OnConfirmedGoal.InvokeAsync(goalId);
+
+        var newStarter = new MentorAssignment
+        {
+            GoalId = goalId,
+            MentorId = _currentUser.Id,
+            MentorName = _currentUser.FirstName
+        };
+        
+        await OnStartGoal.InvokeAsync(newStarter);
+    }
+    
+        
+    //Process Goal, status går fra InProgress -> Awaiting Approval
+    [Parameter]
+    public EventCallback<MentorAssignment> OnProcessGoal { get; set; }
+
+    private async Task ProcessGoal(int goalId)
+    {
+        var newConfirmer = new MentorAssignment
+        {
+            GoalId = goalId,
+            MentorId = _currentUser.Id,
+            MentorName = _currentUser.FirstName
+        };
+        
+        await OnProcessGoal.InvokeAsync(newConfirmer);
+    }
+    
+    //
+    [Parameter]
+    public EventCallback<int> OnFinishGoal { get; set; }
+
+    private async Task FinishGoal(int goalId)
+    {
+        await OnFinishGoal.InvokeAsync(goalId);
     }
 
- 
+    private void OpenModal(Goal goal)
+    {
+        _currentGoal = goal;
+        _goalHistoryModal.Open();
+        
+    }
 }

@@ -22,7 +22,6 @@ builder.Services.AddScoped<IHotel, HotelServiceMock>();
 builder.Services.AddScoped<IElevPlan, ElevPlanServiceMock>();
 builder.Services.AddScoped<IGoal, GoalServiceMock>();
 builder.Services.AddScoped<ITemplate, TemplateServiceMock>();
-builder.Services.AddScoped<ISkole, SkoleServiceMock>();
-builder.Services.AddScoped<IUddannelse, UddannelseServiceMock>();
+builder.Services.AddScoped<IKursus, KursusServiceMock>();
 
 await builder.Build().RunAsync();

@@ -7,8 +7,10 @@ namespace Client
     public interface ITemplate
     {
         PlanTemplate CreateTemplate();
-        Task<List<Goal>> GetGoals();
+        Task<Dictionary<int,Goal>> GetGoals();
         Task<PlanTemplate> GetTemplateById(int templateId);
+        
+        Task<List<PlanTemplate>> GetAllTemplates();
         
     }
 
