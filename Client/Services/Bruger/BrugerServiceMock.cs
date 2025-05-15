@@ -267,5 +267,10 @@ namespace Client
             }
             
         }
+
+        public Task<List<User>> GetStudentsForløb(int leaderId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

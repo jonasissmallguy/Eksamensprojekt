@@ -13,5 +13,8 @@ namespace Core
         public string Semester { get; set; }
         public DateOnly StartDate { get; set; }
         public List<Goal> Goals { get; set; } 
+        
+        public string Status { get; set; }
+        
     }
 }

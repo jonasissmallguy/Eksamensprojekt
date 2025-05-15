@@ -1,8 +1,10 @@
-﻿@inject IAuth AuthService;
-@inject NavigationManager navMan;
-@page "/"
-@using Core
+﻿@using Core
 
+@inject IAuth AuthService;
+@inject NavigationManager navMan;
+@inject IBruger IBrugerService;
+
+@page "/"
 <h3 class="page-title">Oversigt</h3>
 
 <div class="row mt-4">
@@ -33,8 +35,8 @@
     <div class="col-sm-6 mt-4">
         <div class="custom-card">
             <div class="card-body">
-                <h5 class="card-title custom-title">Notifikationer</h5>
-                <p class="card-text">Du har følgende notofikationer</p>
+                <h5 class="card-title custom-title">Forløb der mangler godkendelse</h5>
+                
             </div>
         </div>
     </div>
@@ -54,7 +56,15 @@
             navMan.NavigateTo("login/");
             return;
         }
-        else if (_currentUser.Rolle == "Elev" || _currentUser.Rolle == "Køkkenchef" || _currentUser.Rolle == "Mentor")
+        else if (_currentUser.Rolle == "Køkkenchef")
+        {
+            navMan.NavigateTo("/");
+
+            await IBrugerService.GetStudentsForløb(_currentUser.Id);
+
+        }
+        
+        else if (_currentUser.Rolle == "Elev" || _currentUser.Rolle == "Mentor")
         {
             navMan.NavigateTo("/");
         }

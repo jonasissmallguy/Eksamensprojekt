@@ -23,6 +23,9 @@ namespace Client
         
         Task<List<GoalNameDTO>> GetAllGoalTypes();
         
+        
+        
+
     }
 
 }
