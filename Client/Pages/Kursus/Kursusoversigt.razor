@@ -1,35 +1,29 @@
 ﻿@using Core;
 
-@inject IGoal IGoalService;
+@inject IGoal GoalService;
 @inject IKursus IKursusService;
 @inject NavigationManager navMan;
 
 @page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
 
-@foreach (var x in alleKurser)
-{
-    <p>@x.Title</p>
-}
-
-<!--
 <table>
     <tr>
         <th>Titel</th>
-        <th>Semester</th>
-        <th>Status</th>
+        <th>Lokation</th>
+        <th>Start dato</th>
+        <th>Slut dato</th>
     </tr>
     @foreach (var kursus in alleKurser)
     {
         <tr>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Title</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Semester</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Status</td>
+            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Location</td>
+            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.StartDate</td>
+            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.EndDate</td>
         </tr>
     }
 </table>
-
--->
 
 @code {
 
@@ -40,12 +34,9 @@
     {
         alleKurser = await IKursusService.GetAllCourses();
     }
-
-    /*
+    
     private void NavigateToKursus(int kursusId)
     {
-        navMan.NavigateTo($"kursusoverblik/{kursusId}");
+        navMan.NavigateTo($"kursuspage/{kursusId}");
     }
-    */
-
 }

@@ -12,6 +12,9 @@ public class KursusServiceMock : IKursus
         {
             Id = 1,
             Title = "ESG og Bæredygtighed",
+            Location = "Comwell Hovedkontor",
+            StartDate = new DateTime(2025, 7, 24, 10, 0, 0),
+            EndDate = new  DateTime(2025, 7, 24, 15, 0, 0),
         }
     };
     
@@ -36,7 +39,7 @@ public class KursusServiceMock : IKursus
         throw new NotImplementedException();
     }
 
-    public Task DeleteCourse(Kursus kursus)
+    public Task DeleteCourse(Kursus kursus, int kursusId)
     {
         throw new NotImplementedException();
     }
