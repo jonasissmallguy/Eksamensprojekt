@@ -9,100 +9,68 @@
 
 <h3 class="page-title">Oversigt</h3>
 
-<div class="row mt-4">
+<div class="dashboard-grid">
     @if (_currentUser?.Rolle == "Elev")
     {
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Velkomst Boks</h5>
-                    <p class="card-text">Velkommen til din side @_currentUser?.FirstName</p>
-                </div>
-            </div>
+        <div class="dashboard-card">
+            <h5 class="card-title">Velkomst Boks</h5>
+            <p>Velkommen til din side @_currentUser?.FirstName</p>
         </div>
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Kommende Skoleophold</h5>
-                    <p class="card-text">Du har følgende skoleophold</p>
-                </div>
-            </div>
+        <div class="dashboard-card">
+            <h5 class="card-title">Kommende Skoleophold</h5>
+            <p>Du har følgende skoleophold</p>
         </div>
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Aktive Delmål</h5>
-                    <p class="card-text">Igangværende delmål</p>
-                </div>
-            </div>
+        <div class="dashboard-card">
+            <h5 class="card-title">Aktive Delmål</h5>
+            <p>Igangværende delmål</p>
         </div>
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Kommende Kurser</h5>
-                    <p class="card-text">Følgende kurser kommer i den næste periode</p>
-                </div>
-            </div>
+        <div class="dashboard-card">
+            <h5 class="card-title">Kommende Kurser</h5>
+            <p>Følgende kurser kommer i den næste periode</p>
         </div>
     }
-    @if (_currentUser?.Rolle == "Køkkenchef")
+    else if (_currentUser?.Rolle == "Køkkenchef")
     {
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Manglende kurser</h5>
-                    @if (_missingCourses != null)
+        <div class="dashboard-card">
+            <h5 class="card-title">Kommende Kurser</h5>
+            <p>Oversigt over kommende kurser</p>
+        </div>
+        <div class="dashboard-card">
+            <h5 class="card-title">Kommende Skoleophold</h5>
+            <p>Kommende skoleophold for dine elever</p>
+        </div>
+        <div class="dashboard-card">
+            <h5 class="card-title">Manglende kurser</h5>
+            <p>Dine elevers manglende kurser</p>
+            @if (_missingCourses != null)
+            {
+                <ul class="list-reset">
+                    @foreach (var g in _missingCourses)
                     {
-                        <div class="mt-4">
-                            <ul>
-                                @foreach (var g in _missingCourses)
-                                {
-                                    <li>Kursus: @g.Title Elev: @g.</li>
-                                }
-                            </ul>
-                        </div>
+                        <li>Kursus: @g.Title Elev: ...</li>
                     }
-                </div>
-            </div>
+                </ul>
+            }
         </div>
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Kommende Kurser</h5>
-                    <p class="card-text">Oversigt over kommende kurser</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Elevers mål der afventer dine godkendelser</h5>
-                    <p class="card-text">Du har følgende notifikationer</p>
-                    @if (_awaitingApproval != null)
+        <div class="dashboard-card">
+            <h5 class="card-title">Elevers mål der afventer dine godkendelser</h5>
+            <p>Du har følgende notifikationer</p>
+            @if (_awaitingApproval != null)
+            {
+                <ul class="list-reset">
+                    @foreach (var g in _awaitingApproval)
                     {
-                        <div class="mt-4">
-                            <ul>
-                                @foreach (var g in _awaitingApproval)
-                                {
-                                    <p>@g.Id</p>
-                                    <li>Delmål: @g.Title <button @onclick="() => ApproveGoal(g)">Godkend mål</button> </li>
-                                }
-                            </ul>
-                        </div>
+                        <li>
+                            Delmål: @g.Title
+                            <button class="btn-approve" @onclick="() => ApproveGoal(g)">Godkend mål</button>
+                        </li>
                     }
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 mt-4">
-            <div class="custom-card">
-                <div class="card-body">
-                    <h5 class="card-title custom-title">Kommende Skoleophold</h5>
-                    <p class="card-text">Kommende skoleophold for dine elever</p>
-                </div>
-            </div>
+                </ul>
+            }
         </div>
     }
 </div>
+
 
 
 @code {
@@ -133,9 +101,9 @@
             if (_currentUser.Rolle == "Køkkenchef")
             {
                 _awaitingApproval = await IGoalService.GetAwaitingApproval();
-                Console.WriteLine($"AwaitingApproval count: {_awaitingApproval?.Count}");
                 _missingCourses = await IGoalService.GetMissingCourses(_bruger);
-                Console.WriteLine($"MissingCourses count: {_missingCourses?.Count}");
+                
+                
                 
             }
         }
