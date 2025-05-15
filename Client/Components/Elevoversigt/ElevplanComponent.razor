@@ -65,19 +65,19 @@
                                                                 <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
                                                             }
                                                             </div>
-                                                            @if (goal.Status != "Completed")
+                                                            @if (goal.Status != "Completed" && goal.Type == "Delmål")
                                                             {
                                                                 @if (StartGoal && goal.Status == "Active")
                                                                 {
                                                                     <button class="btn btn-sm btn-primary" @onclick="() => StartGoalNow(goal.Id)">Påbegynd</button>
                                                                 }
-                                                                else if (StartGoal && goal.Status == "InProgress")
+                                                                else if (StartGoal && goal.Status == "InProgress" && goal.Type == "Delmål")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
                                                                         <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>
                                                                     </div>
                                                                 }
-                                                                else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef")
+                                                                else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef" && goal.Type == "Delmål")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
                                                                         <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>

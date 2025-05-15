@@ -169,9 +169,9 @@ namespace Client
                     Id = elev.Id,
                     Name = elev.FirstName,
                     HotelId = elev.Hotel.Id,
-                    Hotel = "test",
+                    Hotel = elev.Hotel.HotelNavn,
                     Roller = elev.Rolle,
-                    Ansvarlig = "test ansvarlig"
+                    Ansvarlig = elev.FirstName + " " + elev.LastName
                 });
             }
 
