@@ -1,51 +1,119 @@
-﻿@inject IAuth AuthService;
+﻿@using Core
+
+@inject IAuth AuthService;
+@inject IBruger IBrugerService;
 @inject NavigationManager navMan;
+@inject IGoal IGoalService;
+
 @page "/"
-@using Core
 
 <h3 class="page-title">Oversigt</h3>
 
 <div class="row mt-4">
-    <div class="col-sm-6">
-        <div class="custom-card">
-            <div class="card-body">
-                <h5 class="card-title custom-title">Velkomst Boks</h5>
-                <p class="card-text">Velkommen til din side @_currentUser?.FirstName</p>
+    @if (_currentUser?.Rolle == "Elev")
+    {
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Velkomst Boks</h5>
+                    <p class="card-text">Velkommen til din side @_currentUser?.FirstName</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="custom-card">
-            <div class="card-body">
-                <h5 class="card-title custom-title">Kommende Deadlines</h5>
-                <p class="card-text">Du har nu følgende deadlines</p>
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Kommende Skoleophold</h5>
+                    <p class="card-text">Du har følgende skoleophold</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-6 mt-4">
-        <div class="custom-card">
-            <div class="card-body">
-                <h5 class="card-title custom-title">Kommende Kurser</h5>
-                <p class="card-text">Følgende kurser kommer i den næste periode</p>
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Aktive Delmål</h5>
+                    <p class="card-text">Igangværende delmål</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-sm-6 mt-4">
-        <div class="custom-card">
-            <div class="card-body">
-                <h5 class="card-title custom-title">Notifikationer</h5>
-                <p class="card-text">Du har følgende notofikationer</p>
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Kommende Kurser</h5>
+                    <p class="card-text">Følgende kurser kommer i den næste periode</p>
+                </div>
             </div>
         </div>
-    </div>
+    }
+    @if (_currentUser?.Rolle == "Køkkenchef")
+    {
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Manglende kurser</h5>
+                    @if (_missingCourses != null)
+                    {
+                        <div class="mt-4">
+                            <ul>
+                                @foreach (var g in _missingCourses)
+                                {
+                                    <li>Kursus: @g.Title Elev: @g => g.</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Kommende Kurser</h5>
+                    <p class="card-text">Oversigt over kommende kurser</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Elevers mål der afventer dine godkendelser</h5>
+                    <p class="card-text">Du har følgende notifikationer</p>
+                    @if (_awaitingApproval != null)
+                    {
+                        <div class="mt-4">
+                            <ul>
+                                @foreach (var g in _awaitingApproval)
+                                {
+                                    <p>@g.Id</p>
+                                    <li>Delmål: @g.Title <button @onclick="() => ApproveGoal(g)">Godkend mål</button> </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 mt-4">
+            <div class="custom-card">
+                <div class="card-body">
+                    <h5 class="card-title custom-title">Kommende Skoleophold</h5>
+                    <p class="card-text">Kommende skoleophold for dine elever</p>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 
-@code 
-
-{
+@code {
     private BrugerLoginDTO _currentUser;
-    
+
+    private User _bruger;
+
+    private List<Goal> _awaitingApproval;
+    private List<Goal> _missingCourses;
+    private List<Goal> _outOfHouse;
+
     protected override async Task OnInitializedAsync()
     {
         _currentUser = await AuthService.GetBruger();
@@ -54,13 +122,32 @@
             navMan.NavigateTo("login/");
             return;
         }
-        else if (_currentUser.Rolle == "Elev" || _currentUser.Rolle == "Køkkenchef" || _currentUser.Rolle == "Mentor")
-        {
-            navMan.NavigateTo("/");
-        }
-        else if (_currentUser.Rolle == "HR")
+
+        _bruger = await IBrugerService.GetUserById(_currentUser.Id);
+
+        // Redirect HR og kok til Dashboard
+        if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Kok")
         {
             navMan.NavigateTo("/Dashboard");
+            return;
+        }
+
+        // Hvis det er køkkenchef, indlæser vi de relevante data
+        if (_currentUser.Rolle == "Køkkenchef")
+        {
+            _awaitingApproval = await IGoalService.GetAwaitingApproval();
+            _missingCourses = await IGoalService.GetMissingCourses(_bruger);
+            _outOfHouse = await IGoalService.GetOutOfHouse();
+        }
+    }
+
+    private async Task ApproveGoal(Goal goal)
+    {
+        await IGoalService.ConfirmGoalFromHomePage(goal);
+
+        if (goal.Id != null)
+        {
+            _awaitingApproval = _awaitingApproval.Where(g => g.Id != goal.Id).ToList();
         }
     }
 }

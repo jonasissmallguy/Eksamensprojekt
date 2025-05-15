@@ -281,5 +281,10 @@ namespace Client
             }
             
         }
+
+        public Task<User> GetUserById(int currentUserId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
