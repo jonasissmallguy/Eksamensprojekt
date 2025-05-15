@@ -37,24 +37,30 @@ namespace Client
             return goalTypes;
         }
 
-        public Task<List<Goal>> GetAwaitingApproval()
+        public async Task<List<Goal>> GetAwaitingApproval()
+        {
+            return _goals.Where(g => g.Status == "AwaitingApproval").ToList();
+        }
+
+        public async Task<List<Goal>> GetMissingCourses(User bruger)
+        {
+            var missingCourses = _goals.Where(g => g.Status == "MissingCourses").ToList();
+            return missingCourses;
+        }
+
+        public async Task<List<Goal>> GetOutOfHouse()
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Goal>> GetMissingCourses(User bruger)
+        public async Task ConfirmGoalFromHomePage(Goal goal)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Goal>> GetOutOfHouse()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task ConfirmGoalFromHomePage(Goal goal)
-        {
-            throw new NotImplementedException();
+            var existingGoal = _goals.FirstOrDefault(g => g.Id == goal.Id);
+            if (existingGoal != null)
+            {
+                existingGoal.Status = "Completed";
+                existingGoal.CompletedAt = DateTime.Now;
+            }
         }
 
 
