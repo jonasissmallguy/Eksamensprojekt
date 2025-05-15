@@ -1,8 +1,11 @@
 ﻿@using Core
+@using Core.DTO.Goal
+@using Client.Components
 
 @inject NavigationManager navMan;
 @inject IBruger IBrugerService;
 @inject IHotel IHotelService;
+@inject IGoal IGoalService;
 
 
 @page "/dashboard"
@@ -33,12 +36,37 @@
     <!-- Dropdown til rolle -->
     <div class="dropdownmenu">
         <Dropdown Color="DropdownColor.Secondary">
-            <DropdownToggleButton>@(selectedYear.HasValue ? $"År {selectedYear}" : "År")</DropdownToggleButton>
+            <DropdownToggleButton>@(string.IsNullOrEmpty(selectedYear) ? "År" : selectedYear)</DropdownToggleButton>
             <DropdownMenu>
-                <DropdownItem @onclick="() => SelectYear(null)">Alle år</DropdownItem>
-                <DropdownItem @onclick="() => SelectYear(1)">År 1</DropdownItem>
-                <DropdownItem @onclick="() => SelectYear(2)">År 2</DropdownItem>
-                <DropdownItem @onclick="() => SelectYear(3)">År 3</DropdownItem>
+                <DropdownItem @onclick="() => SelectYear(String.Empty)">Alle år</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectYear("År 1"))">År 1</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectYear("År 2"))">År 2</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectYear("År 3"))">År 3</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+
+    <!-- Dropdown til skole -->
+    <div class="dropdownmenu">
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>@(string.IsNullOrEmpty(selectedSkole) ? "Skole" : selectedSkole)</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem @onclick="() => SelectSkole(String.Empty)">Alle skoler</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectSkole("Kold Kollege"))">Kold Kollege</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectSkole("Bæskolen Kronjylland"))">Bæskolen Kronjylland</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectSkole("Hansted Kokkeskole"))">Hansted Kokkeskole</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+
+    <!-- Dropdown til uddannelse -->
+    <div class="dropdownmenu">
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>@(string.IsNullOrEmpty(selectedUddannelse) ? "Uddannelse" : selectedUddannelse)</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem @onclick="() => SelectUddannelse(String.Empty)">Alle uddannelser</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectUddannelse("EUX"))">EUX</DropdownItem>
+                <DropdownItem @onclick="@(() => SelectUddannelse("Voksenelev"))">Voksenelev</DropdownItem>
             </DropdownMenu>
         </Dropdown>
     </div>
@@ -47,24 +75,30 @@
     {
         <!-- Knap til at tilføje et delmål-->
         <div class="addgoal-button">
-            <Button class="btn btn-primary" @onclick="NavigateToAddGoal">Tilføj delmål</Button>
+            <Button class="btn btn-primary" @onclick="OpenModal">Tilføj delmål</Button>
+        </div>
+        <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
+        <div class="export-button">
+            <Button class="btn btn-primary">Eksporter fil</Button>
         </div>
     }
-
-    <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
-    <div class="export-button">
-        <Button class="btn btn-primary">Eksporter fil</Button>
-    </div>
+    
 </div>
 
 <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
 <table>
     <tr>
+        <th>
+            <input type="checkbox"
+                   @onchange="ToggleSelectAll"
+                   checked="@AreAllFilteredSelected" />
+        </th>
         <th>Navn</th>
         <th>Hotel</th>
         <th>Status</th>
         <th>År</th>
-        <th>Vælg:</th>
+        <th>Skole</th>
+        <th>Uddannelse</th>
     </tr>
     
     @if (alleElever != null)
@@ -72,16 +106,18 @@
         @foreach (var x in FiltreredElever)
         {
             <tr>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">Status</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
                 <td>
                     <input type="checkbox"
                            checked="@selectedStudentIds.Contains(x.Id)"
                            @onchange="(e) => CheckboxValueChanged(x.Id, (bool) ((ChangeEventArgs)e).Value)"/>
                 </td>
-                
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">11/47</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Skole</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Uddannelse</td>
+
             </tr>
         }
     }
@@ -91,15 +127,174 @@
     }
 </table>
 
+<ModalTilføjDelmål @ref="modalRef" Title="Tilføj delmål">
+    <div class="addGoal-topline">
+        <h3>Tilføj delmål</h3>
+
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>Måltype:</DropdownToggleButton>
+            <DropdownMenu>
+                @foreach (var y in alleTyper)
+                {
+                    <DropdownItem @onclick="() => SelectType(y.GoalId)">@y.GoalName</DropdownItem>
+                }
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+
+    <EditForm Model="newGoal" class="row p-3">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Type">Type: @(GetGoalName(selectedGoalId))</label>
+            </div>
+        </div>
+        <!-- Herunder har vi et if statement der forbinder den valgte måltype med en bestemt editfor. -->
+        <!-- 1 er kursus, 2 er skole, 3 er delmål -->
+
+        @if (selectedGoalId == 1)
+        {
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Titel">Titel:</label>
+                    <InputText id="Titel" @bind-Value="newGoal.Title"
+                               placeholder="Kursusnavn..." class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Beskrivelse">Beskrivelse:</label>
+                    <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                                   placeholder="Husk at tilføje adresse!" class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Status">Status:</label>
+                    <InputText id="Status" @bind-Value="newGoal.Status"
+                               placeholder="Status" class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Semester">Semester:</label>
+                    <InputSelect class="form-select" @bind-Value="newGoal.Semester">
+                        @foreach (var yy in år)
+                        {
+                            <option value="@yy">@yy</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <button class="btn btn-primary">Tilføj</button>
+                </div>
+            </div>
+        }
+        else if (selectedGoalId == 2)
+        {
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Titel">Titel:</label>
+                    <InputText id="Titel" @bind-Value="newGoal.Title"
+                               placeholder="Titel på delmål..." class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Beskrivelse">Beskrivelse:</label>
+                    <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                                   placeholder="Beskrivelse" class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Status">Status:</label>
+                    <InputText id="Status" @bind-Value="newGoal.Status"
+                               placeholder="Status" class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Semester">Semester:</label>
+                    <InputSelect class="form-select" @bind-Value="newGoal.Semester">
+                        @foreach (var yy in år)
+                        {
+                            <option value="@yy">@yy</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <button class="btn btn-primary">Tilføj</button>
+                </div>
+            </div>
+        }
+        else if (selectedGoalId == 3)
+        {
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Titel">Titel:</label>
+                    <InputText id="Titel" @bind-Value="newGoal.Title"
+                               placeholder="Titel på delmål..." class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Beskrivelse">Beskrivelse:</label>
+                    <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                                   placeholder="Beskrivelse" class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Status">Status:</label>
+                    <InputText id="Status" @bind-Value="newGoal.Status"
+                               placeholder="Status" class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Semester">Semester:</label>
+                    <InputSelect class="form-select" @bind-Value="newGoal.Semester">
+                        @foreach (var yy in år)
+                        {
+                            <option value="@yy">@yy</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <button class="btn btn-primary">Tilføj</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>Vælg en måltype for at få den passende skabelon.</p>
+        }
+
+    </EditForm>
+
+</ModalTilføjDelmål>
+
 @code {
 
     // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
 
-    private int? selectedYear = null;
+    private string selectedYear = String.Empty;
     private int? selectedHotelId = null;
     private bool isSelected(int id) => selectedStudentId == id;
     private int? selectedStudentId = null;
+    private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
+    private string selectedSkole = String.Empty;
+    private string selectedUddannelse = String.Empty;
+
 
     private bool isChecked;
 
@@ -113,13 +308,17 @@
             (string.IsNullOrWhiteSpace(searchText) ||
              a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
             (!selectedHotelId.HasValue || a.HotelId == selectedHotelId) &&
-            (!selectedYear.HasValue || a.Year == selectedYear)));
+            (string.IsNullOrEmpty(selectedYear) || a.Year == selectedYear) &&
+            (string.IsNullOrEmpty(selectedSkole) || a.Skole == selectedSkole) &&
+            (string.IsNullOrEmpty(selectedUddannelse) || a.Uddannelse == selectedUddannelse)));
 
     protected override async Task OnInitializedAsync()
     {
         alleElever = await IBrugerService.GetElevOversigt();
 
         alleHoteller = await IHotelService.GetAllHotelNames();
+        
+        alleTyper = await IGoalService.GetAllGoalTypes();
     }
 
     private async Task NavigateToElevPlan(int studentId)
@@ -138,12 +337,22 @@
         selectedHotelId = hotelId;
     }
 
+    private void SelectSkole(string skole)
+    {
+        selectedSkole = skole;
+    }
+
+    private void SelectUddannelse(string uddannelse)
+    {
+        selectedUddannelse = uddannelse;
+    }
+
     private void NavigateToAddGoal()
     {
         navMan.NavigateTo("/tilføjdelmål");
     }
 
-    private void SelectYear(int? year)
+    private void SelectYear(string year)
     {
         selectedYear = year;
     }
@@ -160,4 +369,55 @@
         }
     }
 
+    private void ToggleSelectAll(ChangeEventArgs e)
+    {
+        bool shouldSelectAll = (bool)e.Value;
+        
+        if (shouldSelectAll)
+        {
+            foreach (var elev in FiltreredElever)
+            {
+                selectedStudentIds.Add(elev.Id);
+            }
+        }
+        else
+        {
+            foreach (var elev in FiltreredElever)
+            {
+                selectedStudentIds.Remove(elev.Id);
+            }
+        }
+    }
+    
+    //Herunder koden til tilføj delmål
+    private GoalCreationDTO newGoal = new();
+
+    private List<GoalNameDTO> alleTyper;
+
+    private int? selectedGoalId = null;
+
+    private string[] år = { "År 1", "År 2", "År 3" };
+    private string[] skole = { "Kold Kollege", "Bæskolen Kronjylland", "Hansted Kokkeskole" };
+    private string[] uddannelse = { "EUX", "Voksenelev"};
+
+    private string GetGoalName(int? goalId)
+    {
+        var goal = alleTyper.FirstOrDefault(t => t.GoalId == goalId);
+        return goal?.GoalName ?? "Ukendt";
+    }
+
+    private void SelectType(int? goalId)
+    {
+        selectedGoalId = goalId;
+    }
+    
+    // Herunder kode til Modaldialog
+
+    private ModalTilføjDelmål? modalRef;
+    
+    private void OpenModal()
+    {
+        modalRef?.Open();
+    }
+    
 }

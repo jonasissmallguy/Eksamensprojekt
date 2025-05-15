@@ -10,8 +10,9 @@
         public string Hotel { get; set; }
         public string Roller { get; set; }
         public string Ansvarlig  {get; set;}
-        
-        public int Year { get; set; }
+        public string Year { get; set; }
+        public string Skole { get; set; }
+        public string Uddannelse { get; set; }
 
     }
 

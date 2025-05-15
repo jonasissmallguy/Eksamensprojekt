@@ -18,8 +18,12 @@ namespace Core
         public Hotel Hotel { get; set; }
         
         public DateOnly? StartDate { get; set; }
-        public int Year { get; set; }
+        public string Year { get; set; }
         public string Status { get; set; } = "Active";
         public Plan ElevPlan { get; set; }
+        
+        public string Skole { get; set; }
+        
+        public string Uddannelse { get; set; }
     }
 }
