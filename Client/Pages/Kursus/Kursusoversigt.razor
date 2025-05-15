@@ -11,7 +11,6 @@
     <tr>
         <th>Titel</th>
         <th>Lokation</th>
-        <th>Instruktør</th>
         <th>Start dato</th>
         <th>Slut dato</th>
     </tr>
@@ -20,7 +19,6 @@
         <tr>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Title</td>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Location</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.InstructorName</td>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.StartDate</td>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.EndDate</td>
         </tr>

@@ -13,7 +13,6 @@ public class KursusServiceMock : IKursus
             Id = 1,
             Title = "ESG og Bæredygtighed",
             Location = "Comwell Hovedkontor",
-            InstructorName = "Lars Jensen",
             StartDate = new DateTime(2025, 7, 24, 10, 0, 0),
             EndDate = new  DateTime(2025, 7, 24, 15, 0, 0),
         }
