@@ -9,7 +9,7 @@ namespace Client
     {
         
         //Goals
-        Task DeleteGoal(Goal goal);
+        Task DeleteGoal(Goal goal, int studentId);
         Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates);
         
         //Goal progress

@@ -40,7 +40,7 @@ else
     
     private async Task HandleDeleteGoal(Goal goal)
     {
-        await IGoalService.DeleteGoal(goal);
+        await IGoalService.DeleteGoal(goal, studentId);
     }
     
     private async Task HandleElevplanSubmit()

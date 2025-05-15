@@ -39,13 +39,13 @@ namespace Client
         
 
 
-        public async Task DeleteGoal(Goal goal)
+        public async Task DeleteGoal(Goal goal, int studentID)
         {
             
-            //Opdater vores goal collection
-            
-            //Sletter goal fra forløb collection // FK
-            //await _elevPlan.RemoveGoalIdFromForløb(goal);
+            //Sletter goal
+            var user = await _bruger.GetBrugerById(studentID);
+            var forløb = user.ElevPlan.Forløbs.FirstOrDefault(f => f.Id == goal.ForløbId);
+            var deleteGoal = forløb.Goals.FirstOrDefault(x => x.Id == goal.Id);
         }
 
         
