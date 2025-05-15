@@ -9,7 +9,7 @@ namespace Server
     {
         public async Task<bool> DeleteGoal(int planId, int studentId, int goalId)
         {
-         
+            return false;
         }
     }
 }
