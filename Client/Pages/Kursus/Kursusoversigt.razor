@@ -13,6 +13,7 @@
         <th>Lokation</th>
         <th>Start dato</th>
         <th>Slut dato</th>
+        <th>Status</th>
     </tr>
     @foreach (var kursus in alleKurser)
     {
@@ -21,9 +22,11 @@
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Location</td>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.StartDate</td>
             <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.EndDate</td>
+            <td>@kursus.Status</td>
         </tr>
     }
 </table>
+
 
 @code {
 

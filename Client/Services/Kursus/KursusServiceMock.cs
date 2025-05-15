@@ -1,4 +1,5 @@
-﻿using Client;
+﻿
+
 using Core;
 
 namespace Client;
@@ -17,13 +18,18 @@ public class KursusServiceMock : IKursus
             EndDate = new  DateTime(2025, 7, 24, 15, 0, 0),
             Students = new List<User>
             {
-                new User {Id = 1, FirstName = "Jonas", Hotel = new Hotel{Id = 1, HotelNavn = "Aarhus Comwell"}}
+                new User {Id = 3, FirstName = "Jonas", Hotel = new Hotel{Id = 1, HotelNavn = "Aarhus Comwell"}}
             }
             
         }
     };
-    
-    
+
+    private IElevPlan _elevplan;
+
+    public KursusServiceMock(IElevPlan elevPlan)
+    {
+        _elevplan = elevPlan;
+    }
     
     public async Task<List<Kursus>> GetAllCourses()
     {
@@ -56,9 +62,10 @@ public class KursusServiceMock : IKursus
         throw new NotImplementedException();
     }
 
-    public async Task RemoveStudentFromCourse(int studentId)
+    public async Task RemoveStudentFromCourse(int studentId, Kursus kursus)
     {
-        _allCourses.RemoveAll(x => x.Id == studentId);
+        var kursuset = _allCourses.FirstOrDefault(x => x.Id == kursus.Id);
+        kursuset.Students.RemoveAll(x => x.Id == studentId);
     }
 
     public async Task CompleteCourse(Kursus kursus)
@@ -68,12 +75,16 @@ public class KursusServiceMock : IKursus
         
         foreach (var x in kursus.Students)
         {
+
+            _elevplan.CreateElevPlan(x.Id);
+            
             allParticipants.Add(x);
         }
 
         foreach (var student in allParticipants)
         {
             var forløbs = student.ElevPlan.Forløbs;
+            
             foreach (var forløb in forløbs)
             {
                 var goal = forløb.Goals.FirstOrDefault(x => x.Title == _kursusnavn);

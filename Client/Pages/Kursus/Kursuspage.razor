@@ -8,13 +8,20 @@
 
 @page "/kursuspage/{kursusId:int}"
 <h3>Kursus information</h3>
+<h5>@_kursus.Title</h5>
+<h5>Start dato:@_kursus.StartDate</h5>
+<h5>Start dato:@_kursus.EndDate</h5>
 
+
+
+<h6>Deltagerliste</h6>
 <div class="full-course-information">
     <table class="table table-striped">
         <thead>
         <tr>
             <th>Navn</th>
             <th>Resteruant</th>
+            <th>Slet fra kursus</th>
         </tr>
         </thead>
         <tbody>
@@ -55,12 +62,8 @@
 
     private async Task RemoveStudent(User user)
     {
-        await IKursusService.RemoveStudentFromCourse(user.Id);
+        await IKursusService.RemoveStudentFromCourse(user.Id, _kursus);
 
-        if (user != null)
-        {
-            _kursus.Students.Where(x => x.Id != user.Id);
-        }
+
     }
-
 }
