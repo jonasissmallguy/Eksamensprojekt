@@ -60,7 +60,7 @@
     protected override async Task OnInitializedAsync()
     {
         elev = await IBrugerService.GetBrugerById(studentId);
-        elevPlan = await IElevPlanService.GetPlanByStudentId(studentId);
+        elevPlan = await IElevPlanService.GetPlanByStudentId(studentId); // denne er ikke nødvendig...
         
         //Dette er bare brugt til visning til COmwell - dette skal slettes!!!!!!
         if (elevPlan == null)

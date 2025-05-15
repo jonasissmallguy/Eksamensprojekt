@@ -33,9 +33,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        elev = await IBrugerService.GetBrugerById(studentId);
-        nyElevPlan = await IElevPlanService.CreateElevPlan(elev.Id);
-        
+        //elev = await IBrugerService.GetBrugerById(studentId);
+        Console.WriteLine(studentId);
+        nyElevPlan = await IElevPlanService.CreateElevPlan(studentId);
     }
     
     private async Task HandleDeleteGoal(Goal goal)
@@ -50,11 +50,9 @@ else
         navMan.NavigateTo("/dashboard");
     }
     
-    
     private void NavigateToCreateGoal()
     {
         navMan.NavigateTo("tilføj delmål");
     }
-
-
+    
 }

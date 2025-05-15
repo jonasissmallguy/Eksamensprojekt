@@ -7,20 +7,23 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="DotNetEnv" Version="3.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1"/>
+        <PackageReference Include="MongoDB.Bson" Version="3.4.0" />
+        <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
+        <PackageReference Include="MongoDB.Driver.Core" Version="2.30.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Controllers\Goal\" />
       <Folder Include="Controllers\Hotel\" />
-      <Folder Include="Controllers\Plan\" />
-      <Folder Include="Controllers\Template\" />
-      <Folder Include="Controllers\User\" />
       <Folder Include="Repositories\Goal\" />
       <Folder Include="Repositories\Hotel\" />
       <Folder Include="Repositories\Plan\" />
-      <Folder Include="Repositories\Template\" />
-      <Folder Include="Repositories\User\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
 </Project>
