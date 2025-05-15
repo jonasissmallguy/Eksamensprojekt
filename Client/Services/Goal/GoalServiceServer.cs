@@ -8,10 +8,15 @@ namespace Client
         
         private string serverUrl = "http://localhost:5075";
         private HttpClient _client;
+
+        public GoalServiceServer(HttpClient client)
+        {
+            _client = client;
+        }
         
         public async Task DeleteGoal(Goal goal, int studentId)
         {
-            await _client.DeleteAsync($"{serverUrl}/goals/{goal.PlanId}?studentId={goal.ForløbId}?goalId={goal.Id}");
+            await _client.DeleteAsync($"{serverUrl}/goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
         }
 
         public Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates)

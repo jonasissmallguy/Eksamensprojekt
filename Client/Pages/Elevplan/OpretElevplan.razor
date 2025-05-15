@@ -33,13 +33,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        //elev = await IBrugerService.GetBrugerById(studentId);
         nyElevPlan = await IElevPlanService.CreateElevPlan(studentId);
     }
     
     private async Task HandleDeleteGoal(Goal goal)
     {
         await IGoalService.DeleteGoal(goal, studentId);
+
+        var forløb = nyElevPlan.Forløbs.FirstOrDefault(f => f.Id == goal.ForløbId);
+
+        if (forløb != null)
+        {
+            forløb.Goals.RemoveAll(x => x.Id == goal.Id);
+        }
+
     }
     
     private async Task HandleElevplanSubmit()

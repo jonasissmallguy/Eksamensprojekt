@@ -5,7 +5,7 @@ namespace Server
 {
     
     [ApiController]
-    [Route("goal")]
+    [Route("goals")]
     public class GoalController : ControllerBase
     {
 
@@ -23,11 +23,16 @@ namespace Server
         /// <param name="studentId"></param>
         /// <param name="goalId"></param>
         [HttpDelete]
-        [Route("{planId}/{studentId}/{goalId}")]
-        public async Task<IActionResult> DeleteGoal(int planId, int studentId, int goalId)
+        [Route("{studentId}/{planId}/{forløbId}/{goalId}")]
+        public async Task<IActionResult> DeleteGoal(int studentId, int planId, int forløbId, int goalId)
         {
-            var delete =  await _goalRepository.DeleteGoal(planId, studentId, goalId);
-            return Ok();
+            var delete =  await _goalRepository.DeleteGoal(studentId, planId, forløbId, goalId);
+
+            if (delete)
+            {
+                return Ok();
+            }
+            return NotFound();
         }
 
 
