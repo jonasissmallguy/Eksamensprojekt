@@ -17,10 +17,10 @@
                 <img class="biopic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"/>
             </div>
             <div class="textcontainer">
-                <h3 class="navn">@elev.Navn </h3>
-                <p class="telefon">Telefon: @elev.Telefon </p>
+                <h3 class="navn">@elev.FirstName </h3>
+                <p class="telefon">Telefon: @elev.Mobile </p>
                 <p class="mail">Mail: @elev.Email</p>
-                <p class="restaurant">Restaurant: @elev.RestaurantNavn</p>
+                <p class="restaurant">Restaurant: @elev.Hotel.HotelNavn</p>
             </div>
         </div>
     }
@@ -28,19 +28,19 @@
     <div class="content-scroll">
         @if (elev != null && _currentUser.Rolle == "HR")
         {
-            <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
         }
         else if (elev != null && _currentUser.Rolle == "Køkkenchef")
         {
-            <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
         }
         else if (elev != null && _currentUser.Rolle == "Kok")
         {
-            <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
         }
         else if (elev != null && _currentUser.Rolle == "Elev")
         {
-            <ElevplanComponent Plan="@elevPlan" Goals="@goals" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
         }
         else
         {
@@ -53,10 +53,9 @@
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
 
     [Parameter] public int studentId { get; set; }
-    private BrugerProfilDTO elev;
+    private User elev;
     private Plan? elevPlan;
-
-    private Dictionary<int, Goal> goals = new();
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,12 +66,6 @@
         if (elevPlan == null)
         {
             elevPlan = await IElevPlanService.CreateElevPlan(studentId);
-        }
-        //SLET DET OVENO
-        
-        if (elevPlan != null)
-        {
-            goals = await IGoalService.GetAllGoalsByPlanId(studentId);
         }
     }
 

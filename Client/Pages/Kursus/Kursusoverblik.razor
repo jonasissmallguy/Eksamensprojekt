@@ -34,8 +34,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _kursus = await GoalService.GetGoalByGoalId(kursusId);
-        _allUsersInKursus = await GoalService.GetUsersByGoalId(kursusId);
     }
 
 }

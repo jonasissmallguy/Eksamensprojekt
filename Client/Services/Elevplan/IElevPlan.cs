@@ -9,12 +9,5 @@ namespace Client
         Task<Plan> CreateElevPlan(int studentId);
         Task SavePlan(Plan plan);
         Task<Plan> GetPlanByStudentId(int studentId);
-        Task<List<Plan>> GetAllPlans();
-        
-        //Forløb
-        Task RemoveGoalIdFromForløb(Goal goal);
-
-
-
     }
 }
