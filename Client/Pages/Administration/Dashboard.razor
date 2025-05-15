@@ -71,6 +71,24 @@
         </Dropdown>
     </div>
     
+    <div class="dropdownmenu">
+        <Dropdown Color="DropdownColor.Secondary">
+            <DropdownToggleButton>Start</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem>
+                    Start før:
+                    <DateInput TValue="DateOnly?" @bind-Value="@selectedSkolestartBefore" Placeholder="Enter Date"/>
+                </DropdownItem>
+                <DropdownItem>
+                    Start efter:
+                    <DateInput TValue="DateOnly?" @bind-Value="@selectedSkolestartAfter" Placeholder="Enter Date"/>
+                </DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+    <!-- Input til startdatofiltrering -->
+
+    
     @if (selectedStudentIds.Any())
     {
         <!-- Knap til at tilføje et delmål-->
@@ -272,8 +290,6 @@
     private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
     private string selectedSkole = String.Empty;
     private string selectedUddannelse = String.Empty;
-    private DateOnly SkoleStart = DateOnly.MinValue;
-    private DateOnly SkoleEnd = DateOnly.MinValue;
 
 
     private bool isChecked;
@@ -281,6 +297,9 @@
     private List<ElevOversigtDTO> alleElever;
     private List<HotelNameDTO> alleHoteller;
     private HashSet<int> selectedStudentIds = new();
+    
+    private DateOnly? selectedSkolestartBefore = null;
+    private DateOnly? selectedSkolestartAfter = null;
 
     // Filter til søgetekst og til valg af hotel
     private IEnumerable<ElevOversigtDTO> FiltreredElever =>
@@ -399,5 +418,6 @@
     {
         modalRef?.Open();
     }
+    
     
 }
