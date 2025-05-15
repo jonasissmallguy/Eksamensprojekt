@@ -37,14 +37,14 @@
             <div class="col-md-6 mb-3">
                 <label for="Titel">Titel:</label>
                 <InputText id="Titel" @bind-Value="newGoal.Title"
-                           placeholder="Titel på delmål..." class="form-control"/>
+                           placeholder="Kursusnavn..." class="form-control"/>
             </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
                 <label for="Beskrivelse">Beskrivelse:</label>
                 <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
-                               placeholder="Beskrivelse" class="form-control"/>
+                               placeholder="Husk at tilføje adresse!" class="form-control"/>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -57,8 +57,12 @@
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
                 <label for="Semester">Semester:</label>
-                <InputNumber id="Semester" @bind-Value="newGoal.Semester"
-                             placeholder="Semester" class="form-control"/>
+                <InputSelect class="form-select" @bind-Value="newGoal.Semester">
+                    @foreach (var yy in år)
+                    {
+                        <option value="@yy">@yy</option>
+                    }
+                </InputSelect>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -93,8 +97,12 @@
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
                 <label for="Semester">Semester:</label>
-                <InputNumber id="Semester" @bind-Value="newGoal.Semester"
-                             placeholder="Semester" class="form-control"/>
+                <InputSelect class="form-select" @bind-Value="newGoal.Semester">
+                    @foreach (var yy in år)
+                    {
+                        <option value="@yy">@yy</option>
+                    }
+                </InputSelect>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -129,8 +137,12 @@
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
                 <label for="Semester">Semester:</label>
-                <InputNumber id="Semester" @bind-Value="newGoal.Semester"
-                             placeholder="Semester" class="form-control"/>
+                <InputSelect class="form-select" @bind-Value="newGoal.Semester">
+                    @foreach (var yy in år)
+                    {
+                        <option value="@yy">@yy</option>
+                    }
+                </InputSelect>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -149,17 +161,19 @@
 @code {
 
     private GoalCreationDTO newGoal = new();
-    
+
     private List<GoalNameDTO> alleTyper;
-    
+
     private int? selectedGoalId = null;
+
+    private string[] år = { "År 1", "År 2", "År 3" };
 
     private string GetGoalName(int? goalId)
     {
         var goal = alleTyper.FirstOrDefault(t => t.GoalId == goalId);
         return goal?.GoalName ?? "Ukendt";
     }
-    
+
     private void SelectType(int? goalId)
     {
         selectedGoalId = goalId;
@@ -168,7 +182,7 @@
     protected override async Task OnInitializedAsync()
     {
         alleTyper = await IGoalService.GetAllGoalTypes();
-        
+
     }
-    
+
 }

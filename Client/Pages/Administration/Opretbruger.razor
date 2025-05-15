@@ -77,6 +77,24 @@
                         }
                     </InputSelect>
                 </div>
+                <div class="form-group">
+                    <label class="form-label required-field">Skole</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.Skole">
+                        @foreach (var s in skole)
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required-field">Uddannelse</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.Uddannelse">
+                        @foreach (var u in uddannelse)
+                        {
+                            <option value="@u">@u</option>
+                        }
+                    </InputSelect>
+                </div>
                 <button type="submit" class="submit-btn">Opret bruger</button>
             </EditForm>
         </div>
@@ -94,6 +112,8 @@
     private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
     private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
     private string[] år = { "År 1", "År 2", "År 3" };
+    private string[] skole = { "Kold Kollege", "Bæskolen Kronjylland", "Hansted Kokkeskole" };
+    private string[] uddannelse = { "EUX", "Voksenelev"};
 
 
     protected override async void OnInitialized()
@@ -101,6 +121,8 @@
         newUser.Rolle = roller[0];
         newUser.Køn = køn[2]; //prefixed til "Ikke angivet"
         newUser.Year = år[0];
+        newUser.Uddannelse = uddannelse[0];
+        newUser.Skole = skole[0];
         hoteller = await IHotelService.GetAllHotelNames();
         newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
 
