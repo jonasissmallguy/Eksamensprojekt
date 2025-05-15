@@ -10,7 +10,9 @@ namespace Client
         Task UpdateCourse(Kursus kursus);
         Task DeleteCourse(Kursus kursus, int kursusId);
         Task StartCourse(Kursus kursus);
-        Task RemoveStudentFromCourse(Kursus kursus, int studentId);
+        Task RemoveStudentFromCourse(int studentId);
+
+        Task CompleteCourse(Kursus kursus);
 
     }
 }
