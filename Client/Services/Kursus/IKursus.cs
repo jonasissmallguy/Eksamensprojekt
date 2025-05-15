@@ -8,7 +8,7 @@ namespace Client
         Task<Kursus> GetCourseById(int kursusId);
         Task AddCourse(Kursus kursus);
         Task UpdateCourse(Kursus kursus);
-        Task DeleteCourse(Kursus kursus);
+        Task DeleteCourse(Kursus kursus, int kursusId);
         Task StartCourse(Kursus kursus);
         Task RemoveStudentFromCourse(Kursus kursus, int studentId);
 

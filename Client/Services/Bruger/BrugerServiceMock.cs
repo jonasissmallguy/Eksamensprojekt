@@ -58,7 +58,7 @@ namespace Client
                 Id = bruger.Id,
                 Email = bruger.Email,
                 MentorNavn = "Martin",
-                Navn = bruger.FirstName ,
+                Navn = bruger.FirstName + " " + bruger.LastName,
                 RegionNavn = "Fyn",
                 RestaurantNavn = "Comwell Aarhus",
                 Rolle = bruger.Rolle

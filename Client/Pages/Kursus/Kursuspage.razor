@@ -1,0 +1,56 @@
+﻿@using Core;
+
+@inject IKursus KursusService;
+@inject IGoal GoalService;
+@inject IBruger BrugerService;
+
+
+@page "/kursuspage/{kursusId:int}"
+<h3>Kursus information</h3>
+
+<div class="full-course-information">
+    <div class="info-and-missing">
+        <p class="course-info">
+            
+        </p>
+        <div>
+            <table>
+                <tr>
+                    <th>Elever, der mangler kurset</th>
+                </tr>
+                <tr>
+                    <td>bruger.Navn</td>
+                    <td>bruger.RestaurantNavn</td>
+                    <td><button class="remind_chef">Påmind køkkenchef</button></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="signed-up">
+        <table>
+            <tr>
+                <th>Tilmeldte elever</th>
+            </tr>
+            <tr>
+                <td>bruger.Navn</td>
+                <td>bruger.RestaurantNavn</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+@code {
+
+    [Parameter] public int kursusId { get; set; }
+
+    private Goal _kursus;
+
+    private List<User?> _allUsersInKursus = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _kursus = await GoalService.GetGoalByGoalId(kursusId);
+        _allUsersInKursus = await GoalService.GetUsersByGoalId(kursusId);
+    }
+
+}
