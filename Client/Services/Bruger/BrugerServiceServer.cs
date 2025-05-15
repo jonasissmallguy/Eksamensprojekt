@@ -16,7 +16,7 @@ namespace Client
 
         public async Task<User> GetBrugerById(int userId)
         {
-            return await _client.GetFromJsonAsync<User>($"{serverUrl}/{userId}");
+            return await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{userId}");
         }
 
         public Task<bool> OpdaterBruger(int userId, User updateBruger)

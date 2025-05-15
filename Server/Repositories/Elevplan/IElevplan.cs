@@ -8,6 +8,8 @@ namespace Server
     {
         
         Task<UpdateResult> SaveElevplan(int studentId, Plan plan);
+        
+        Task<Plan> GetPlanByStudentId(int studentId);
 
     }
 

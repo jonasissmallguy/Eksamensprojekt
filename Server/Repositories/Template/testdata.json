@@ -5,117 +5,117 @@
   "CreatedAt": "2025-05-15T12:00:00Z",
   "Forløbs": [
     {
-      "Id": "f1",
+      "_id": 1,
       "Semester": "År 1",
       "Title": "Introduktion",
       "Goals": [
-        { "Id": "g1", "Type": "Delmål", "Title": "Udlevering af tøj", "Description": "Modtagelse og gennemgang af køkkenuniform" },
-        { "Id": "g2", "Type": "Delmål", "Title": "Faciliteter", "Description": "Gennemgang af køkken og personalefaciliteter" },
-        { "Id": "g3", "Type": "Delmål", "Title": "Personlige ejendele", "Description": "Håndtering af personlige ejendele på arbejdspladsen" },
-        { "Id": "g4", "Type": "Delmål", "Title": "Ind/ud stempling", "Description": "Procedure for ind- og udstemplning" },
-        { "Id": "g5", "Type": "Delmål", "Title": "Rundvisning", "Description": "Grundig rundvisning på hele hotellet" },
-        { "Id": "g6", "Type": "Delmål", "Title": "Elevansvarlig og mentor", "Description": "Introduktion til elevansvarlig og mentorordning" },
-        { "Id": "g7", "Type": "Delmål", "Title": "Afdelingsledere", "Description": "Præsentation af køkkenets ledelsesstruktur" },
-        { "Id": "g8", "Type": "Delmål", "Title": "Sygdom", "Description": "Procedure ved sygdom og fraværsmelding" },
-        { "Id": "g9", "Type": "Delmål", "Title": "Comwell Connect", "Description": "Introduktion til Comwell Connect-systemet" }
+        { "_id": 1, "Type": "Delmål", "Title": "Udlevering af tøj", "Description": "Modtagelse og gennemgang af køkkenuniform" },
+        { "_id": 2, "Type": "Delmål", "Title": "Faciliteter", "Description": "Gennemgang af køkken og personalefaciliteter" },
+        { "_id": 3, "Type": "Delmål", "Title": "Personlige ejendele", "Description": "Håndtering af personlige ejendele på arbejdspladsen" },
+        { "_id": 4, "Type": "Delmål", "Title": "Ind/ud stempling", "Description": "Procedure for ind- og udstemplning" },
+        { "_id": 5, "Type": "Delmål", "Title": "Rundvisning", "Description": "Grundig rundvisning på hele hotellet" },
+        { "_id": 6, "Type": "Delmål", "Title": "Elevansvarlig og mentor", "Description": "Introduktion til elevansvarlig og mentorordning" },
+        { "_id": 7, "Type": "Delmål", "Title": "Afdelingsledere", "Description": "Præsentation af køkkenets ledelsesstruktur" },
+        { "_id": 8, "Type": "Delmål", "Title": "Sygdom", "Description": "Procedure ved sygdom og fraværsmelding" },
+        { "_id": 9, "Type": "Delmål", "Title": "Comwell Connect", "Description": "Introduktion til Comwell Connect-systemet" }
       ]
     },
     {
-      "Id": "f2",
+      "_id": 2,
       "Semester": "År 1",
       "Title": "Information",
       "Goals": [
-        { "Id": "g10", "Type": "Delmål", "Title": "Vagtplaner", "Description": "Forståelse og håndtering af vagtplaner" },
-        { "Id": "g11", "Type": "Delmål", "Title": "Ferie", "Description": "Procedure for ferieplanlægning" },
-        { "Id": "g12", "Type": "Delmål", "Title": "Medarbejderhåndbog", "Description": "Gennemgang af medarbejderhåndbogen" },
-        { "Id": "g13", "Type": "Delmål", "Title": "Koldt/varmt køkken", "Description": "Introduktion til koldt og varmt køkken" },
-        { "Id": "g14", "Type": "Delmål", "Title": "Morgen- og aftenvagter", "Description": "Rutiner for morgen- og aftenvagter" },
-        { "Id": "g15", "Type": "Delmål", "Title": "Uddannelsesplan", "Description": "Gennemgang af den samlede uddannelsesplan" }
+        { "_id": 10, "Type": "Delmål", "Title": "Vagtplaner", "Description": "Forståelse og håndtering af vagtplaner" },
+        { "_id": 11, "Type": "Delmål", "Title": "Ferie", "Description": "Procedure for ferieplanlægning" },
+        { "_id": 12, "Type": "Delmål", "Title": "Medarbejderhåndbog", "Description": "Gennemgang af medarbejderhåndbogen" },
+        { "_id": 13, "Type": "Delmål", "Title": "Koldt/varmt køkken", "Description": "Introduktion til koldt og varmt køkken" },
+        { "_id": 14, "Type": "Delmål", "Title": "Morgen- og aftenvagter", "Description": "Rutiner for morgen- og aftenvagter" },
+        { "_id": 15, "Type": "Delmål", "Title": "Uddannelsesplan", "Description": "Gennemgang af den samlede uddannelsesplan" }
       ]
     },
     {
-      "Id": "f3",
+      "_id": 3,
       "Semester": "År 1",
       "Title": "Sikkerhed og Miljø",
       "Goals": [
-        { "Id": "g16", "Type": "Delmål", "Title": "Intro til arbejdsmiljø", "Description": "Grundlæggende introduktion til arbejdsmiljø" },
-        { "Id": "g17", "Type": "Delmål", "Title": "Ergonomi", "Description": "Ergonomiske principper i køkkenet" },
-        { "Id": "g18", "Type": "Delmål", "Title": "Arbejdsulykker", "Description": "Forebyggelse og håndtering af arbejdsulykker" },
-        { "Id": "g19", "Type": "Delmål", "Title": "Sikkerhedsrutiner", "Description": "Generelle sikkerhedsrutiner i køkkenet" },
-        { "Id": "g20", "Type": "Delmål", "Title": "Hjertestarter og førstehjælpskasse", "Description": "Brug af hjertestarter og førstehjælpskasse" },
-        { "Id": "g21", "Type": "Delmål", "Title": "Sikkerhedsvideo", "Description": "Gennemgang af sikkerhedsvideo" },
-        { "Id": "g22", "Type": "Delmål", "Title": "Brand og evakuering", "Description": "Procedurer ved brand og evakuering" },
-        { "Id": "g23", "Type": "Delmål", "Title": "Brandslukning", "Description": "Grundlæggende brandslukningsteknikker" },
-        { "Id": "g24", "Type": "Delmål", "Title": "Sikkerhedsrutiner", "Description": "Detaljeret gennemgang af sikkerhedsrutiner" }
+        { "_id": 16, "Type": "Delmål", "Title": "Intro til arbejdsmiljø", "Description": "Grundlæggende introduktion til arbejdsmiljø" },
+        { "_id": 17, "Type": "Delmål", "Title": "Ergonomi", "Description": "Ergonomiske principper i køkkenet" },
+        { "_id": 18, "Type": "Delmål", "Title": "Arbejdsulykker", "Description": "Forebyggelse og håndtering af arbejdsulykker" },
+        { "_id": 19, "Type": "Delmål", "Title": "Sikkerhedsrutiner", "Description": "Generelle sikkerhedsrutiner i køkkenet" },
+        { "_id": 20, "Type": "Delmål", "Title": "Hjertestarter og førstehjælpskasse", "Description": "Brug af hjertestarter og førstehjælpskasse" },
+        { "_id": 21, "Type": "Delmål", "Title": "Sikkerhedsvideo", "Description": "Gennemgang af sikkerhedsvideo" },
+        { "_id": 22, "Type": "Delmål", "Title": "Brand og evakuering", "Description": "Procedurer ved brand og evakuering" },
+        { "_id": 23, "Type": "Delmål", "Title": "Brandslukning", "Description": "Grundlæggende brandslukningsteknikker" },
+        { "_id": 24, "Type": "Delmål", "Title": "Sikkerhedsrutiner", "Description": "Detaljeret gennemgang af sikkerhedsrutiner" }
       ]
     },
     {
-      "Id": "f4",
+      "_id": 4,
       "Semester": "År 1",
       "Title": "Forventningsafstemning",
       "Goals": [
-        { "Id": "g25", "Type": "Delmål", "Title": "6 ugers samtale", "Description": "Opfølgningssamtale efter 6 uger" },
-        { "Id": "g26", "Type": "Delmål", "Title": "3 måneders samtale", "Description": "Opfølgningssamtale efter 3 måneder" }
+        { "_id": 25, "Type": "Delmål", "Title": "6 ugers samtale", "Description": "Opfølgningssamtale efter 6 uger" },
+        { "_id": 26, "Type": "Delmål", "Title": "3 måneders samtale", "Description": "Opfølgningssamtale efter 3 måneder" }
       ]
     },
     {
-      "Id": "f5",
+      "_id": 5,
       "Semester": "År 1",
       "Title": "Obligatoriske Kurser",
       "Goals": [
-        { "Id": "g27", "Type": "Kursus", "Title": "Kernen i Comwell", "Description": "Grundlæggende kursus om Comwell" },
-        { "Id": "g28", "Type": "Kursus", "Title": "Bæredygtighed", "Description": "Kursus om bæredygtighed i hotelbranchen" },
-        { "Id": "g29", "Type": "Kursus", "Title": "Intro for elever", "Description": "Introduktionskursus for nye elever" },
-        { "Id": "g30", "Type": "Delmål", "Title": "Crosstræning", "Description": "Tværfaglig træning i køkkenet" }
+        { "_id": 27, "Type": "Kursus", "Title": "Kernen i Comwell", "Description": "Grundlæggende kursus om Comwell" },
+        { "_id": 28, "Type": "Kursus", "Title": "Bæredygtighed", "Description": "Kursus om bæredygtighed i hotelbranchen" },
+        { "_id": 29, "Type": "Kursus", "Title": "Intro for elever", "Description": "Introduktionskursus for nye elever" },
+        { "_id": 30, "Type": "Delmål", "Title": "Crosstræning", "Description": "Tværfaglig træning i køkkenet" }
       ]
     },
     {
-      "Id": "f6",
+      "_id": 6,
       "Semester": "År 1",
       "Title": "Faglige Kompetencer",
       "Goals": [
-        { "Id": "g31", "Type": "Delmål", "Title": "Systemer", "Description": "Gennemgang af køkkenets systemer" },
-        { "Id": "g32", "Type": "Delmål", "Title": "Knivgennemgang", "Description": "Korrekt brug og vedligeholdelse af knive" },
-        { "Id": "g33", "Type": "Delmål", "Title": "Kvalitetskendetegn", "Description": "Forståelse af kvalitetsstandarder" },
-        { "Id": "g34", "Type": "Delmål", "Title": "Grovudskæring af kødstykker", "Description": "Teknikker til udskæring af kød" },
-        { "Id": "g35", "Type": "Delmål", "Title": "Fonder", "Description": "Tilberedning og brug af fonder" },
-        { "Id": "g36", "Type": "Delmål", "Title": "Grundsaucer", "Description": "Tilberedning af grundlæggende saucer" },
-        { "Id": "g37", "Type": "Delmål", "Title": "Tilberedningsteknikker", "Description": "Forskellige madlavningsteknikker" },
-        { "Id": "g38", "Type": "Delmål", "Title": "Anretninger", "Description": "Kreativ og professionel anretning" },
-        { "Id": "g39", "Type": "Delmål", "Title": "Rengøring af værktøj", "Description": "Korrekt rengøring af køkkenudstyr" },
-        { "Id": "g40", "Type": "Delmål", "Title": "Forplejningsmuligheder", "Description": "Forskellige forplejningsformer" },
-        { "Id": "g41", "Type": "Delmål", "Title": "Konferencemenuer", "Description": "Sammensætning af konferencemenuer" },
-        { "Id": "g42", "Type": "Delmål", "Title": "A la Carte menuer", "Description": "Konstruktion af A la Carte menuer" },
-        { "Id": "g43", "Type": "Delmål", "Title": "Selskabsmenuer", "Description": "Planlægning af selskabsmenuer" },
-        { "Id": "g44", "Type": "Delmål", "Title": "Barkort", "Description": "Sammensætning af barkort" }
+        { "_id": 31, "Type": "Delmål", "Title": "Systemer", "Description": "Gennemgang af køkkenets systemer" },
+        { "_id": 32, "Type": "Delmål", "Title": "Knivgennemgang", "Description": "Korrekt brug og vedligeholdelse af knive" },
+        { "_id": 33, "Type": "Delmål", "Title": "Kvalitetskendetegn", "Description": "Forståelse af kvalitetsstandarder" },
+        { "_id": 34, "Type": "Delmål", "Title": "Grovudskæring af kødstykker", "Description": "Teknikker til udskæring af kød" },
+        { "_id": 35, "Type": "Delmål", "Title": "Fonder", "Description": "Tilberedning og brug af fonder" },
+        { "_id": 36, "Type": "Delmål", "Title": "Grundsaucer", "Description": "Tilberedning af grundlæggende saucer" },
+        { "_id": 37, "Type": "Delmål", "Title": "Tilberedningsteknikker", "Description": "Forskellige madlavningsteknikker" },
+        { "_id": 38, "Type": "Delmål", "Title": "Anretninger", "Description": "Kreativ og professionel anretning" },
+        { "_id": 39, "Type": "Delmål", "Title": "Rengøring af værktøj", "Description": "Korrekt rengøring af køkkenudstyr" },
+        { "_id": 40, "Type": "Delmål", "Title": "Forplejningsmuligheder", "Description": "Forskellige forplejningsformer" },
+        { "_id": 41, "Type": "Delmål", "Title": "Konferencemenuer", "Description": "Sammensætning af konferencemenuer" },
+        { "_id": 42, "Type": "Delmål", "Title": "A la Carte menuer", "Description": "Konstruktion af A la Carte menuer" },
+        { "_id": 43, "Type": "Delmål", "Title": "Selskabsmenuer", "Description": "Planlægning af selskabsmenuer" },
+        { "_id": 44, "Type": "Delmål", "Title": "Barkort", "Description": "Sammensætning af barkort" }
       ]
     },
     {
-      "Id": "f7",
+      "_id": 7,
       "Semester": "År 1",
       "Title": "Bæredygtighed og Miljøhensyn",
       "Goals": [
-        { "Id": "g45", "Type": "Delmål", "Title": "Esmiley-system", "Description": "Introduktion til Esmiley-systemet" },
-        { "Id": "g46", "Type": "Delmål", "Title": "Affaldssortering i køkkenet", "Description": "Korrekt affaldssortering i køkkenområdet" },
-        { "Id": "g47", "Type": "Delmål", "Title": "Affaldssortering på hotellet", "Description": "Overordnet affaldssortering på hele hotellet" }
+        { "_id": 45, "Type": "Delmål", "Title": "Esmiley-system", "Description": "Introduktion til Esmiley-systemet" },
+        { "_id": 46, "Type": "Delmål", "Title": "Affaldssortering i køkkenet", "Description": "Korrekt affaldssortering i køkkenområdet" },
+        { "_id": 47, "Type": "Delmål", "Title": "Affaldssortering på hotellet", "Description": "Overordnet affaldssortering på hele hotellet" }
       ]
     },
     {
-      "Id": "f8",
+      "_id": 8,
       "Semester": "År 2",
       "Title": "Avancerede teknikker og præsentation",
       "Goals": [
-        { "Id": "g48", "Type": "Kursus", "Title": "Model 4 - Attachè", "Description": "Avancerede teknikker for attachè i køkkenet" },
-        { "Id": "g49", "Type": "Kompetence", "Title": "Attractiva", "Description": "Lær at lave visuelt tiltalende anretninger" }
+        { "_id": 48, "Type": "Kursus", "Title": "Model 4 - Attachè", "Description": "Avancerede teknikker for attachè i køkkenet" },
+        { "_id": 49, "Type": "Kompetence", "Title": "Attractiva", "Description": "Lær at lave visuelt tiltalende anretninger" }
       ]
     },
     {
-      "Id": "f9",
+      "_id": 9,
       "Semester": "År 3",
       "Title": "Afsluttende projekter og svendeprøve",
       "Goals": [
-        { "Id": "g50", "Type": "Kursus", "Title": "Introduction til OOPI", "Description": "Object-Orienteret Principer i madlavning" },
-        { "Id": "g51", "Type": "Delmål", "Title": "Avr.", "Description": "Afsluttende projekter og svendeprøve" }
+        { "_id": 50, "Type": "Kursus", "Title": "Introduction til OOPI", "Description": "Object-Orienteret Principer i madlavning" },
+        { "_id": 51, "Type": "Delmål", "Title": "Avr.", "Description": "Afsluttende projekter og svendeprøve" }
       ]
     }
   ]

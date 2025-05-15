@@ -15,10 +15,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Goal\" />
       <Folder Include="Controllers\Hotel\" />
-      <Folder Include="Repositories\Goal\" />
+      <Folder Include="Controllers\Kursus\" />
       <Folder Include="Repositories\Hotel\" />
+      <Folder Include="Repositories\Kursus\" />
       <Folder Include="Repositories\Plan\" />
     </ItemGroup>
 

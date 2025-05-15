@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using Core;
 
 namespace Client
@@ -17,11 +18,14 @@ namespace Client
         
         public async Task<Plan> CreateElevPlan(int studentId)
         {
-            var response = await _client.PostAsync($"{serverUrl}/elevplan?studentId={studentId}", null);
-            response.EnsureSuccessStatusCode(); 
+            var response = await _client.PostAsJsonAsync($"{serverUrl}/elevplan/{studentId}", new { studentId });
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<Plan>();
+            }
             
-            Plan plan = await response.Content.ReadFromJsonAsync<Plan>();
-            return plan;
+            throw new Exception($"Error creating elev plan: {response.StatusCode}");
         }
 
         public Task SavePlan(Plan plan)
@@ -29,10 +33,11 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task<Plan> GetPlanByStudentId(int studentId)
+        public async Task<Plan> GetPlanByStudentId(int studentId)
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<Plan>($"{serverUrl}/elevplan/{studentId}");
         }
     }
+   
 
 }

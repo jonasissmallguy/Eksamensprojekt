@@ -26,7 +26,7 @@ namespace Server
         
         public async Task<PlanTemplate> GetPlanTemplate(int id)
         {
-            var filter = Builders<PlanTemplate>.Filter.Eq(x => x.Id, id);
+            var filter = Builders<PlanTemplate>.Filter.Eq("_id", id);
             return await _templateCollection.Find(filter).FirstOrDefaultAsync();
         }
     }

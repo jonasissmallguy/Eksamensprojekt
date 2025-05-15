@@ -75,8 +75,6 @@ public class KursusServiceMock : IKursus
         
         foreach (var x in kursus.Students)
         {
-
-            _elevplan.CreateElevPlan(x.Id);
             
             allParticipants.Add(x);
         }

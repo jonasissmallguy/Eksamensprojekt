@@ -52,7 +52,9 @@ namespace Server
                 Email = user.Email,
                 Rolle = user.Rolle,
                 //mangler hotel
-                StartDate = user.StartDate
+                StartDate = user.StartDate,
+                Skole = user.Skole,
+                Uddannelse = user.Uddannelse
             };
             
             Console.WriteLine($"User received: {user.FirstName}, {user.LastName}, {user.Email}");

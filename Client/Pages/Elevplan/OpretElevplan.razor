@@ -11,7 +11,7 @@
 
 @page "/opretelevplan/{studentId:int}"
 
-@if (elev != null)
+@if (nyElevPlan != null)
 {
     <h2>Du er ved at oprette en elevplan for @elev.FirstName</h2>
     
@@ -34,7 +34,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         //elev = await IBrugerService.GetBrugerById(studentId);
-        Console.WriteLine(studentId);
         nyElevPlan = await IElevPlanService.CreateElevPlan(studentId);
     }
     
@@ -45,8 +44,8 @@ else
     
     private async Task HandleElevplanSubmit()
     {
-        //Gemmer planen
-        await IElevPlanService.SavePlan(nyElevPlan);
+        
+        //await IElevPlanService.SavePlan(nyElevPlan);
         navMan.NavigateTo("/dashboard");
     }
     
