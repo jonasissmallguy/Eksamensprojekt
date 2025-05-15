@@ -99,6 +99,8 @@
         <th>År</th>
         <th>Skole</th>
         <th>Uddannelse</th>
+        <th>Start</th>
+        <th>Slut</th>
     </tr>
     
     @if (alleElever != null)
@@ -117,6 +119,8 @@
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Skole</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Uddannelse</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.StartDate</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.EndDate</td>
 
             </tr>
         }
@@ -151,7 +155,7 @@
             </div>
         </div>
         <!-- Herunder har vi et if statement der forbinder den valgte måltype med en bestemt editfor. -->
-        <!-- 1 er kursus, 2 er skole, 3 er delmål -->
+        <!-- 1 er skole, 2 er delmål -->
 
         @if (selectedGoalId == 1)
         {
@@ -159,7 +163,7 @@
                 <div class="col-md-6 mb-3">
                     <label for="Titel">Titel:</label>
                     <InputText id="Titel" @bind-Value="newGoal.Title"
-                               placeholder="Kursusnavn..." class="form-control"/>
+                               placeholder="Skolenavn..." class="form-control"/>
                 </div>
             </div>
             <div class="row justify-content-center">
@@ -194,46 +198,6 @@
             </div>
         }
         else if (selectedGoalId == 2)
-        {
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Titel">Titel:</label>
-                    <InputText id="Titel" @bind-Value="newGoal.Title"
-                               placeholder="Titel på delmål..." class="form-control"/>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Beskrivelse">Beskrivelse:</label>
-                    <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
-                                   placeholder="Beskrivelse" class="form-control"/>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Status">Status:</label>
-                    <InputText id="Status" @bind-Value="newGoal.Status"
-                               placeholder="Status" class="form-control"/>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Semester">Semester:</label>
-                    <InputSelect class="form-select" @bind-Value="newGoal.Semester">
-                        @foreach (var yy in år)
-                        {
-                            <option value="@yy">@yy</option>
-                        }
-                    </InputSelect>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <button class="btn btn-primary">Tilføj</button>
-                </div>
-            </div>
-        }
-        else if (selectedGoalId == 3)
         {
             <div class="row justify-content-center">
                 <div class="col-md-6 mb-3">
