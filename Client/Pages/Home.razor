@@ -57,7 +57,7 @@
                             <ul>
                                 @foreach (var g in _missingCourses)
                                 {
-                                    <li>Kursus: @g.Title Elev: </li>
+                                    <li>Kursus: @g.Title Elev: @g.</li>
                                 }
                             </ul>
                         </div>
@@ -107,47 +107,46 @@
 
 @code {
     private BrugerLoginDTO _currentUser;
-
     private User _bruger;
-
     private List<Goal> _awaitingApproval;
     private List<Goal> _missingCourses;
-    private List<Goal> _outOfHouse;
 
     protected override async Task OnInitializedAsync()
     {
-        _currentUser = await AuthService.GetBruger();
-        if (_currentUser == null)
-        {
-            navMan.NavigateTo("login/");
-            return;
+            _currentUser = await AuthService.GetBruger();
+            if (_currentUser == null)
+            {
+                navMan.NavigateTo("login/");
+                return;
+            }
+
+            _bruger = await IBrugerService.GetUserById(_currentUser.Id);
+
+            // Redirect HR og kok til Dashboard
+            if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Kok")
+            {
+                navMan.NavigateTo("/Dashboard");
+                return;
+            }
+
+            // Hvis det er køkkenchef, indlæser vi de relevante data
+            if (_currentUser.Rolle == "Køkkenchef")
+            {
+                _awaitingApproval = await IGoalService.GetAwaitingApproval();
+                Console.WriteLine($"AwaitingApproval count: {_awaitingApproval?.Count}");
+                _missingCourses = await IGoalService.GetMissingCourses(_bruger);
+                Console.WriteLine($"MissingCourses count: {_missingCourses?.Count}");
+                
+            }
         }
-
-        _bruger = await IBrugerService.GetUserById(_currentUser.Id);
-
-        // Redirect HR og kok til Dashboard
-        if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Kok")
+       
+        private async Task ApproveGoal(Goal goal)
         {
-            navMan.NavigateTo("/Dashboard");
-            return;
-        }
+            await IGoalService.ConfirmGoalFromHomePage(goal);
 
-        // Hvis det er køkkenchef, indlæser vi de relevante data
-        if (_currentUser.Rolle == "Køkkenchef")
-        {
-            _awaitingApproval = await IGoalService.GetAwaitingApproval();
-            _missingCourses = await IGoalService.GetMissingCourses(_bruger);
-            _outOfHouse = await IGoalService.GetOutOfHouse();
+            if (goal.Id != null)
+            {
+                _awaitingApproval = _awaitingApproval.Where(g => g.Id != goal.Id).ToList();
+            }
         }
     }
-
-    private async Task ApproveGoal(Goal goal)
-    {
-        await IGoalService.ConfirmGoalFromHomePage(goal);
-
-        if (goal.Id != null)
-        {
-            _awaitingApproval = _awaitingApproval.Where(g => g.Id != goal.Id).ToList();
-        }
-    }
-}
