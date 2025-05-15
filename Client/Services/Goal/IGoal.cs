@@ -9,11 +9,7 @@ namespace Client
     {
         
         //Goals
-        Task<Goal> GetGoalByGoalId(int goalId);
-        Task<Dictionary<int, Goal>> GetAllGoalsByPlanId(int planId);
-        Task<List<Goal>> GetAllUncompletedCourses();
-        Task<List<User>> GetUsersByGoalId(int goalId);
-        Task DeleteGoal(Goal goal);
+        Task DeleteGoal(Goal goal, int studentId);
         Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates);
         
         //Goal progress

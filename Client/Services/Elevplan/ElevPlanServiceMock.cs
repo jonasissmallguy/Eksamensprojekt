@@ -9,11 +9,13 @@ namespace Client
         private List<Plan> _allePlaner = new();
         private ITemplate _template;
         private IGoal _goal;
+        private IBruger _user;
         
-        public ElevPlanServiceMock(ITemplate template, IGoal goal)
+        public ElevPlanServiceMock(ITemplate template, IGoal goal, IBruger user)
         {
             _template = template;
             _goal = goal;
+            _user = user;
         }
         
 
@@ -26,7 +28,7 @@ namespace Client
 
         public async Task<Plan> CreateElevPlan(int studentId)
         {
-            var template =  await _template.GetTemplateById(1);
+            var template = await _template.GetTemplateById(1);
 
             var nyPlan = new Plan
             {
@@ -45,39 +47,30 @@ namespace Client
                     Id = GenerateId(),
                     Title = forløbTemplate.Title,
                     Semester = forløbTemplate.Semester,
-                    StartDate = DateOnly.MaxValue, //denne???
-                    GoalIds = new List<int>()
+                    StartDate = DateOnly.MaxValue, 
+                    Goals = new List<Goal>() 
                 };
-                
+        
                 //Opretter goals
                 await _goal.CreateGoalsForTemplate(nyPlan.Id, forløb, forløbTemplate.Goals);
                 nyPlan.Forløbs.Add(forløb);
             }
+            
+            await _user.SaveStudentPlan(studentId, nyPlan);
+            
             return nyPlan;
         }
 
         public async Task SavePlan(Plan plan)
         {
-            _allePlaner.Add(plan);    
+            await _user.SaveStudentPlan(plan.StudentId, plan);
         }
-
-        public async Task<List<Plan>> GetAllPlans()
-        {
-            return _allePlaner;
-        }
-
-        public async Task RemoveGoalIdFromForløb(Goal goal)
-        {
-            var plan = _allePlaner.FirstOrDefault(p => p.Id == goal.PlanId);
-            var forløb = plan.Forløbs.FirstOrDefault(f => f.Id == goal.ForløbId);
-            forløb.GoalIds.Remove(goal.Id);
-            
-        }
+        
 
         public async Task<Plan> GetPlanByStudentId(int studentId)
         {
-            var plan = _allePlaner.FirstOrDefault(x => x.StudentId == studentId);
-            return plan;
+            var user = await _user.GetBrugerById(studentId); 
+            return user.ElevPlan;
         }
     }
 }

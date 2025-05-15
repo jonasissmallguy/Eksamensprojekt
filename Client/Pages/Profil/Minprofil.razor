@@ -17,19 +17,19 @@
     </div>
     
     <div class="card">
-        <h2 class="title">Velkommen til din profil, @_minBruger.Navn</h2>
+        <h2 class="title">Velkommen til din profil, @_minBruger.FirstName</h2>
         <EditForm Model="_minBruger" OnValidSubmit="@UpdateDetails">
             <DataAnnotationsValidator/>
             <ValidationSummary class="validation-summary"/>
             <div class="form-control">
                 <div class="input-group">
                     <label for="navn">Fulde navn</label>
-                    <InputText id="navn" @bind-Value="_minBruger.Navn"/>
+                    <InputText id="navn" @bind-Value="_minBruger.FirstName"/>
                 </div>
 
                 <div class="input-group">
                     <label for="telefon">Telefonnummer</label>
-                    <InputNumber id="telefon" @bind-Value="_minBruger.Telefon"/>
+                    <InputNumber id="telefon" @bind-Value="_minBruger.Mobile"/>
                 </div>
 
                 <div class="input-group">
@@ -45,21 +45,14 @@
                 @if (_minBruger.Rolle == "Elev")
                 {
                     <div class="mentor-card">
-                        <h3 class="mentor-title">Din mentor</h3>
-                        <div class="mentor-info">
+                        <div class="restaurant-info">
                             <div class="input-group">
-                                <label for="mentor">Mentor</label>
-                                <InputText id="mentor" @bind-Value="@_minBruger.MentorNavn" disabled />
-                            </div>
-
-                            <div class="restaurant-info">
-                                <div class="input-group">
-                                    <label for="restaurant">Restaurant</label>
-                                    <InputText id="restaurant" @bind-Value="@_minBruger.RestaurantNavn" disabled />
-                                </div>
+                                <label for="restaurant">Restaurant</label>
+                                <InputText id="restaurant" @bind-Value="@_minBruger.Hotel.HotelNavn" disabled />
                             </div>
                         </div>
                     </div>
+            
                 }
             </div>
 
@@ -78,7 +71,7 @@
     [CascadingParameter] 
     private BrugerLoginDTO _currentUser { get; set; }
 
-    private BrugerProfilDTO _minBruger = new();
+    private User _minBruger = new();
     
     protected override async Task OnInitializedAsync()
     {
