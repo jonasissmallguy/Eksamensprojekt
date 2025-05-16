@@ -29,5 +29,11 @@ namespace Server
             var filter = Builders<PlanTemplate>.Filter.Eq("_id", id);
             return await _templateCollection.Find(filter).FirstOrDefaultAsync();
         }
+
+        public async Task<List<PlanTemplate>> GetAllPlanTemplates()
+        {
+            var filter = Builders<PlanTemplate>.Filter.Empty;
+            return await _templateCollection.Find(filter).ToListAsync();
+        }
     }
 }
