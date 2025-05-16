@@ -7,20 +7,16 @@
 
 @page "/templateside/{templateId:int}"
 
-<!--
+
 @if (_template != null)
 {
-    <h3>@_template.Title</h3>
-
-    <ElevplanComponent PlanTemplate="@_template" ShowSubmitButton="true"ShowComments="false"/>
-
+    <ElevplanComponent PlanTemplate="@_template" ShowSubmitButton="false" ShowComments="false"/>
 }
-
 else
 {
     <p>Loading...</p>
 }
--->
+
 
 @code {
     

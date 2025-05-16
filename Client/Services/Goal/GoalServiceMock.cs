@@ -25,6 +25,11 @@ namespace Client
             return id;
         }
 
+        public Task DeleteComment(int goalId, int commentId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<GoalNameDTO>> GetAllGoalTypes()
         {
             var goalTypes = new List<GoalNameDTO>
@@ -78,17 +83,17 @@ namespace Client
             }
         }
 
-
+        //God
         public async Task DeleteGoal(Goal goal, int studentID)
         {
-            
             //Sletter goal
             var user = await _bruger.GetBrugerById(studentID);
             var forløb = user.ElevPlan.Forløbs.FirstOrDefault(f => f.Id == goal.ForløbId);
-            var deleteGoal = forløb.Goals.FirstOrDefault(x => x.Id == goal.Id);
+            Console.WriteLine(forløb.Title);
         }
 
         
+        //God
         public async Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløb, List<GoalTemplate> goalTemplates)
         {
             var newGoals = new List<Goal>();
@@ -105,6 +110,8 @@ namespace Client
                 {
                     Id = GenerateId(),
                     Type = template.Type,
+                    ForløbId = forløb.Id,
+                    PlanId = planId,
                     Title = template.Title,
                     Description = template.Description,
                     Semester = forløb.Semester, 
@@ -129,8 +136,7 @@ namespace Client
             goal.StarterName = mentor.MentorName;
             goal.StartedAt = DateTime.Now;
             goal.Status = "InProgress";
-
-
+            
         }
         
         public async Task ProcessGoal(ElevplanComponent.MentorAssignment mentor)
@@ -150,7 +156,6 @@ namespace Client
             goal.CompletedAt = DateTime.Now;
             goal.Status = "Completed";
             
-
         }
 
         public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
@@ -170,12 +175,5 @@ namespace Client
                 goal.Comments.Add(nyKomment);
             }
         }
-
-        public async Task DeleteComment(int goalId, int commentId)
-        {
-            var goal = _goals.FirstOrDefault(x => x.Id == goalId);
-            goal.Comments.Remove(goal.Comments.FirstOrDefault(x => x.Id == commentId));
-        }
     }
-
 }

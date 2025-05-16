@@ -20,7 +20,7 @@
                 <h3 class="navn">@elev.FirstName </h3>
                 <p class="telefon">Telefon: @elev.Mobile </p>
                 <p class="mail">Mail: @elev.Email</p>
-                <p class="restaurant">Restaurant: @elev.Hotel.HotelNavn</p>
+                <!--<p class="restaurant">Restaurant: @elev.Hotel.HotelNavn</p>-->
             </div>
         </div>
     }
@@ -60,13 +60,16 @@
     protected override async Task OnInitializedAsync()
     {
         elev = await IBrugerService.GetBrugerById(studentId);
-        elevPlan = await IElevPlanService.GetPlanByStudentId(studentId);
+        elevPlan = elev.ElevPlan;
         
+        //elevPlan = await IElevPlanService.GetPlanByStudentId(studentId); 
+
         //Dette er bare brugt til visning til COmwell - dette skal slettes!!!!!!
-        if (elevPlan == null)
+        /*if (elevPlan == null)
         {
             elevPlan = await IElevPlanService.CreateElevPlan(studentId);
         }
+        */
     }
 
     private async Task AddComment(NewComment comment)

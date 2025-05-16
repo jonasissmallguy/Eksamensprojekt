@@ -65,19 +65,19 @@
                                                                 <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
                                                             }
                                                             </div>
-                                                            @if (goal.Status != "Completed")
+                                                            @if (goal.Status != "Completed" && goal.Type == "Delmål")
                                                             {
                                                                 @if (StartGoal && goal.Status == "Active")
                                                                 {
                                                                     <button class="btn btn-sm btn-primary" @onclick="() => StartGoalNow(goal.Id)">Påbegynd</button>
                                                                 }
-                                                                else if (StartGoal && goal.Status == "InProgress")
+                                                                else if (StartGoal && goal.Status == "InProgress" && goal.Type == "Delmål")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
                                                                         <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>
                                                                     </div>
                                                                 }
-                                                                else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef")
+                                                                else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef" && goal.Type == "Delmål")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
                                                                         <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>
@@ -109,7 +109,7 @@
                                                                         }
 
                                                                         <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
-                                                                        <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
+                                                                        <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id], _currentUser))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                     </div>
                                                                 </div>
                                                             }
@@ -123,7 +123,7 @@
                                                                         }
 
                                                                         <textarea @bind="comments[goal.Id]" class="form-control mb-2" placeholder="Skriv..."></textarea>
-                                                                        <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id]))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
+                                                                        <button @onclick="@(() => HandleAddCommentClicked(goal, comments[goal.Id], _currentUser))" class="btn btn-sm btn-primary">Tilføj kommentar</button>
                                                                     </div>
                                                                 </div>
                                                             }
@@ -219,14 +219,19 @@
     [Parameter]
     public EventCallback<NewComment> OnAddCommentClick { get; set; }
 
-    private async Task HandleAddCommentClicked(Goal goal, string comment)
+    private async Task HandleAddCommentClicked(Goal goal, string comment, BrugerLoginDTO bruger)
     {
         if (!string.IsNullOrWhiteSpace(comment))
         {
             var newComment = new NewComment
             {
+                
+                PlanId = goal.PlanId,
+                ForløbId = goal.ForløbId,
                 GoalId = goal.Id,
-                Comment = comment
+                Comment = comment,
+                CommentorId = bruger.Id,
+                CommentName = bruger.FirstName
             };
             
             await OnAddCommentClick.InvokeAsync(newComment);
