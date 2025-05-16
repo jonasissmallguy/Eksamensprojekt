@@ -38,7 +38,12 @@ namespace Client
                 {
                     Id = 1,
                     HotelNavn = "Aarhus"
-                }
+                },
+                Year = "År 1",
+                Skole = "Kold Kollege",
+                Uddannelse = "EUX",
+                StartDate = new DateOnly(2025, 5, 5),
+                EndDate = new DateOnly(2028, 5, 5)
             },
             new User
             {
@@ -77,6 +82,11 @@ namespace Client
             user.Mobile = updatedBruger.Mobile;
             user.Rolle = updatedBruger.Rolle;
             user.Status = updatedBruger.Status;
+            user.Year = updatedBruger.Year;
+            user.Skole = updatedBruger.Skole;
+            user.Uddannelse = updatedBruger.Uddannelse;
+            user.StartDate = updatedBruger.StartDate;
+            user.EndDate = updatedBruger.EndDate;
 
             return true;
         }
@@ -144,11 +154,16 @@ namespace Client
                 Mobile = nyBruger.Mobile,
                 Rolle = nyBruger.Rolle,
                 StartDate = nyBruger.StartDate,
+                EndDate = nyBruger.EndDate,
                 Hotel = new Hotel
                 {
                     Id = nyBruger.Id,
                     HotelNavn = "Aarhus"
-                }
+                },
+                Year = nyBruger.Year,
+                Skole = nyBruger.Skole,
+                Uddannelse = nyBruger.Uddannelse
+                
             };
 
             _allUsers.Add(newUser);
@@ -169,9 +184,15 @@ namespace Client
                     Id = elev.Id,
                     Name = elev.FirstName,
                     HotelId = elev.Hotel.Id,
-                    Hotel = elev.Hotel.HotelNavn,
+                    Hotel = "test",
                     Roller = elev.Rolle,
-                    Ansvarlig = elev.FirstName + " " + elev.LastName
+                    Ansvarlig = "test ansvarlig",
+                    Year = elev.Year,
+                    Skole = elev.Skole,
+                    Uddannelse = elev.Uddannelse,
+                    StartDate = elev.StartDate,
+                    EndDate = elev.EndDate
+                    
                 });
             }
 
@@ -268,9 +289,10 @@ namespace Client
             
         }
 
-        public Task<List<User>> GetStudentsForløb(int leaderId)
+        public Task<User> GetUserById(int currentUserId)
         {
-            throw new NotImplementedException();
+            var user = _allUsers.FirstOrDefault(x => x.Id == currentUserId);
+            return Task.FromResult(user);
         }
     }
 }

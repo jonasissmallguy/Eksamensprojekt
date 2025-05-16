@@ -35,13 +35,53 @@ namespace Client
             var goalTypes = new List<GoalNameDTO>
             {
                 new GoalNameDTO() { GoalId = 0, GoalName = "Ingen" },
-                new GoalNameDTO() { GoalId = 1, GoalName = "Kursus" },
-                new GoalNameDTO() { GoalId = 2, GoalName = "Skole" },
-                new GoalNameDTO() { GoalId = 3, GoalName = "Delmål" }
+                new GoalNameDTO() { GoalId = 1, GoalName = "Skole" },
+                new GoalNameDTO() { GoalId = 2, GoalName = "Delmål" }
             };
             return goalTypes;
         }
-        
+
+        public async Task<List<Goal>> GetAwaitingApproval()
+        {
+            return _goals.Where(g => g.Status == "AwaitingApproval").ToList();
+        }
+
+        public async Task<List<Goal>> GetMissingCourses(User bruger)
+        {
+            if (bruger == null || bruger.ElevPlan == null || bruger.ElevPlan.Forløbs == null)
+                return new List<Goal>();
+
+            var missingGoals = new List<Goal>();
+
+            foreach (var forløb in bruger.ElevPlan.Forløbs)
+            {
+                if (forløb.Goals != null)
+                {
+                    missingGoals.AddRange(
+                        forløb.Goals.Where(g => g.Status == "MissingCourses")
+                    );
+                }
+            }
+
+            return missingGoals;
+        }
+
+
+        public async Task<List<Goal>> GetOutOfHouse()
+        {
+            var outOfHouse = _goals.Where(g => g.Status == "OutOfHouse").ToList();
+            return outOfHouse;
+        }
+
+        public async Task ConfirmGoalFromHomePage(Goal goal)
+        {
+            var existingGoal = _goals.FirstOrDefault(g => g.Id == goal.Id);
+            if (existingGoal != null)
+            {
+                existingGoal.Status = "Completed";
+                existingGoal.CompletedAt = DateTime.Now;
+            }
+        }
 
         //God
         public async Task DeleteGoal(Goal goal, int studentID)

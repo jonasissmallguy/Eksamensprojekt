@@ -19,9 +19,6 @@ namespace Client
         Task ActivateUser(int userId);
         Task UpdateHotel(Hotel hotel, int userId);
         Task SaveStudentPlan(int studentId, Plan plan);
-        
-        //
-        Task<List<User>> GetStudentsForløb(int leaderId);
-
+        Task<User> GetUserById(int currentUserId);
     }
 }
