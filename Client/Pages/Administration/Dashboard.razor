@@ -17,6 +17,9 @@
     <div class="searchbar">
         <TextInput @bind-value="@searchText" Placeholder="Søg ved navn..."></TextInput>
     </div>
+    <div>
+        <button @onclick="VisElever">Vis data</button>
+    </div>
 
     <!-- Dropdown til hotelvalg -->
     <div class="dropdownmenu">
@@ -143,8 +146,11 @@
         <th>Start</th>
         <th>Slut</th>
     </tr>
-    
-    @if (alleElever != null)
+    @if (alleElever == null)
+    {
+        <p>Indlæser elever...</p>
+    }
+    else if (alleElever != null)
     {
         @foreach (var x in FiltreredElever)
         {
@@ -317,7 +323,7 @@
 
     private bool isChecked;
 
-    private List<ElevOversigtDTO> alleElever;
+    private List<ElevOversigtDTO> alleElever = new();
     private List<HotelNameDTO> alleHoteller;
     private HashSet<int> selectedStudentIds = new();
     
@@ -325,25 +331,33 @@
     private DateOnly? selectedSkolestartAfter = null;
     private DateOnly? selectedSkoleendBefore = null;
     private DateOnly? selectedSkoleendAfter = null;
-
+    
+    
     // Filter til søgetekst og til valg af hotel
-    private IEnumerable<ElevOversigtDTO> FiltreredElever =>
-        alleElever.Where((a =>
-            (string.IsNullOrWhiteSpace(searchText) ||
-             a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
-            (!selectedHotelId.HasValue || a.HotelId == selectedHotelId) &&
-            (string.IsNullOrEmpty(selectedYear) || a.Year == selectedYear) &&
-            (string.IsNullOrEmpty(selectedSkole) || a.Skole == selectedSkole) &&
-            (string.IsNullOrEmpty(selectedUddannelse) || a.Uddannelse == selectedUddannelse) &&
-            (!selectedSkolestartBefore.HasValue || a.StartDate <= selectedSkolestartBefore) &&
-            (!selectedSkolestartAfter.HasValue || a.StartDate >= selectedSkolestartAfter) &&
-            (!selectedSkoleendBefore.HasValue || a.EndDate <= selectedSkoleendBefore) &&
-            (!selectedSkoleendAfter.HasValue || a.EndDate >= selectedSkoleendAfter)));
+    private IEnumerable<ElevOversigtDTO> FiltreredElever {
+        get
+        {
+            var filtered = alleElever.Where((a =>
+                (string.IsNullOrWhiteSpace(searchText) ||
+                 a.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
+                (!selectedHotelId.HasValue || a.HotelId == selectedHotelId) &&
+                (string.IsNullOrEmpty(selectedYear) || a.Year == selectedYear) &&
+                (string.IsNullOrEmpty(selectedSkole) || a.Skole == selectedSkole) &&
+                (string.IsNullOrEmpty(selectedUddannelse) || a.Uddannelse == selectedUddannelse) &&
+                (!selectedSkolestartBefore.HasValue || a.StartDate <= selectedSkolestartBefore) &&
+                (!selectedSkolestartAfter.HasValue || a.StartDate >= selectedSkolestartAfter) &&
+                (!selectedSkoleendBefore.HasValue || a.EndDate <= selectedSkoleendBefore) &&
+                (!selectedSkoleendAfter.HasValue || a.EndDate >= selectedSkoleendAfter)));
+            
+            return filtered;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        alleElever = await IBrugerService.GetElevOversigt();
-
+        alleElever = await IBrugerService.GetElevOversigt() ?? new List<ElevOversigtDTO>();
+        Console.WriteLine($"Number of students retrieved: {alleElever.Count}");
+        
         alleHoteller = await IHotelService.GetAllHotelNames();
         
         alleTyper = await IGoalService.GetAllGoalTypes();
@@ -459,6 +473,11 @@
     private void OpenModal()
     {
         modalRef?.Open();
+    }
+
+    private void VisElever()
+    {
+        StateHasChanged();
     }
     
     

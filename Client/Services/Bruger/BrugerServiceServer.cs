@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using Blazored.LocalStorage;
 using Core;
 
 namespace Client
@@ -9,7 +10,8 @@ namespace Client
     {
         private string serverUrl = "http://localhost:5075";
         private HttpClient _client = new();
-
+        
+        private List<User> _allUsers = new();
         public BrugerServiceServer(HttpClient client)
         {
             _client = client;
@@ -44,10 +46,34 @@ namespace Client
     
             return createdUser;
         }
-
-        public Task<List<ElevOversigtDTO>> GetElevOversigt()
+        
+        public async Task<List<ElevOversigtDTO>> GetElevOversigt()
         {
-            throw new NotImplementedException();
+            var allUsers = await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
+            var elevOversigt = new List<ElevOversigtDTO>();
+
+            var elever = allUsers.Where(x => x.Rolle == "Elev").ToList();
+
+            foreach (var elev in elever)
+            {
+                elevOversigt.Add(new ElevOversigtDTO
+                {
+                    Id = elev.Id,
+                    Name = elev.FirstName,
+                    // HotelId = elev.Hotel.Id,
+                    // Hotel = "test",
+                    Roller = elev.Rolle,
+                    // Ansvarlig = "test ansvarlig",
+                    Year = elev.Year,
+                    Skole = elev.Skole,
+                    Uddannelse = elev.Uddannelse,
+                    StartDate = elev.StartDate,
+                    EndDate = elev.EndDate
+                    
+                });
+            }
+
+            return await Task.FromResult(elevOversigt);
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -55,14 +81,27 @@ namespace Client
             return await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
         }
 
-        public Task<List<User>> GetAllUsersWithOutCurrent(int userId)
+        public async Task<List<User>> GetAllUsersWithOutCurrent(int userId)
         {
-            throw new NotImplementedException();
+            var list = _allUsers.Where(x => x.Id != userId).ToList();
+            return list;
         }
 
-        public Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
+        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
         {
-            throw new NotImplementedException();
+            var users = new List<User>();
+
+            foreach (var id in studentIds)
+            {
+                var user = _allUsers.FirstOrDefault(x => x.Id == id);
+
+                if (user != null)
+                {
+                    users.Add(user);
+                }
+            }
+            return users;
+
         }
 
         public Task DeleteUser(int userId)
