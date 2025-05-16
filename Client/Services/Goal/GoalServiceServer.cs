@@ -1,4 +1,5 @@
-﻿using Client.Components.Elevoversigt;
+﻿using System.Net.Http.Json;
+using Client.Components.Elevoversigt;
 using Core;
 
 namespace Client
@@ -39,9 +40,9 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
+        public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
         {
-            throw new NotImplementedException();
+            await _client.PostAsJsonAsync($"{serverUrl}/goals", comment);
         }
 
         public Task DeleteComment(int goalId, int commentId)

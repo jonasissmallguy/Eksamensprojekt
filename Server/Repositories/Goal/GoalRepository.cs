@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using Client;
+using Core;
 using MongoDB.Driver;
 using DotNetEnv;
 using MongoDB.Bson;
@@ -23,7 +24,8 @@ namespace Server
         }
 
 
-
+        
+        //Fjerner et goal i vores nestedarray 
         public async Task<bool> DeleteGoal(int studentId, int planId, int forløbId, int goalId)
         {
             var filter = Builders<User>.Filter.And(
@@ -35,6 +37,26 @@ namespace Server
                 Builders<Goal>.Filter.Eq(g => g.Id, goalId));
 
             var result = await _goalCollection.UpdateOneAsync(filter, update);
+
+            return result.ModifiedCount > 0;
+        }
+
+        //Tilføjer en kommentar til vores mål
+        public async Task<bool> AddComment(NewComment comment)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.ElevPlan.Id, comment.PlanId);
+
+            var update = Builders<User>.Update.Push("ElevPlan.Forløbs.$[forløb].Goals.$[goal].Comments", comment);
+
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("forløb.Id", comment.ForløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("goal.Id", comment.GoalId))
+            };
+
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+
+            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
 
             return result.ModifiedCount > 0;
         }

@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using Client;
+using Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server
@@ -35,9 +36,28 @@ namespace Server
             return NotFound();
         }
 
-
         /// <summary>
         /// Tilføjer en kommentar til vores goal
+        /// </summary>
+        /// <param name="goal"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> PostComment(NewComment comment)
+        {
+            var commentToAdd = await _goalRepository.AddComment(comment);
+
+            if (commentToAdd)
+            {
+                return Ok();
+            }
+            return NotFound();
+            
+        }
+        
+
+
+        /// <summary>
+        /// Tilføjer et nyt delmål til vores forløb
         /// </summary>
         /// <returns></returns>
         [HttpPost]
