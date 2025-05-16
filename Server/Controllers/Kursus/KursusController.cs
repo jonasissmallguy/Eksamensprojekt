@@ -1,5 +1,4 @@
-﻿using Client;
-using Core;
+﻿using Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server
@@ -8,54 +7,42 @@ namespace Server
     [Route("kursus")]
     public class KursusController : ControllerBase
     {
-        private IKursus _kursusService;
+        private readonly IKursusRepository _kursusRepository;
 
-        public KursusController(IKursus kursusService)
+        public KursusController(IKursusRepository kursusRepository)
         {
-            _kursusService = kursusService;
+            _kursusRepository = kursusRepository;
         }
 
-        /// <summary>
-        /// Henter alle kurser
-        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetAllCourses()
+        public async Task<IActionResult> GetAll()
         {
-            var kurser = await _kursusService.GetAllCourses();
+            var kurser = await _kursusRepository.GetAllCourses();
             return Ok(kurser);
         }
 
-        /// <summary>
-        /// Henter et kursus baseret på ID
-        /// </summary>
-        [HttpGet]
-        [Route("{id}")]
-        public async Task<IActionResult> GetCourseById(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var kursus = await _kursusService.GetCourseById(id);
-
-            if (kursus == null)
-                return NotFound();
-
+            var kursus = await _kursusRepository.GetCourseById(id);
+            if (kursus == null) return NotFound();
             return Ok(kursus);
         }
 
-        /// <summary>
-        /// Fjerner en elev fra et kursus
-        /// </summary>
-        [HttpDelete]
-        [Route("{kursusId}/student/{studentId}")]
-        public async Task<IActionResult> RemoveStudent(int kursusId, int studentId)
+        [HttpPut("remove-student")]
+        public async Task<IActionResult> RemoveStudent(int studentId, int kursusId)
         {
-            var kursus = await _kursusService.GetCourseById(kursusId);
-            if (kursus == null)
-                return NotFound("Kursus ikke fundet");
-
-            await _kursusService.RemoveStudentFromCourse(studentId, kursus);
-            return Ok();
+            var success = await _kursusRepository.RemoveStudentFromCourse(studentId, kursusId);
+            if (success) return Ok();
+            return NotFound();
         }
 
-        /// <summary>
-        /// Marker et kursus som fuldført
-        /// </summary>
-        [HttpPost]
+        [HttpPut("complete")]
+        public async Task<IActionResult> CompleteCourse([FromBody] Kursus kursus)
+        {
+            var success = await _kursusRepository.CompleteCourse(kursus);
+            if (success) return Ok();
+            return BadRequest();
+        }
+    }
+}
