@@ -35,6 +35,12 @@ namespace Server
             return await _userCollection.Find(filter).FirstOrDefaultAsync();
         }
 
+        public async Task<List<User>> GetAllUsersWithOutMyself(int userId)
+        {
+            var filter = Builders<User>.Filter.Ne("_id", userId);
+            return await _userCollection.Find(filter).ToListAsync();
+        }
+
         public async Task<User> SaveBruger(User bruger)
         {
             int id = await GetNextId();
@@ -65,6 +71,37 @@ namespace Server
             return true;
         }
 
+        public Task DeleteUser(int studentId)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            return _userCollection.DeleteOneAsync(filter);
+        }
+
+        public async Task DeactivateUser(int studentId)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            var update = Builders<User>.Update.Set("Status", "Deactivated");
+            
+            await _userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task ActivateUser(int studentId)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            var update = Builders<User>.Update.Set("Status", "Active");
+            
+            await _userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateRolle(string rolle, int userId)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", userId);
+            var update = Builders<User>.Update.Set("Rolle", rolle);
+            
+            await _userCollection.UpdateOneAsync(filter, update);
+            
+        }
+        
     }
 }
 
