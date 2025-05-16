@@ -24,7 +24,24 @@ namespace Server
             {
                 return NotFound();
             }
-           
+            return Ok(allUsers);
+        }
+
+        /// <summary>
+        /// Henter alle bruger uden mig selv
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("withoutmyself/{id:int}")]
+        public async Task<IActionResult> GetAllUsersWithOutMyself(int id)
+        {
+            var allUsers = await _userRepository.GetAllUsersWithOutMyself(id);
+
+            if (allUsers == null)
+            {
+                return NotFound();
+            }
             return Ok(allUsers);
         }
 
@@ -91,6 +108,61 @@ namespace Server
             
             return Ok(newUser);
         }
+
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            await _userRepository.DeleteUser(id);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Deaktiver en bruger der har status aktiv
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("deactivate/{userId}")]
+        public async Task<IActionResult> DeactivateUser(int userId)
+        {
+            await _userRepository.DeactivateUser(userId);
+            
+            return Ok();
+
+        }
+        
+        /// <summary>
+        /// Aktiver en bruger der er deaktiveret
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("activate/{userId}")]
+        public async Task<IActionResult> ActivateUser(int userId)
+        {
+            await _userRepository.ActivateUser(userId);
+            
+            return Ok();
+            
+        }
+
+        /// <summary>
+        /// Ændrer rolle på en bruger
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("updaterolle/{userId}/{newRolle}")]
+        public async Task<IActionResult> UpdateRole(string newRolle, int userId)
+        {
+            await _userRepository.UpdateRolle(newRolle, userId);
+            
+            return Ok();
+        }
+        
+        
+        
 
     }
 

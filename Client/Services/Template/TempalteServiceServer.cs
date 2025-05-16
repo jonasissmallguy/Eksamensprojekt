@@ -30,9 +30,9 @@ namespace Client
             return await _client.GetFromJsonAsync<PlanTemplate>($"{serverUrl}/template/{templateId}");
         }
 
-        public Task<List<PlanTemplate>> GetAllTemplates()
+        public async Task<List<PlanTemplate>> GetAllTemplates()
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<PlanTemplate>>($"{serverUrl}/template");
         }
     }
 

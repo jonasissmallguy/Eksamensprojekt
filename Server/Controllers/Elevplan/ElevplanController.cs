@@ -25,7 +25,7 @@ namespace Server
         /// <param name="studentId"></param>
         [HttpGet]
         [Route("{studentId:int}")]
-        public async Task<ActionResult<Plan>> GetElevplanByStudentId(int studentId)
+        public async Task<IActionResult> GetElevplanByStudentId(int studentId)
         {
             var elevplan = await _elevplan.GetPlanByStudentId(studentId);
 
@@ -41,7 +41,7 @@ namespace Server
         /// </summary>
         /// <param name="studentId"></param>
         [HttpPost("{studentId:int}")]
-        public async Task<ActionResult<Plan>> CreateElevplan(int studentId)
+        public async Task<IActionResult> CreateElevplan(int studentId)
         {
         
             var template = await _template.GetPlanTemplate(1);

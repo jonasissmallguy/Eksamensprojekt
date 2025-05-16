@@ -42,7 +42,7 @@ namespace Client
 
         public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
         {
-            await _client.PostAsJsonAsync($"{serverUrl}/goals", comment);
+            await _client.PostAsJsonAsync($"{serverUrl}/goals/comment", comment);
         }
 
         public Task DeleteComment(int goalId, int commentId)

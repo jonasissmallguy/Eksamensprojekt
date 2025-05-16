@@ -15,9 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\Hotel\" />
       <Folder Include="Controllers\Kursus\" />
-      <Folder Include="Repositories\Hotel\" />
       <Folder Include="Repositories\Kursus\" />
       <Folder Include="Repositories\Plan\" />
     </ItemGroup>
