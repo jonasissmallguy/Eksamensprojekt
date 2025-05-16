@@ -1,4 +1,5 @@
 ﻿using Client;
+using Client.Components.Elevoversigt;
 using Core;
 using MongoDB.Driver;
 using DotNetEnv;
@@ -42,23 +43,34 @@ namespace Server
         }
 
         //Tilføjer en kommentar til vores mål
-        public async Task<bool> AddComment(NewComment comment)
+        public async Task<bool> AddComment(Comment comment)
         {
-            var filter = Builders<User>.Filter.Eq(u => u.ElevPlan.Id, comment.PlanId);
-
-            var update = Builders<User>.Update.Push("ElevPlan.Forløbs.$[forløb].Goals.$[goal].Comments", comment);
-
+            Console.WriteLine($"Adding comment to Plan: {comment.PlanId}, Forløb: {comment.ForløbId}, Goal: {comment.GoalId}");
+    
+            // Use the exact field names from your document structure
+            // Notice the document uses _id fields, not Id fields
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", comment.PlanId);
+    
+            var update = Builders<User>.Update.Push("ElevPlan.Forløbs.$[f].Goals.$[g].Comments", comment);
+    
             var arrayFilters = new List<ArrayFilterDefinition>
             {
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("forløb.Id", comment.ForløbId)),
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("goal.Id", comment.GoalId))
+                // Notice the use of _id instead of Id based on your document structure
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", comment.ForløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", comment.GoalId))
             };
-
+    
             var options = new UpdateOptions { ArrayFilters = arrayFilters };
-
+    
             var result = await _goalCollection.UpdateOneAsync(filter, update, options);
-
+            Console.WriteLine($"Result: ModifiedCount={result.ModifiedCount}, MatchedCount={result.MatchedCount}");
+    
             return result.ModifiedCount > 0;
+        }
+
+        public Task StartGoal(ElevplanComponent mentor)
+        {
+            throw new NotImplementedException();
         }
     }
 }

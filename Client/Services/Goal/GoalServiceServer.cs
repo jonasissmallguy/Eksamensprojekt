@@ -25,9 +25,9 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task StartGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
-            throw new NotImplementedException();
+            await _client.PutAsJsonAsync($"{serverUrl}/goals/", mentor);
         }
 
         public Task ProcessGoal(ElevplanComponent.MentorAssignment bruger)
@@ -42,7 +42,12 @@ namespace Client
 
         public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
         {
-            await _client.PostAsJsonAsync($"{serverUrl}/goals/comment", comment);
+            var response = await _client.PostAsJsonAsync($"{serverUrl}/goals/comment", comment);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error adding comment: {response.StatusCode}, {errorContent}");
+            }
         }
 
         public Task DeleteComment(int goalId, int commentId)

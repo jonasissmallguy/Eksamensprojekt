@@ -1,4 +1,5 @@
 ﻿using Client;
+using Client.Components.Elevoversigt;
 using Core;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,29 +43,33 @@ namespace Server
         /// <param name="goal"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/comment")]
+        [Route("comment")]
         public async Task<IActionResult> PostComment(NewComment comment)
         {
-            var commentToAdd = await _goalRepository.AddComment(comment);
-
-            if (commentToAdd)
+            try
             {
+                if (comment == null)
+                    return BadRequest("Data");
+
+                var newComment = new Comment
+                {
+                    CreatorId = comment.CommentorId,
+                    CreatorName = comment.CommentName,
+                    Text = comment.Comment
+                };
+
+                var commentToAdd = await _goalRepository.AddComment(newComment);
+
                 return Ok(commentToAdd);
-            }
-            return NotFound();
             
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error " + ex.Message);
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
         }
         
-        /// <summary>
-        /// Tilføjer et nyt delmål til vores forløb
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> CreateGoal(Goal goal)
-        {
-            return Ok();
-        }
-
     }
 
 }

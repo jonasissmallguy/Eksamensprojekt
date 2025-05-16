@@ -75,6 +75,7 @@
     private async Task AddComment(NewComment comment)
     {
         await IGoalService.AddComment(comment, _currentUser);
+        StateHasChanged();
 
     }
 
