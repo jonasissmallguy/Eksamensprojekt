@@ -35,7 +35,48 @@ namespace Client
             };
             return goalTypes;
         }
-        
+
+        public async Task<List<Goal>> GetAwaitingApproval()
+        {
+            return _goals.Where(g => g.Status == "AwaitingApproval").ToList();
+        }
+
+        public async Task<List<Goal>> GetMissingCourses(User bruger)
+        {
+            if (bruger == null || bruger.ElevPlan == null || bruger.ElevPlan.Forløbs == null)
+                return new List<Goal>();
+
+            var missingGoals = new List<Goal>();
+
+            foreach (var forløb in bruger.ElevPlan.Forløbs)
+            {
+                if (forløb.Goals != null)
+                {
+                    missingGoals.AddRange(
+                        forløb.Goals.Where(g => g.Status == "MissingCourses")
+                    );
+                }
+            }
+
+            return missingGoals;
+        }
+
+
+        public async Task<List<Goal>> GetOutOfHouse()
+        {
+            var outOfHouse = _goals.Where(g => g.Status == "OutOfHouse").ToList();
+            return outOfHouse;
+        }
+
+        public async Task ConfirmGoalFromHomePage(Goal goal)
+        {
+            var existingGoal = _goals.FirstOrDefault(g => g.Id == goal.Id);
+            if (existingGoal != null)
+            {
+                existingGoal.Status = "Completed";
+                existingGoal.CompletedAt = DateTime.Now;
+            }
+        }
 
 
         public async Task DeleteGoal(Goal goal, int studentID)

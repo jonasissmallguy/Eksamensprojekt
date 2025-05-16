@@ -1,229 +1,97 @@
-﻿/*Elevoversigts midlertidig styling*/
-.page-title {
-    font-size: 4rem;
-    margin-bottom: 2rem;
-}
-
-.custom-card {
-    border: 2px solid #007bff;
-    border-radius: 10px;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
-    max-height: 250px; /* Maksimal højde på boksen */
-    overflow-y: auto;  /* Vertikal scrollbar vises hvis nødvendigt */
-}
-
-}
-
-.custom-title {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #0056b3;
-}
-
-.card-text {
-    font-size: 1rem;
-}
-/* Update for the dashboard-container */
-.dashboard-container {
-    padding: 0; /* Remove padding as the container is now inside the padded content */
-}
-
-.dashboard-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.dashboard-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.card-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #f3f4f6;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.card-header h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #374151;
-    margin: 0;
-}
-
-.card-filter {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.85rem;
-    color: #6b7280;
-    cursor: pointer;
-}
-
-.card-body {
-    padding: 1.5rem;
-}
-
-/* Overall Rating Card */
-.rating-big {
-    font-size: 2.5rem;
+﻿.page-title {
+    font-size: 3rem;
     font-weight: 700;
-    color: #374151;
+    color: #1f2937; /* Mørk gråblå */
+    margin-bottom: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.rating-stars {
-    color: #f59e0b;
-    font-size: 1.25rem;
-    margin: 0.5rem 0;
-}
-
-.rating-count {
-    font-size: 0.85rem;
-    color: #6b7280;
-}
-
-.rating-chart {
-    margin-top: 1.5rem;
-    height: 60px;
-    position: relative;
-}
-
-.chart-line {
-    height: 2px;
-    background-color: #10b981;
+/* Container med grid: 2 kolonner på bredere skærme */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* To kolonner */
+    gap: 1.75rem;
     width: 100%;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    max-width: 1200px; /* Maks bredde, kan justeres */
+    margin: 0 auto; /* Centrerer containeren */
 }
 
-.chart-dot {
-    width: 10px;
-    height: 10px;
-    background-color: #10b981;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    right: 30%;
-    transform: translate(50%, -50%);
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
-}
-
-/* Reviews Card */
-.reviews-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.reviews-total div:first-child {
-    font-size: 0.85rem;
-    color: #6b7280;
-    margin-bottom: 0.25rem;
-}
-
-.reviews-count {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #374151;
-}
-
-.reviews-change {
-    display: flex;
-    align-items: center;
-    font-size: 1.25rem;
-    font-weight: 600;
-}
-
-.reviews-change.positive {
-    color: #10b981;
-}
-
-.reviews-change i {
-    font-size: 1.75rem;
-}
-
-.reviews-chart {
-    height: 120px;
-    display: flex;
-    align-items: flex-end;
-}
-
-.chart-bars {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: flex-end;
-    gap: 0.75rem;
-}
-
-.chart-bar {
-    flex: 1;
-    height: 40%;
-    background-color: #e5e7eb;
-    border-radius: 4px 4px 0 0;
-}
-
-.chart-bar.active {
-    background-color: #10b981;
-    height: 70%;
-}
-
-/* Sentiment Card */
-.sentiment-gauge {
+/* Kort-stil */
+.dashboard-card {
+    background-color: #fff;
+    border-radius: 12px;
+    border: 1.5px solid #d1d5db; /* Kant */
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+    padding: 1.5rem 2rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.gauge-indicator {
-    width: 50px;
-    height: 50px;
-    background-color: #10b981;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.gauge-label {
-    font-weight: 600;
-    color: #10b981;
-}
-
-.sentiment-score {
-    text-align: center;
-}
-
-.score-percentage {
-    font-size: 1.75rem;
-    font-weight: 700;
+    justify-content: flex-start;
+    transition: box-shadow 0.3s ease;
+    min-height: 200px;
     color: #374151;
 }
 
-.score-description {
-    font-size: 0.85rem;
-    color: #6b7280;
+.dashboard-card:hover {
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
 }
 
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2563eb; /* Blå */
+    margin-bottom: 0.75rem;
+}
+
+/* Tekst i kort */
+.dashboard-card p {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: #4b5563; /* Medium grå */
+    margin-top: 0;
+}
+
+/* Liste styling */
+.list-reset {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 1rem;
+}
+
+.list-reset li {
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+    color: #374151;
+}
+
+/* Knap styling */
+.btn-approve {
+    background-color: #2563eb;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 0.4rem 1rem;
+    margin-left: 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+}
+
+.btn-approve:hover {
+    background-color: #1e40af;
+}
+
+/* Responsivt: én kolonne på smallere skærme */
 @media (max-width: 768px) {
-    .dashboard-row {
+    .dashboard-grid {
         grid-template-columns: 1fr;
     }
 
-    .card-body {
-        padding: 1rem;
+    .dashboard-card {
+        min-height: auto;
+        padding: 1rem 1.25rem;
+    }
+
+    .page-title {
+        font-size: 2.25rem;
     }
 }

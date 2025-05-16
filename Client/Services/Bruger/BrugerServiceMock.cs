@@ -288,5 +288,11 @@ namespace Client
             }
             
         }
+
+        public Task<User> GetUserById(int currentUserId)
+        {
+            var user = _allUsers.FirstOrDefault(x => x.Id == currentUserId);
+            return Task.FromResult(user);
+        }
     }
 }

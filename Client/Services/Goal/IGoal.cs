@@ -22,7 +22,11 @@ namespace Client
         Task DeleteComment(int goalId, int commentId);
         
         Task<List<GoalNameDTO>> GetAllGoalTypes();
-        
+
+        Task<List<Goal>> GetAwaitingApproval();
+        Task<List<Goal>> GetMissingCourses(User bruger);
+        Task<List<Goal>> GetOutOfHouse();
+        Task ConfirmGoalFromHomePage(Goal goal);
     }
 
 }

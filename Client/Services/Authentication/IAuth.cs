@@ -13,7 +13,7 @@ namespace Client
         Task<string> GetLocalStorageResetEmail();
         Task DeleteLocalStorageResetEmail();
         Task<bool> UpdatePassword(string updatedPassword, string confirmedPassword);
-
+        
 
     }
 
