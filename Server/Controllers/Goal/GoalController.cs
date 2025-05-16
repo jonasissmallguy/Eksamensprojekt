@@ -42,20 +42,19 @@ namespace Server
         /// <param name="goal"></param>
         /// <returns></returns>
         [HttpPost]
+        [Route("/comment")]
         public async Task<IActionResult> PostComment(NewComment comment)
         {
             var commentToAdd = await _goalRepository.AddComment(comment);
 
             if (commentToAdd)
             {
-                return Ok();
+                return Ok(commentToAdd);
             }
             return NotFound();
             
         }
         
-
-
         /// <summary>
         /// Tilføjer et nyt delmål til vores forløb
         /// </summary>

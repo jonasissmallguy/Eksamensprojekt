@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Core;
+using SendGrid.Helpers.Errors.Model;
 
 namespace Client
 {
@@ -54,10 +55,10 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
         }
-
-        public Task<List<User>> GetAllUsersWithOutCurrent(int userId)
+        
+        public async Task<List<User>> GetAllUsersWithOutCurrent(int userId)
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users/withoutmyself/{userId}");
         }
 
         public Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
@@ -65,24 +66,24 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task DeleteUser(int userId)
+        public async Task DeleteUser(int userId)
         {
-            throw new NotImplementedException();
+            await _client.DeleteAsync($"{serverUrl}/users/{userId}");
         }
 
-        public Task ChangeRolle(string newRolle, int userId)
+        public async Task ChangeRolle(string newRolle, int userId)
         {
-            throw new NotImplementedException();
+            await _client.PutAsJsonAsync($"{serverUrl}/users/updaterolle/{userId}/{newRolle}", new{});
         }
 
-        public Task DeActivateUser(int userId)
-        {
-            throw new NotImplementedException();
+        public async Task DeActivateUser(int userId)
+        { 
+            await _client.PutAsJsonAsync($"{serverUrl}/users/deactivate/{userId}", userId);
         }
 
-        public Task ActivateUser(int userId)
+        public async Task ActivateUser(int userId)
         {
-            throw new NotImplementedException();
+            await _client.PutAsJsonAsync($"{serverUrl}/users/activate/{userId}", userId);
         }
 
         public Task UpdateHotel(Hotel hotel, int userId)
