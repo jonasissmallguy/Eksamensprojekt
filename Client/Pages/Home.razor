@@ -47,7 +47,7 @@
                 <ul class="list-reset">
                     @foreach (var g in _missingCourses)
                     {
-                        <li>Kursus: @g.Title Elev: ...</li>
+                        <li>Kursus: @g.Title Elev: @_bruger.FirstName @_bruger.LastName</li>
                     }
                 </ul>
             }

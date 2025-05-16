@@ -44,9 +44,24 @@ namespace Client
 
         public async Task<List<Goal>> GetMissingCourses(User bruger)
         {
-            var missingCourses = _goals.Where(g => g.Status == "MissingCourses").ToList();
-            return missingCourses;
+            if (bruger == null || bruger.ElevPlan == null || bruger.ElevPlan.Forløbs == null)
+                return new List<Goal>();
+
+            var missingGoals = new List<Goal>();
+
+            foreach (var forløb in bruger.ElevPlan.Forløbs)
+            {
+                if (forløb.Goals != null)
+                {
+                    missingGoals.AddRange(
+                        forløb.Goals.Where(g => g.Status == "MissingCourses")
+                    );
+                }
+            }
+
+            return missingGoals;
         }
+
 
         public async Task<List<Goal>> GetOutOfHouse()
         {
