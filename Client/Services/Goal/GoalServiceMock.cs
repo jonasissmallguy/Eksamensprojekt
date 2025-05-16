@@ -30,9 +30,8 @@ namespace Client
             var goalTypes = new List<GoalNameDTO>
             {
                 new GoalNameDTO() { GoalId = 0, GoalName = "Ingen" },
-                new GoalNameDTO() { GoalId = 1, GoalName = "Kursus" },
-                new GoalNameDTO() { GoalId = 2, GoalName = "Skole" },
-                new GoalNameDTO() { GoalId = 3, GoalName = "Delmål" }
+                new GoalNameDTO() { GoalId = 1, GoalName = "Skole" },
+                new GoalNameDTO() { GoalId = 2, GoalName = "Delmål" }
             };
             return goalTypes;
         }

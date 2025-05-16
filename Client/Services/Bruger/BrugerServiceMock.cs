@@ -41,7 +41,9 @@ namespace Client
                 },
                 Year = "År 1",
                 Skole = "Kold Kollege",
-                Uddannelse = "EUX"
+                Uddannelse = "EUX",
+                StartDate = new DateOnly(2025, 5, 5),
+                EndDate = new DateOnly(2028, 5, 5)
             },
             new User
             {
@@ -83,6 +85,8 @@ namespace Client
             user.Year = updatedBruger.Year;
             user.Skole = updatedBruger.Skole;
             user.Uddannelse = updatedBruger.Uddannelse;
+            user.StartDate = updatedBruger.StartDate;
+            user.EndDate = updatedBruger.EndDate;
 
             return true;
         }
@@ -150,6 +154,7 @@ namespace Client
                 Mobile = nyBruger.Mobile,
                 Rolle = nyBruger.Rolle,
                 StartDate = nyBruger.StartDate,
+                EndDate = nyBruger.EndDate,
                 Hotel = new Hotel
                 {
                     Id = nyBruger.Id,
@@ -184,7 +189,9 @@ namespace Client
                     Ansvarlig = "test ansvarlig",
                     Year = elev.Year,
                     Skole = elev.Skole,
-                    Uddannelse = elev.Uddannelse
+                    Uddannelse = elev.Uddannelse,
+                    StartDate = elev.StartDate,
+                    EndDate = elev.EndDate
                     
                 });
             }
