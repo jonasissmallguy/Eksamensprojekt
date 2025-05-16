@@ -17,7 +17,7 @@
             <EditForm Model="newUser" OnValidSubmit="@HandleNewUser">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-
+                <scan style="color: red">@errorText</scan>
                 <div class="form-group">
                     <label class="form-label required-field">Fornavn</label>
                     <InputText class="form-control" @bind-Value="newUser.FirstName" placeholder="Indtast fornavn" />
@@ -118,6 +118,7 @@
     private string[] år = { "År 1", "År 2", "År 3" };
     private string[] skole = { "Kold Kollege", "Bæskolen Kronjylland", "Hansted Kokkeskole" };
     private string[] uddannelse = { "EUX", "Voksenelev"};
+    private string errorText;
 
 
     protected override async void OnInitialized()
@@ -133,16 +134,34 @@
     
     private async Task HandleNewUser()
     {
-        if (newUser.Rolle.Equals("Elev"))
+        try
         {
             var user = await IBrugerService.OpretBruger(newUser);
-            
             navMan.NavigateTo($"opretelevplan/{user.Id}");
-            Console.WriteLine(user.Id);
+
+        }
+        catch (Exception e)
+        {
+            //Er der allerede en bruger på de informationer, kommer der fejltekst
+            if (e.Message.Contains("Du har en bruger"))
+            {
+                errorText = "Du har en bruger venligst gå til login";
+            }
+            else
+            {
+                errorText = "Ukendt fejl";
+            }
+        }
+
+
+        if (newUser.Rolle.Equals("Elev"))
+        {
+            navMan.NavigateTo($"/opretelevplan/{newUser.Id}");
         }
         else
         {
             navMan.NavigateTo("");
         }
+        
     }
 }

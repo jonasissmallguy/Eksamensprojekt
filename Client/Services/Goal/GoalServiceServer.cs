@@ -54,5 +54,25 @@ namespace Client
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<Goal>> GetAwaitingApproval()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Goal>> GetMissingCourses(User bruger)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Goal>> GetOutOfHouse()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ConfirmGoalFromHomePage(Goal goal)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

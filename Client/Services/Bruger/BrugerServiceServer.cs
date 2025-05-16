@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using Core;
 
 namespace Client
@@ -28,12 +29,16 @@ namespace Client
         {
             throw new NotImplementedException();
         }
-
+        
         public async Task<User> OpretBruger(BrugerCreateDTO nyBruger)
         { 
             HttpResponseMessage response = await _client.PostAsJsonAsync($"{serverUrl}/users", nyBruger);
-    
-            response.EnsureSuccessStatusCode();
+
+            if (response.StatusCode == HttpStatusCode.Conflict)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception(message);
+            }
     
             User createdUser = await response.Content.ReadFromJsonAsync<User>();
     
@@ -45,9 +50,9 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers()
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
         }
 
         public Task<List<User>> GetAllUsersWithOutCurrent(int userId)
@@ -86,6 +91,11 @@ namespace Client
         }
 
         public Task SaveStudentPlan(int studentId, Plan plan)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> GetUserById(int currentUserId)
         {
             throw new NotImplementedException();
         }

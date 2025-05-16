@@ -16,16 +16,16 @@ namespace Server
         {
             Env.Load();
             string ConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTIONSTRING");
-            
+
             _userClient = new MongoClient(ConnectionString);
             _userDatabase = _userClient.GetDatabase("comwell");
             _userCollection = _userDatabase.GetCollection<User>("users");
         }
 
-        public async  Task<int> GetNextId() //Hjælpefunktion til at få fortløbende id
+        public async Task<int> GetNextId() //Hjælpefunktion til at få fortløbende id
         {
             long count = await _userCollection.CountDocumentsAsync(new BsonDocument());
-            return (int) count + 1;
+            return (int)count + 1;
         }
 
 
@@ -39,7 +39,7 @@ namespace Server
         {
             int id = await GetNextId();
             bruger.Id = id;
-            
+
             await _userCollection.InsertOneAsync(bruger);
 
             return bruger;
@@ -48,8 +48,23 @@ namespace Server
         public async Task<List<User>> GetAllUsers()
         {
             var filter = Builders<User>.Filter.Empty;
-            
+
             return await _userCollection.Find(filter).ToListAsync();
         }
+
+        public async Task<bool> CheckUnique(string email)
+        {
+
+            var filter = Builders<User>.Filter.Eq("Email", email);
+
+            if (_userCollection.Find(filter).Any())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }
+
