@@ -60,6 +60,10 @@
                     <InputDate class="form-control" @bind-Value="newUser.StartDate" placeholder="Indtast ansættelsedato" />
                 </div>
                 <div class="form-group">
+                    <label class="form-label required-field">Afslutnings Dato</label>
+                    <InputDate class="form-control" @bind-Value="newUser.EndDate" placeholder="Indtast afslutningsdatoedato" />
+                </div>
+                <div class="form-group">
                     <label class="form-label required-field">Hotel</label>
                     <InputSelect class="form-select" @bind-Value="newUser.HotelId">
                         @foreach (var x in hoteller)
@@ -125,7 +129,6 @@
         newUser.Skole = skole[0];
         hoteller = await IHotelService.GetAllHotelNames();
         newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
-
     }
     
     private async Task HandleNewUser()

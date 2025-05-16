@@ -35,7 +35,10 @@ namespace Core
         public DateTime DeadLineAt { get; set; }
         public int SortOrder { get; set; }
         
-        public List<Comment> Comments { get; set; } 
+        public List<Comment> Comments { get; set; }
+        
+        public DateTime? SkoleStart { get; set; }
+        public DateTime? SkoleEnd { get; set; }
 
     }
 }       
