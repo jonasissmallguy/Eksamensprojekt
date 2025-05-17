@@ -83,6 +83,16 @@ namespace Client
             }
         }
 
+        public Task<List<Goal>> GetAllGoalsForBruger(User bruger)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string kursus)
+        {
+            throw new NotImplementedException();
+        }
+
         //God
         public async Task DeleteGoal(Goal goal, int studentID)
         {

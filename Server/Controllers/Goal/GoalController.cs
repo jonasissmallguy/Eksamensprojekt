@@ -70,6 +70,48 @@ namespace Server
             }
         }
         
+        [HttpGet("awaiting-approval")]
+        public async Task<IActionResult> GetAwaitingApproval()
+        {
+            var goals = await _goalRepository.GetAwaitingApproval();
+            return Ok(goals);
+        }
+
+        [HttpGet("missing-courses/{userId}")]
+        public async Task<IActionResult> GetMissingCourses(int userId)
+        {
+            var goals = await _goalRepository.GetMissingCourses(userId);
+            return Ok(goals);
+        }
+
+        [HttpGet("out-of-house")]
+        public async Task<IActionResult> GetOutOfHouse()
+        {
+            var goals = await _goalRepository.GetOutOfHouse();
+            return Ok(goals);
+        }
+
+        [HttpPut("confirm")]
+        public async Task<IActionResult> ConfirmGoalFromHomePage([FromBody] Goal goal)
+        {
+            var updated = await _goalRepository.ConfirmGoalFromHomePage(goal);
+            if (updated)
+                return Ok();
+            return NotFound();
+        }
+        
+        [HttpGet("type/{type}/user/{userId}")]
+        public async Task<IActionResult> GetGoalsByTypeForUser(string type, int userId)
+        {
+            var goals = await _goalRepository.GetGoalsByTypeForUser(type, userId);
+
+            if (goals == null || !goals.Any())
+                return NotFound("Ingen mål fundet for bruger og type.");
+
+            return Ok(goals);
+        }
+
+        
     }
 
 }

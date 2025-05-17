@@ -27,6 +27,8 @@ namespace Client
         Task<List<Goal>> GetMissingCourses(User bruger);
         Task<List<Goal>> GetOutOfHouse();
         Task ConfirmGoalFromHomePage(Goal goal);
+        Task<List<Goal>> GetAllGoalsForBruger(User bruger);
+        Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string kursus);
     }
 
 }

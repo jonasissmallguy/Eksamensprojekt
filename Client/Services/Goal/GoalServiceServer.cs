@@ -6,7 +6,7 @@ namespace Client
 {
     public class GoalServiceServer : IGoal
     {
-        
+
         private string serverUrl = "http://localhost:5075";
         private HttpClient _client;
 
@@ -14,7 +14,7 @@ namespace Client
         {
             _client = client;
         }
-        
+
         public async Task DeleteGoal(Goal goal, int studentId)
         {
             await _client.DeleteAsync($"{serverUrl}/goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
@@ -60,24 +60,46 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task<List<Goal>> GetAwaitingApproval()
+        public async Task<List<Goal>> GetAwaitingApproval()
+        {
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/awaiting-approval");
+        }
+
+        public async Task<List<Goal>> GetMissingCourses(User bruger)
+        {
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/missing-courses/{bruger.Id}");
+        }
+
+        public async Task<List<Goal>> GetOutOfHouse()
+        {
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/out-of-house");
+        }
+
+        public async Task ConfirmGoalFromHomePage(Goal goal)
+        {
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm", goal);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Fejl ved opdatering af mål: {error}");
+            }
+        }
+
+        public Task<List<Goal>> GetAllGoalsForBruger(User bruger)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Goal>> GetMissingCourses(User bruger)
+        public async Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string type)
         {
-            throw new NotImplementedException();
+            var response = await _client.GetFromJsonAsync<List<Goal>>(
+                $"{serverUrl}/goals/type/{type}/user/{bruger.Id}"
+            );
+
+            return response;
         }
 
-        public Task<List<Goal>> GetOutOfHouse()
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task ConfirmGoalFromHomePage(Goal goal)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
+    
