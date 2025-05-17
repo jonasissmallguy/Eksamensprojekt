@@ -99,7 +99,9 @@ namespace Server
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
                 //mangler hotel
+                Year = user.Year,
                 StartDate = user.StartDate,
+                EndDate = user.EndDate,
                 Skole = user.Skole,
                 Uddannelse = user.Uddannelse
             };

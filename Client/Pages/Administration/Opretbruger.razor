@@ -120,18 +120,26 @@
     private string[] uddannelse = { "EUX", "Voksenelev"};
     private string errorText;
 
-
-    protected override async void OnInitialized()
+// rasmus skiftet "void" til "Task"
+    protected override async Task OnInitializedAsync()
     {
         newUser.Rolle = roller[0];
         newUser.Køn = køn[2]; //prefixed til "Ikke angivet"
         newUser.Year = år[0];
         newUser.Uddannelse = uddannelse[0];
         newUser.Skole = skole[0];
-        hoteller = await IHotelService.GetAllHotelNames();
-        newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
+
+        try
+        {
+            hoteller = await IHotelService.GetAllHotelNames();
+            newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Fejl ved hentning af hoteller: {ex.Message}");
+        }
     }
-    
+
     private async Task HandleNewUser()
     {
         try
