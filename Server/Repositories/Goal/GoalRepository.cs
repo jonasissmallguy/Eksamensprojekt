@@ -133,14 +133,16 @@ namespace Server
 
         public async Task<bool> ConfirmGoalFromHomePage(Goal goal)
         {
-            var filter = Builders<User>.Filter.ElemMatch<Forløb>("ElevPlan.Forløbs.Goals", new BsonDocument {
-                { "_id", goal.Id },
-                { "Type", goal.Type }
-            });
+            if (goal == null || goal.Id <= 0)
+                return false;
+
+            // Find user som indeholder et forløb med målet
+            var filter = Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f =>
+                f.Goals.Any(g => g.Id == goal.Id));
 
             var update = Builders<User>.Update
                 .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "Finished")
-                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].ConfirmedAt", DateTime.UtcNow);
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].ConfirmedAt", DateTime.Now);
 
             var arrayFilters = new List<ArrayFilterDefinition>
             {
@@ -151,8 +153,13 @@ namespace Server
             var options = new UpdateOptions { ArrayFilters = arrayFilters };
 
             var result = await _goalCollection.UpdateOneAsync(filter, update, options);
+
+            if (result.ModifiedCount == 0)
+                Console.WriteLine($"ConfirmGoalFromHomePage: Kunne ikke opdatere mål med Id={goal.Id}");
+
             return result.ModifiedCount > 0;
         }
+
 
 
         

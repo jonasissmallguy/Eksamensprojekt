@@ -94,11 +94,15 @@ namespace Server
         [HttpPut("confirm")]
         public async Task<IActionResult> ConfirmGoalFromHomePage([FromBody] Goal goal)
         {
+            if (goal == null || goal.Id <= 0)
+                return BadRequest("Ugyldigt mål data.");
+
             var updated = await _goalRepository.ConfirmGoalFromHomePage(goal);
             if (updated)
                 return Ok();
-            return NotFound();
+            return NotFound("Mål ikke fundet til opdatering.");
         }
+
         
         [HttpGet("type/{type}/user/{userId}")]
         public async Task<IActionResult> GetGoalsByTypeForUser(string type, int userId)
