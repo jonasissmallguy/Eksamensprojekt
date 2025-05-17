@@ -161,7 +161,7 @@
                            @onchange="(e) => CheckboxValueChanged(x.Id, (bool) ((ChangeEventArgs)e).Value)"/>
                 </td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@(GetHotelName(x.HotelId))</td>
+                <td @onclick="@(() => NavigateToElevPlan(x.Id))">Hotel</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">11/47</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
                 <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Skole</td>
