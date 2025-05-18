@@ -179,7 +179,43 @@ namespace Server
             return result;
         }
 
+        public async Task<List<string>> GetAllGoalTypes()
+        {
+            // Antag at alle måltyper kan findes ved at aggregere over alle goals og hente unikke typer
+            var pipeline = new BsonDocument[]
+            {
+                new BsonDocument("$unwind", "$ElevPlan.Forløbs"),
+                new BsonDocument("$unwind", "$ElevPlan.Forløbs.Goals"),
+                new BsonDocument("$group", new BsonDocument
+                {
+                    { "_id", "$ElevPlan.Forløbs.Goals.Type" }
+                }),
+                new BsonDocument("$project", new BsonDocument
+                {
+                    { "Type", "$_id" },
+                    { "_id", 0 }
+                })
+            };
 
+            var result = await _goalCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();
+
+            return result.Select(d => d["Type"].AsString).ToList();
+        }
+
+        public async Task<List<Goal>> GetAllGoalsForUser(int userId)
+        {
+            var user = await _goalCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
+            if (user?.ElevPlan?.Forløbs == null)
+                return new List<Goal>();
+
+            var allGoals = new List<Goal>();
+            foreach (var forløb in user.ElevPlan.Forløbs)
+            {
+                allGoals.AddRange(forløb.Goals);
+            }
+
+            return allGoals;
+        }
 
     }
 }

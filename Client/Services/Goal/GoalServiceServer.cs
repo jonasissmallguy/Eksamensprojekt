@@ -30,14 +30,14 @@ namespace Client
             await _client.PutAsJsonAsync($"{serverUrl}/goals/", mentor);
         }
 
-        public Task ProcessGoal(ElevplanComponent.MentorAssignment bruger)
+        public async Task ProcessGoal(ElevplanComponent.MentorAssignment bruger)
         {
-            throw new NotImplementedException();
+            await _client.PutAsJsonAsync($"{serverUrl}/goals/process", bruger);
         }
 
-        public Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        public async Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
         {
-            throw new NotImplementedException();
+            await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm-leder", leder);
         }
 
         public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
@@ -55,9 +55,9 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task<List<GoalNameDTO>> GetAllGoalTypes()
+        public async Task<List<GoalNameDTO>> GetAllGoalTypes()
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<GoalNameDTO>>($"{serverUrl}/goals/types");
         }
 
         public async Task<List<Goal>> GetAwaitingApproval()
@@ -85,9 +85,9 @@ namespace Client
             }
         }
 
-        public Task<List<Goal>> GetAllGoalsForBruger(User bruger)
+        public async Task<List<Goal>> GetAllGoalsForBruger(User bruger)
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/all-for-user/{bruger.Id}");
         }
 
         public async Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string type)
