@@ -50,9 +50,15 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task<List<GoalNameDTO>> GetAllGoalTypes()
+        public async Task<List<GoalNameDTO>> GetAllGoalTypes()
         {
-            throw new NotImplementedException();
+            var goalTypes = new List<GoalNameDTO>
+            {
+                new GoalNameDTO() { GoalId = 0, GoalName = "Ingen" },
+                new GoalNameDTO() { GoalId = 1, GoalName = "Skole" },
+                new GoalNameDTO() { GoalId = 2, GoalName = "Delmål" }
+            };
+            return goalTypes;
         }
 
         public Task<List<Goal>> GetAwaitingApproval()
