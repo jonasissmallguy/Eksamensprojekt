@@ -409,6 +409,8 @@
         {
             selectedStudentIds.Remove(studentId);
         }
+        
+        LogSelectedStudents();
     }
 
     private void ToggleSelectAll(ChangeEventArgs e)
@@ -479,6 +481,23 @@
     {
         StateHasChanged();
     }
+    
+    // Lille sag der checker hvilke elever der er tjekket af
+    private void LogSelectedStudents()
+    {
+        var selected = alleElever
+            .Where(e => selectedStudentIds.Contains(e.Id))
+            .Select(e => $"{e.Id}: {e.Name}")
+            .ToList();
+
+        Console.WriteLine("Valgte elever:");
+        foreach (var elev in selected)
+        {
+            Console.WriteLine(elev);
+        }
+    }
+
+
     
     
 }
