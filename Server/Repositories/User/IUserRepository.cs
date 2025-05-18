@@ -9,6 +9,7 @@ namespace Server
         Task<User> GetUserById(int id);
         Task<List<User>> GetAllUsers();
         Task<List<User>> GetAllUsersWithOutMyself(int userId);
+        Task<User> GetUserByEmail(string email);
         
         //Post
         Task<User> SaveBruger(User bruger);

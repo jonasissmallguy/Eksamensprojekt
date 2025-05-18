@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
 using Blazored.LocalStorage;
 using Core;
 
@@ -80,29 +81,48 @@ namespace Client
             await _localStorage.RemoveItemAsync("bruger");
         }
 
-        public Task GetUserByEmail(string email)
+        public async Task GetUserByEmail(string email)
         {
-            throw new NotImplementedException();
+           var user = await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{email}");
+
+           if (user != null)
+           {
+               await _localStorage.SetItemAsync("resetEmail", user.Email); 
+               
+           }
         }
 
-        public Task<bool> CheckVerficiationCode(string email, string kode)
+        public async Task<bool> CheckVerficiationCode(string email, string kode)
         {
-            throw new NotImplementedException();
+            var result = await _client.GetFromJsonAsync<bool>($"{serverUrl}/users/{email}/{kode}");
+
+            if (!result)
+            {
+                return false;
+            }
+
+            return true;
         }
 
-        public Task<string> GetLocalStorageResetEmail()
+        public async Task<string> GetLocalStorageResetEmail()
         {
-            throw new NotImplementedException();
+            var userToResetEmail = await _localStorage.GetItemAsync<string>("resetEmail");
+            return userToResetEmail;
         }
 
-        public Task DeleteLocalStorageResetEmail()
+        public async Task DeleteLocalStorageResetEmail()
         {
-            throw new NotImplementedException();
+            await _localStorage.RemoveItemAsync("resetEmail");
         }
 
-        public Task<bool> UpdatePassword(string updatedPassword, string confirmedPassword)
+        public async Task<bool> UpdatePassword(string updatedPassword, string confirmedPassword)
         {
-            throw new NotImplementedException();
+            BrugerLoginDTO currentUser = await GetBruger();
+
+            var userEmail = await GetLocalStorageResetEmail();
+
+            return true;
+
         }
     }
 

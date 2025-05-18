@@ -1,5 +1,8 @@
 ﻿using Core;
 using Microsoft.AspNetCore.Mvc;
+using DotNetEnv;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace Server
 {
@@ -9,6 +12,9 @@ namespace Server
     {
         
         private IUserRepository _userRepository;
+        
+        private static Dictionary<string, (string Kode, DateTime Expiry)> verificeringsKoder = new();
+
 
         public UserController(IUserRepository userRepository)
         {
@@ -43,6 +49,70 @@ namespace Server
                 return NotFound();
             }
             return Ok(allUsers);
+        }
+        /*
+        //Hjælpefunktion til at reset email
+        public async Task SendResetCodeEmail(string email, string verificeringsKode)
+        {
+            //Loader .env
+            Env.Load();
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+            
+            //Anvender SendGrid
+            var client = new SendGridClient(apiKey);
+
+            //Fra & Til
+            var from = new EmailAddress("jonasdupontheidemann@gmail.com", "HR");
+            var to = new EmailAddress(email);
+            
+            //Indhold
+            var subject = "Nulstilling af Comwell adgangskode";
+            var plainTextContent =
+                $"Opret din nye adgangskode\t\n\t\t\n\t" +
+                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
+                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
+                $"{verificeringsKode}" +
+                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
+            
+            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+            
+            //Generer email og sender
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+        }
+        */
+
+
+        [HttpGet]
+        [Route("{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetUserByEmail(email);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            Random ran = new Random();
+            string verificeringsKode = String.Empty;
+                
+            string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
+            int size = 8;
+
+            for (int i = 0; i < size; i++)
+            {
+                //Tager et random index
+                int x = ran.Next(bogstaver.Length);
+                verificeringsKode = verificeringsKode + bogstaver[x];
+            }
+            
+                
+            verificeringsKoder[email] = (verificeringsKode, DateTime.Now.AddMinutes(10));
+            
+            //await SendResetCodeEmail(email, verificeringsKode);
+            
+            return Ok(user);
         }
 
         
@@ -99,9 +169,9 @@ namespace Server
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
                 //mangler hotel
-                StartDate = user.StartDate,
-                Skole = user.Skole,
-                Uddannelse = user.Uddannelse
+                //StartDate = user.StartDate,
+                //Skole = user.Skole,
+                //Uddannelse = user.Uddannelse
             };
             
              var newUser = await _userRepository.SaveBruger(nyBruger);
@@ -160,10 +230,31 @@ namespace Server
             
             return Ok();
         }
-        
-        
-        
 
+        [HttpPut]
+        [Route("updatepassword/{updatedPassword}/{confirmPassword}")]
+        public async Task UpdatePassword(string updatedPassword, string confirmPassword)
+        {
+            
+        }
+
+        /// <summary>
+        /// Metode til at tjekke, at vores verificeringskoder er rigtige
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{email}/{kode}")]
+        public async Task<bool> CheckVerificationCoed(string email, string kode)
+        {
+            if (verificeringsKoder.TryGetValue(email, out var output))
+            {
+                if (output.Kode == kode && output.Expiry > DateTime.Now)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }        
     }
 
 }

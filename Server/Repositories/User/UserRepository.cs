@@ -41,6 +41,12 @@ namespace Server
             return await _userCollection.Find(filter).ToListAsync();
         }
 
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var filter = Builders<User>.Filter.Eq("Email", email);
+            return await _userCollection.Find(filter).FirstOrDefaultAsync();
+        }
+
         public async Task<User> SaveBruger(User bruger)
         {
             int id = await GetNextId();

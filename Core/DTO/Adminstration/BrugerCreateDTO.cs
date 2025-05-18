@@ -24,8 +24,8 @@ namespace Core
         [Required(ErrorMessage = "Venligst angiv et køn")]
         public string Køn { get; set; }
         
-        [Required(ErrorMessage = "Venligst indtast et hotel")]
-        public int HotelId { get; set; }
+        //[Required(ErrorMessage = "Venligst indtast et hotel")]
+        //public int HotelId { get; set; }
         [Required(ErrorMessage = "Venligst indtast en startdato")]
         public DateOnly? StartDate { get; set; }
         [Required(ErrorMessage = "Venligst indtast en aflslutningsdato")]
