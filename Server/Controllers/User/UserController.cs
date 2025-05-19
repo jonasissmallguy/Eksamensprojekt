@@ -53,6 +53,7 @@ namespace Server
             return Ok(allUsers);
         }
   
+        [NonAction]
         //Hjælpefunktion til at reset email
         public async Task SendResetCodeEmail(string email, string verificeringsKode)
         {
@@ -83,6 +84,7 @@ namespace Server
             var response = await client.SendEmailAsync(msg);
         }
         
+        [NonAction]
         //Checker vores verificeringskode... i server memory
         public async Task<bool> CheckVerficiationCode(string email, string kode)
         {
@@ -96,6 +98,7 @@ namespace Server
             return false;
         }
         
+        [NonAction]
         //Generer verificeringskode
         public string GenerateResetCode(string email)
         {
@@ -145,7 +148,7 @@ namespace Server
             return Ok(user);
         }
 
-        
+        [NonAction]
         //Opretter password
         public string GeneratePassword()
         {
@@ -292,7 +295,6 @@ namespace Server
             await _userRepository.DeactivateUser(userId);
             
             return Ok();
-
         }
         
         /// <summary>
