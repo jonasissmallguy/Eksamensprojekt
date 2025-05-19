@@ -99,6 +99,11 @@ public class KursusServiceMock : IKursus
         }
     }
 
+    public Task AddStudentToCourse(int studentId, Kursus kursus)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<List<KursusTemplate>> GetAllTemplates()
     {
         throw new NotImplementedException();

@@ -12,6 +12,7 @@ namespace Server
         private IMongoClient _hotelClient;
         private IMongoDatabase _hotelDatabase;
         private IMongoCollection<Hotel> _hotelCollection;
+        private readonly IMongoCollection<BsonDocument> _countersCollection;
 
         public HotelRepository()
         {
@@ -21,13 +22,24 @@ namespace Server
             _hotelClient = new MongoClient(ConnectionString);
             _hotelDatabase = _hotelClient.GetDatabase("comwell");
             _hotelCollection = _hotelDatabase.GetCollection<Hotel>("hotels");
+            _countersCollection = _hotelDatabase.GetCollection<BsonDocument>("counters"); 
+
+        }
+        
+        public async Task<int> GetNextSequenceValue(string sequenceName)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", sequenceName);
+            var update = Builders<BsonDocument>.Update.Inc("seq", 1);
+            var options = new FindOneAndUpdateOptions<BsonDocument>
+            {
+                ReturnDocument = ReturnDocument.After,
+                IsUpsert = true
+            };
+
+            var result = await _countersCollection.FindOneAndUpdateAsync(filter, update, options); 
+            return result["seq"].AsInt32;
         }
 
-        public async Task<int> GetNextId()
-        {
-            long count = await _hotelCollection.CountDocumentsAsync(new BsonDocument());
-            return (int)count + 1;
-        }
         
         
         public async Task<List<Hotel>> GetAllHotels()
@@ -38,7 +50,7 @@ namespace Server
 
         public async Task SaveHotel(Hotel hotel)
         {
-            int id = await GetNextId();
+            int id = await GetNextSequenceValue("hotelId");
             hotel.Id = id;
             
             await _hotelCollection.InsertOneAsync(hotel);

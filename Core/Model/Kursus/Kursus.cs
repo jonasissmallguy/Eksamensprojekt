@@ -15,7 +15,6 @@ namespace Core
         public string Description { get; set; }
         public List<User> Students { get; set; }
         
-
     }
 
 }
