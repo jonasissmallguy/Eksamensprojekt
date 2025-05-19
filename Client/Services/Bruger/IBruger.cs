@@ -10,7 +10,7 @@ namespace Client
         Task<User> OpretBruger(BrugerCreateDTO nyBruger);
         Task<List<ElevOversigtDTO>> GetElevOversigt();
         Task<List<User>> GetAllUsers();
-        Task<List<User>> GetAllUsersWithOutCurrent(int userId);
+        Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId);
         Task<List<User>> GetAllUsersByStudentId(List<int> studentIds);
         Task DeleteUser(int userId);
         Task ChangeRolle(string newRolle, int userId);
@@ -19,5 +19,8 @@ namespace Client
         Task UpdateHotel(Hotel hotel, int userId);
         Task SaveStudentPlan(int studentId, Plan plan);
         Task<User> GetUserById(int currentUserId);
+        
+        Task<List<KursusDeltagerListeDTO>> GetAllStudents();
+        
     }
 }

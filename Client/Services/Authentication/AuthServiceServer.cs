@@ -9,16 +9,17 @@ namespace Client
     public class AuthServiceServer : IAuth
     {
         
-        private string serverUrl = "http://localhost:5075";
         private HttpClient _client;
         private ILocalStorageService _localStorage;
         private IBruger _bruger;
+        private readonly string _serverUrl;
 
-        public AuthServiceServer(HttpClient client, ILocalStorageService localStorage, IBruger bruger)
+        public AuthServiceServer(HttpClient client, ILocalStorageService localStorage, IBruger bruger, IConfiguration config)
         {
             _client = client;
             _localStorage = localStorage;
             _bruger = bruger;
+            _serverUrl = config["ApiBaseUrl"];
         }
 
         public async Task<BrugerLoginDTO?> GetBruger()
@@ -83,7 +84,7 @@ namespace Client
 
         public async Task GetUserByEmail(string email)
         {
-           var user = await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{email}");
+           var user = await _client.GetFromJsonAsync<User>($"{_serverUrl}/users/{email}");
     
            if (user != null)
            {
@@ -94,7 +95,7 @@ namespace Client
 
         public async Task<bool> CheckVerficiationCode(string email, string kode)
         {
-            var result = await _client.GetFromJsonAsync<bool>($"{serverUrl}/users/{email}/{kode}");
+            var result = await _client.GetFromJsonAsync<bool>($"{_serverUrl}/users/{email}/{kode}");
 
             if (!result)
             {
@@ -122,7 +123,7 @@ namespace Client
             //Bruger er allerede logget ind
             if (currentUser != null)
             {
-                var result = await _client.PutAsJsonAsync($"{serverUrl}/users/updatepassword/{currentUser.Email}", updatedPassword);
+                var result = await _client.PutAsJsonAsync($"{_serverUrl}/users/updatepassword/{currentUser.Email}", updatedPassword);
                 if (result.IsSuccessStatusCode)
                 {
                     return true;
@@ -132,9 +133,9 @@ namespace Client
             else
             {
                 var email = await GetLocalStorageResetEmail();
-                var result = await _client.PutAsJsonAsync($"{serverUrl}/users/updatepassword/{email}", updatedPassword);
+                var result = await _client.PutAsJsonAsync($"{_serverUrl}/users/updatepassword/{email}", updatedPassword);
                 
-                //var user = await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{email}");
+                //var user = await _client.GetFromJsonAsync<User>($"{_serverUrl}/users/{email}");
 
                 if (result.IsSuccessStatusCode)
                 {

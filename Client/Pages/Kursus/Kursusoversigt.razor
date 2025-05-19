@@ -34,53 +34,7 @@
         }
     </table>
 }
-<!--
-<ModalKursus @ref="_modalKursus">
-    <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
-        <DataAnnotationsValidator/>
-        <ValidationSummary/>
-        <div class="form-group mb-3">
-            <label for="courseSelect">Vælg kursus:</label>
-            <InputSelect class="form-select" @bind-Value="newCourse.Title">
-                <option value="">-- Vælg kursus --</option>
-                @if (CoursesTemplates != null)
-                {
-                    @foreach (var course in CoursesTemplates)
-                    {
-                        <option value="@course.Id">@course.Title</option>
-                    }
-                }
-            </InputSelect>
-        </div>
-        <div class="form-group mb-3">
-            <label for="location">Lokation:</label>
-            <InputText class="form-control" @bind-Value="newCourse.Location"/>
-        </div>
 
-        <div class="form-group mb-3">
-            <label for="startDate">Start dato:</label>
-            <InputDate class="form-select" @bind-Value="newCourse.StartDate"/>
-        </div>
-
-
-        <div class="form-group mb-3">
-            <label for="endDate">Slut dato:</label>
-            <inputDate class="form-select" @bind-Value="newCourse.EndDate"/>
-        </div>
-
-        <div class="text-end mt-4">
-            <button type="button" class="btn btn-secondary me-2" @onclick="CloseCourseSelection">Annuller</button>
-            <button type="submit" class="submit-btn">Gem kursus</button>
-        </div>
-    </EditForm>
-    
-</ModalKursus>    
-}
-
-else
-{
-    <p>Loading...</p>
-}-->
 <ModalKursus @ref="_modalKursus">
     <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
         <DataAnnotationsValidator />
@@ -106,9 +60,15 @@ else
         </div>
 
         <div class="form-group mb-3">
+            <label for="description">Beskrivelse:</label>
+            <InputTextArea class="form-control" @bind-Value="newCourse.Description" />
+        </div>
+
+        <div class="form-group mb-3">
             <label for="startDate">Start dato:</label>
             <InputDate class="form-select" @bind-Value="newCourse.StartDate" />
         </div>
+        
 
         <div class="form-group mb-3">
             <label for="endDate">Slut dato:</label>
@@ -167,43 +127,4 @@ else
     {
         navMan.NavigateTo($"kursuspage/{kursusId}");
     }
-
-    /*
-    private List<Kursus> alleKurser;
-    private ModalKursus _modalKursus { get; set; }
-    private KursusCreationDTO newCourse = new();
-    private List<Kursus> Courses;
-    private List<KursusTemplate> CoursesTemplates;
-
-    private string? selectedCourse;
-    private DateTime? startDate;
-    private DateTime? endDate;
-    private string? location;
-
-    protected override async Task OnInitializedAsync()
-    {
-        alleKurser = await IKursusService.GetAllCourses();
-    }
-
-    private void NavigateToCourse(int kursusId)
-    {
-        navMan.NavigateTo($"kursuspage/{kursusId}");
-    }
-
-    private async Task AddCourse()
-    {
-        _modalKursus.Open();
-        CoursesTemplates = await IKursusService.GetAllTemplates();
-    }
-
-    private void CloseCourseSelection()
-    {
-        _modalKursus.Close();
-    }
-
-    private async Task SaveCourse(KursusCreationDTO kursus)
-    {
-        await IKursusService.SaveCourse(kursus);
-        navMan.NavigateTo("kursusoversigt");
-    }*/
 }

@@ -38,17 +38,7 @@ namespace Server
             return Ok(success);
         }
 
-        /// <summary>
-        /// Tilføjer en elev til et kursus og assigner i deres elevplan
-        /// </summary>
-        /// <param name="kursus"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("addcourse/{studentId}")]
-        public async Task AddStudentToCourse(int studentId, [FromBody] Kursus kursus)
-        {
-            
-        }
+
         
 
         [HttpPut]
@@ -80,12 +70,31 @@ namespace Server
                 Title = kursus.Title,
                 Location = kursus.Location,
                 StartDate = kursus.StartDate,
-                EndDate = kursus.EndDate
+                EndDate = kursus.EndDate,
+                Description = kursus.Description
             };
             
             await _kursusRepository.SaveCourse(kursusModel);
 
             return Ok();
+        }
+
+        [HttpPut]
+        [Route("addstudent/{kursusId}")]
+        public async Task<IActionResult> AddStudentToCourse([FromBody] KursusDeltagerListeDTO user, int kursusId)
+        {
+
+            var newParticipant = new User
+            {
+                Id = user.Id,
+                FirstName = user.Navn,
+                HotelNavn = user.Hotel,
+            };
+            
+            await _kursusRepository.AddStudentToCourse(newParticipant, kursusId);
+
+            return Ok();
+
         }
         
     }

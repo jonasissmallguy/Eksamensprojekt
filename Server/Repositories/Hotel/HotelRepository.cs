@@ -16,8 +16,7 @@ namespace Server
 
         public HotelRepository()
         {
-            Env.Load();
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTIONSTRING");
+            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
             
             _hotelClient = new MongoClient(ConnectionString);
             _hotelDatabase = _hotelClient.GetDatabase("comwell");

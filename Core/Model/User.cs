@@ -26,5 +26,6 @@ namespace Core
         
         public string Uddannelse { get; set; }
         public int ForløbId { get; set; }
+        
     }
 }

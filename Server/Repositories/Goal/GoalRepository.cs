@@ -19,9 +19,8 @@ namespace Server
 
         public GoalRepository()
         {
-            Env.Load();
-
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTIONSTRING");
+            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+            
             _goalClient = new MongoClient(ConnectionString);
             _goalsDatabase = _goalClient.GetDatabase("comwell");
             _goalCollection = _goalsDatabase.GetCollection<User>("users");

@@ -108,4 +108,14 @@ public class KursusServiceMock : IKursus
     {
         throw new NotImplementedException();
     }
+
+    public Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public Task AddStudentToCourse(User user, int kursusId)
+    {
+        throw new NotImplementedException();
+    }
 }

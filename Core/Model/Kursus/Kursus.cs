@@ -13,7 +13,7 @@ namespace Core
         public DateTime? EndDate { get; set; }
         public string Status { get; set; } = "Active"; //Active, InProgress...
         public string Description { get; set; }
-        public List<User> Students { get; set; }
+        public List<User> Students { get; set; } = new List<User>();
         
     }
 
