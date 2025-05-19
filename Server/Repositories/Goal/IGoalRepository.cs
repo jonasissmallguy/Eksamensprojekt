@@ -15,13 +15,16 @@ namespace Server
         /// <summary>
         /// Tilføjer en kommentar til et mål.
         /// </summary>
-        Task<bool> AddComment(Comment comment);
+        Task<Comment> AddComment(Comment comment);
 
-        /// <summary>
-        /// Starter et mål (ikke implementeret).
-        /// </summary>
-        Task StartGoal(ElevplanComponent mentor);
+        
+        Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor);
 
+        Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor);
+        
+        Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment mentor);
+        
+        
         /// <summary>
         /// Henter mål der venter på godkendelse.
         /// </summary>

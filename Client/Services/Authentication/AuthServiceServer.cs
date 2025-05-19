@@ -84,7 +84,7 @@ namespace Client
         public async Task GetUserByEmail(string email)
         {
            var user = await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{email}");
-
+    
            if (user != null)
            {
                await _localStorage.SetItemAsync("resetEmail", user.Email); 
@@ -118,11 +118,31 @@ namespace Client
         public async Task<bool> UpdatePassword(string updatedPassword, string confirmedPassword)
         {
             BrugerLoginDTO currentUser = await GetBruger();
+            
+            //Bruger er allerede logget ind
+            if (currentUser != null)
+            {
+                var result = await _client.PutAsJsonAsync($"{serverUrl}/users/updatepassword/{currentUser.Email}", updatedPassword);
+                if (result.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+            }
+            //Bruger resetter men er ikke logget ind
+            else
+            {
+                var email = await GetLocalStorageResetEmail();
+                var result = await _client.PutAsJsonAsync($"{serverUrl}/users/updatepassword/{email}", updatedPassword);
+                
+                //var user = await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{email}");
 
-            var userEmail = await GetLocalStorageResetEmail();
-
-            return true;
-
+                if (result.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+               
+            }
+            return false;
         }
     }
 

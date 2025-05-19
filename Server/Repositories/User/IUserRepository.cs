@@ -1,5 +1,5 @@
 ﻿using Core;
-
+using MongoDB.Driver;
 namespace Server
 {
 
@@ -10,6 +10,8 @@ namespace Server
         Task<List<User>> GetAllUsers();
         Task<List<User>> GetAllUsersWithOutMyself(int userId);
         Task<User> GetUserByEmail(string email);
+        Task<List<User>> GetAllManagersWithOutHotel();
+        
         
         //Post
         Task<User> SaveBruger(User bruger);
@@ -23,6 +25,8 @@ namespace Server
         Task DeactivateUser(int studentId);
         Task ActivateUser(int studentId);
         Task UpdateRolle(string rolle, int userId);
+        Task<UpdateResult> UpadtePassword(string email, string updatedPassword);
+        
     }
 
 }

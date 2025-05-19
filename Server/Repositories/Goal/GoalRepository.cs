@@ -3,7 +3,6 @@ using Client.Components.Elevoversigt;
 using Core;
 using MongoDB.Driver;
 using DotNetEnv;
-using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 
 namespace Server
@@ -15,6 +14,8 @@ namespace Server
         private IMongoDatabase _goalsDatabase;
         private IMongoCollection<User> _goalCollection;
         private IMongoCollection<User> _brugerCollection;
+        private readonly IMongoCollection<BsonDocument> _countersCollection;
+
 
         public GoalRepository()
         {
@@ -25,10 +26,23 @@ namespace Server
             _goalsDatabase = _goalClient.GetDatabase("comwell");
             _goalCollection = _goalsDatabase.GetCollection<User>("users");
             _brugerCollection = _goalsDatabase.GetCollection<User>("users");
-
+            _countersCollection = _goalsDatabase.GetCollection<BsonDocument>("counters"); 
         }
+        
+        public async Task<int> GetNextSequenceValue(string sequenceName)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", sequenceName);
+            var update = Builders<BsonDocument>.Update.Inc("seq", 1);
+            var options = new FindOneAndUpdateOptions<BsonDocument>
+            {
+                ReturnDocument = ReturnDocument.After,
+                IsUpsert = true
+            };
 
-
+            var result = await _countersCollection.FindOneAndUpdateAsync(filter, update, options); 
+            return result["seq"].AsInt32;
+        }
+        
         
         //Fjerner et goal i vores nestedarray 
         public async Task<bool> DeleteGoal(int studentId, int planId, int forløbId, int goalId)
@@ -47,14 +61,13 @@ namespace Server
         }
 
         //Tilføjer en kommentar til vores mål
-        public async Task<bool> AddComment(Comment comment)
+        public async Task<Comment> AddComment(Comment comment)
         {
             Console.WriteLine($"Adding comment to Plan: {comment.PlanId}, Forløb: {comment.ForløbId}, Goal: {comment.GoalId}");
-    
-            // Use the exact field names from your document structure
-            // Notice the document uses _id fields, not Id fields
+
+            comment.Id = await GetNextSequenceValue("commentId");
+            
             var filter = Builders<User>.Filter.Eq("ElevPlan._id", comment.PlanId);
-    
             var update = Builders<User>.Update.Push("ElevPlan.Forløbs.$[f].Goals.$[g].Comments", comment);
     
             var arrayFilters = new List<ArrayFilterDefinition>
@@ -68,15 +81,103 @@ namespace Server
     
             var result = await _goalCollection.UpdateOneAsync(filter, update, options);
             Console.WriteLine($"Result: ModifiedCount={result.ModifiedCount}, MatchedCount={result.MatchedCount}");
-    
-            return result.ModifiedCount > 0;
+            
+            return comment;
         }
 
-        public Task StartGoal(ElevplanComponent mentor)
+        //Starter en kompetence
+        public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
-            throw new NotImplementedException();
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", mentor.PlanId);
+
+            var update = Builders<User>.Update
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "InProgress")
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].StarterId", mentor.MentorId)
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].StarterName", mentor.MentorName)
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].StartedAt", DateTime.Now);
+
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", mentor.ForløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", mentor.GoalId))
+            };
+
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+
+            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
+            if (result.ModifiedCount == 0)
+                return null;
+
+            //Skal dette laves om - herunder?
+            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
+            var goal = user?.ElevPlan?.Forløbs?
+                .FirstOrDefault(f => f.Id == mentor.ForløbId)?
+                .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);
+
+            return goal;
         }
         
+        public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor)
+        {
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", mentor.PlanId);
+
+            var update = Builders<User>.Update
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "AwaitingApproval")
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].ConfirmerId", mentor.MentorId)
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].ConfirmerName", mentor.MentorName)
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].ConfirmedAt", DateTime.Now);
+
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", mentor.ForløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", mentor.GoalId))
+            };
+
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+
+            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
+            if (result.ModifiedCount == 0)
+                return null;
+
+            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
+            //Skal dette laves om - herunder?
+            var goal = user?.ElevPlan?.Forløbs?
+                .FirstOrDefault(f => f.Id == mentor.ForløbId)?
+                .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);
+
+            return goal;
+        }
+
+        public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment mentor)
+        {
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", mentor.PlanId);
+
+            var update = Builders<User>.Update
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "Completed")
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].CompletedAt", DateTime.Now);
+
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", mentor.ForløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", mentor.GoalId))
+            };
+
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+
+            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
+            if (result.ModifiedCount == 0)
+                return null;
+
+            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
+            
+            //Skal dette laves om - herunder?
+            var goal = user?.ElevPlan?.Forløbs?
+                .FirstOrDefault(f => f.Id == mentor.ForløbId)?
+                .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);
+
+            return goal;
+        }
+
         public async Task<List<Goal>> GetAwaitingApproval()
         {
         var filter = Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f =>

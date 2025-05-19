@@ -139,36 +139,38 @@ namespace Client
 
         
         
-        public async Task StartGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
             goal.StarterId = mentor.MentorId;
             goal.StarterName = mentor.MentorName;
             goal.StartedAt = DateTime.Now;
             goal.Status = "InProgress";
+            return goal;
             
         }
         
-        public async Task ProcessGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
             goal.ConfirmerId = mentor.MentorId;
             goal.ConfirmerName = mentor.MentorName;
             goal.ConfirmedAt = DateTime.Now;
             goal.Status = "AwaitingApproval";
-            
 
+            return goal;
         }
         
-        public async Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment leder)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == leder.GoalId);
             goal.CompletedAt = DateTime.Now;
             goal.Status = "Completed";
-            
+
+            return goal;
         }
 
-        public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
+        public async Task<Comment> AddComment(NewComment comment)
         {
             var goal =  _goals.FirstOrDefault(x => x.Id == comment.GoalId);
 
@@ -177,13 +179,15 @@ namespace Client
                 var nyKomment = new Comment
                 {
                     Id = GenerateId(),
-                    Text = comment.Comment,
-                    CreatorId = currentUser.Id,
-                    CreatorName = currentUser.FirstName
+                    Text = comment.Comment
                 };
                 
                 goal.Comments.Add(nyKomment);
+                
+                return nyKomment;
             }
+
+            return null;
         }
     }
 }

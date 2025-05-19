@@ -25,31 +25,62 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public async Task StartGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
-            await _client.PutAsJsonAsync($"{serverUrl}/goals/", mentor);
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/startgoal", mentor);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var goal = await response.Content.ReadFromJsonAsync<Goal>();
+                return goal;
+            }
+
+            return null;
         }
 
-        public Task ProcessGoal(ElevplanComponent.MentorAssignment bruger)
+        public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment bruger)
         {
-            throw new NotImplementedException();
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/processgoal", bruger);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var goal = await response.Content.ReadFromJsonAsync<Goal>();
+                return goal;
+            }
+            return null;
+            
         }
 
-        public Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment leder)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(leder.MentorName);
+            
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirmgoal", leder);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var goal = await response.Content.ReadFromJsonAsync<Goal>();
+                return goal;
+            }
+
+            return null;
         }
 
-        public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
+        public async Task<Comment> AddComment(NewComment comment)
         {
             var response = await _client.PostAsJsonAsync($"{serverUrl}/goals/comment", comment);
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
+            {
+                var addedComment = await response.Content.ReadFromJsonAsync<Comment>();
+                return addedComment;
+            }
+            else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error adding comment: {response.StatusCode}, {errorContent}");
+                return null;
             }
         }
-
         public Task DeleteComment(int goalId, int commentId)
         {
             throw new NotImplementedException();
