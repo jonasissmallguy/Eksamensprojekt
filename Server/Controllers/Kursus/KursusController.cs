@@ -70,7 +70,8 @@ namespace Server
                 Title = kursus.Title,
                 Location = kursus.Location,
                 StartDate = kursus.StartDate,
-                EndDate = kursus.EndDate
+                EndDate = kursus.EndDate,
+                Description = kursus.Description
             };
             
             await _kursusRepository.SaveCourse(kursusModel);

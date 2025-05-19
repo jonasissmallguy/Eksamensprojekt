@@ -60,9 +60,15 @@
         </div>
 
         <div class="form-group mb-3">
+            <label for="description">Beskrivelse:</label>
+            <InputTextArea class="form-control" @bind-Value="newCourse.Description" />
+        </div>
+
+        <div class="form-group mb-3">
             <label for="startDate">Start dato:</label>
             <InputDate class="form-select" @bind-Value="newCourse.StartDate" />
         </div>
+        
 
         <div class="form-group mb-3">
             <label for="endDate">Slut dato:</label>
