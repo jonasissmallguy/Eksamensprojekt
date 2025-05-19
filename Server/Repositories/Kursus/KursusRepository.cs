@@ -33,18 +33,27 @@ namespace Server
 
         public async Task<bool> RemoveStudentFromCourse(int studentId, int kursusId)
         {
-            var filter = Builders<Kursus>.Filter.Eq(k => k.Id, kursusId);
+            var filter = Builders<Kursus>.Filter.Eq("_id", kursusId);
             var update = Builders<Kursus>.Update.PullFilter(k => k.Students, s => s.Id == studentId);
             var result = await _collection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
         }
 
+        
+        //Denne skal sætte for alle brugere der er på kursuset!
         public async Task<bool> CompleteCourse(Kursus kursus)
         {
-            var filter = Builders<Kursus>.Filter.Eq(k => k.Id, kursus.Id);
+            var filter = Builders<Kursus>.Filter.Eq("_id", kursus.Id);
             var update = Builders<Kursus>.Update.Set("Status", "Completed");
             var result = await _collection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
+        }
+
+        public async Task AddStudentToCourse(int studentId, Kursus kursus)
+        {
+            var filter = Builders<Kursus>.Filter.Eq("_id", kursus.Id);
+            var update = Builders<Kursus>.Update.Set("Students", studentId);
+            
         }
     }
 }

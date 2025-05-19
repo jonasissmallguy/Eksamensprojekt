@@ -13,6 +13,8 @@ namespace Client
         Task RemoveStudentFromCourse(int studentId, Kursus kursus);
 
         Task CompleteCourse(Kursus kursus);
+        
+        Task AddStudentToCourse(int studentId, Kursus kursus);
 
     }
 }

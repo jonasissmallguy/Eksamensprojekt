@@ -24,6 +24,8 @@ namespace Client
             return await _client.GetFromJsonAsync<Kursus>($"{serverUrl}/kursus/{kursusId}");
         }
 
+        
+        //Denne metode skal tilføje ny s
         public async Task AddCourse(Kursus kursus)
         {
             await _client.PostAsJsonAsync("kursus", kursus);
@@ -46,13 +48,18 @@ namespace Client
 
         public async Task RemoveStudentFromCourse(int studentId, Kursus kursus)
         {
-            var url = $"kursus/remove-student?studentId={studentId}&kursusId={kursus.Id}";
-            await _client.PutAsync(url, null);
+            int kursusId = kursus.Id;
+            await _client.DeleteAsync($"{serverUrl}/kursus/removestudent/{studentId}/{kursusId}");
         }
 
         public async Task CompleteCourse(Kursus kursus)
         {
-            await _client.PutAsJsonAsync("kursus/complete", kursus);
+            await _client.PutAsJsonAsync($"{serverUrl}/kursus/complete", kursus);
+        }
+
+        public async Task AddStudentToCourse(int studentId, Kursus kursus)
+        {
+            await _client.PostAsJsonAsync($"{serverUrl}/kursus/addcourse{studentId}", kursus);
         }
     }
 }

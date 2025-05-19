@@ -14,7 +14,6 @@ namespace Core
         public string Status { get; set; } = "Active"; //Active, InProgress...
         public List<User> Students { get; set; }
         
-
     }
 
 }

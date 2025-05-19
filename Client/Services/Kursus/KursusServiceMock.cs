@@ -92,4 +92,9 @@ public class KursusServiceMock : IKursus
             }
         }
     }
+
+    public Task AddStudentToCourse(int studentId, Kursus kursus)
+    {
+        throw new NotImplementedException();
+    }
 }
