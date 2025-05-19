@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using MongoDB.Driver;
+using Core;
 
 namespace Server
 {
@@ -7,6 +8,10 @@ namespace Server
     {
         Task<List<Hotel>> GetAllHotels();
         Task SaveHotel(Hotel hotel);
+        Task<Hotel> GetHotelById(int id);
+        
+        Task<UpdateResult> UpdateHotelChef(Hotel hotel);
+        
 
     }
 

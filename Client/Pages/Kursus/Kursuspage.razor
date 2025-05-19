@@ -29,7 +29,6 @@
             @foreach (var x in _kursus.Students)
             {
                 <td>@x.FirstName</td>
-                <td>@x.Hotel.HotelNavn</td>
                 <td>
                     <button clsas="btn btn-primary" @onclick="() => RemoveStudent(x)"></button>
                 </td>

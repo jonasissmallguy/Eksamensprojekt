@@ -1,4 +1,5 @@
 ﻿using Client;
+using Client.Components.Elevoversigt;
 using Core;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,29 +43,134 @@ namespace Server
         /// <param name="goal"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/comment")]
+        [Route("comment")]
         public async Task<IActionResult> PostComment(NewComment comment)
         {
-            var commentToAdd = await _goalRepository.AddComment(comment);
-
-            if (commentToAdd)
+            try
             {
+                if (comment == null)
+                    return BadRequest("Data");
+
+                var newComment = new Comment
+                {
+                    PlanId = comment.PlanId,
+                    ForløbId = comment.ForløbId,
+                    GoalId = comment.GoalId,
+                    CreatorId = comment.CommentorId,
+                    CreatorName = comment.CommentName,
+                    Text = comment.Comment,
+                    CreatedAt = DateTime.Now
+                };
+
+                var commentToAdd = await _goalRepository.AddComment(newComment);
+
+                if (commentToAdd == null)
+                {
+                    return BadRequest("Fejl - kunne ikke tilføje kommentar");
+                }
+                
                 return Ok(commentToAdd);
             }
-            return NotFound();
-            
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error " + ex.Message);
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
         }
         
-        /// <summary>
-        /// Tilføjer et nyt delmål til vores forløb
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> CreateGoal(Goal goal)
+        [HttpGet("awaiting-approval")]
+        public async Task<IActionResult> GetAwaitingApproval()
         {
-            return Ok();
+            var goals = await _goalRepository.GetAwaitingApproval();
+            return Ok(goals);
         }
 
+        [HttpGet("missing-courses/{userId}")]
+        public async Task<IActionResult> GetMissingCourses(int userId)
+        {
+            var goals = await _goalRepository.GetMissingCourses(userId);
+            return Ok(goals);
+        }
+
+        [HttpGet("out-of-house")]
+        public async Task<IActionResult> GetOutOfHouse()
+        {
+            var goals = await _goalRepository.GetOutOfHouse();
+            return Ok(goals);
+        }
+
+        /// <summary>
+        /// Starter goal
+        /// </summary>
+        /// <param name="bruger"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("startgoal")]
+        public async Task<IActionResult> StartGoal(ElevplanComponent.MentorAssignment bruger)
+        {
+            var goal = await _goalRepository.StartGoal(bruger);
+
+            if (goal == null)
+            {
+                return BadRequest();
+            }
+            return Ok(goal);
+        }
+
+        [HttpPut]
+        [Route("processgoal")]
+        public async Task<IActionResult> ProcessGoal(ElevplanComponent.MentorAssignment bruger)
+        {
+            var processedGoal = await _goalRepository.ProcessGoal(bruger);
+
+            if (processedGoal == null)
+            {
+                return BadRequest();
+            }
+            
+            return Ok(processedGoal);
+        }
+        
+        [HttpPut]
+        [Route("confirmgoal")]
+        public async Task<IActionResult> ConfirmGoal(ElevplanComponent.MentorAssignment bruger)
+        {
+            var processedGoal = await _goalRepository.ConfirmGoal(bruger);
+
+            if (processedGoal == null)
+            {
+                return BadRequest();
+            }
+            
+            return Ok(processedGoal);
+        }
+        
+
+        [HttpPut("confirm")]
+        public async Task<IActionResult> ConfirmGoalFromHomePage([FromBody] Goal goal)
+        {
+            if (goal == null || goal.Id <= 0)
+                return BadRequest("Ugyldigt mål data.");
+
+            var updated = await _goalRepository.ConfirmGoalFromHomePage(goal);
+            if (updated)
+                return Ok();
+            return NotFound("Mål ikke fundet til opdatering.");
+        }
+
+        
+        [HttpGet("type/{type}/user/{userId}")]
+        public async Task<IActionResult> GetGoalsByTypeForUser(string type, int userId)
+        {
+            var goals = await _goalRepository.GetGoalsByTypeForUser(type, userId);
+
+            if (goals == null || !goals.Any())
+                return NotFound("Ingen mål fundet for bruger og type.");
+
+            return Ok(goals);
+        }
+
+        
     }
 
 }

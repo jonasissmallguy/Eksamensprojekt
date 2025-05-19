@@ -32,13 +32,44 @@
     else if (_currentUser?.Rolle == "Køkkenchef")
     {
         <div class="dashboard-card">
-            <h5 class="card-title">Kommende Kurser</h5>
-            <p>Oversigt over kommende kurser</p>
+            <h5 class="card-title">Kommende Kurser (År @(_bruger?.ForløbId))</h5>
+            <p>Oversigt over aktive kurser for det aktuelle år</p>
+            @if (_upcomingCourses != null && _upcomingCourses.Any())
+            {
+                <ul class="list-reset">
+                    @foreach (var course in _upcomingCourses)
+                    {
+                        <li>Kursus: @course.Title – Deadline: @course.DeadLineAt.ToShortDateString()</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Ingen kurser fundet for dette år</p>
+            }
         </div>
+
+
         <div class="dashboard-card">
             <h5 class="card-title">Kommende Skoleophold</h5>
             <p>Kommende skoleophold for dine elever</p>
+            @if (_outOfHouse != null && _outOfHouse.Count > 0)
+            {
+                <ul class="list-reset">
+                    @foreach (var g in _outOfHouse)
+                    {
+                        <li>
+                            Skoleophold: @g.Title – Start: @g.SkoleStart?.ToShortDateString() - Slut: @g.SkoleEnd?.ToShortDateString()
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Ingen planlagte skoleophold</p>
+            }
         </div>
+
         <div class="dashboard-card">
             <h5 class="card-title">Manglende kurser</h5>
             <p>Dine elevers manglende kurser</p>
@@ -79,6 +110,7 @@
     private List<Goal> _awaitingApproval;
     private List<Goal> _missingCourses;
     private List<Goal> _outOfHouse;
+    private List<Goal> _upcomingCourses;
 
     protected override async Task OnInitializedAsync()
     {
@@ -104,6 +136,16 @@
                 _awaitingApproval = await IGoalService.GetAwaitingApproval();
                 _missingCourses = await IGoalService.GetMissingCourses(_bruger);
                 _outOfHouse = await IGoalService.GetOutOfHouse();
+                _upcomingCourses = await IGoalService.GetGoalsByTypeForUser(_bruger, "Kursus");
+                
+                var allGoals = await IGoalService.GetAllGoalsForBruger(_bruger); 
+                _upcomingCourses = allGoals
+                    .Where(g => g.Type == "Kursus" && g.Status == "Active")
+                    .Where(g => g.Semester == "1" || g.Semester == "2" || g.Semester == "3") 
+                    .Where(g => g.ForløbId == _bruger.ForløbId)
+                    .OrderBy(g => g.Semester)
+                    .ThenBy(g => g.DeadLineAt)
+                    .ToList();
             }
         }
        

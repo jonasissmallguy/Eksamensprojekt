@@ -43,6 +43,22 @@ namespace Server
             
             await _hotelCollection.InsertOneAsync(hotel);
         }
+
+        public async Task<Hotel> GetHotelById(int id)
+        {
+            var filter = Builders<Hotel>.Filter.Eq("_id", id);
+            return await _hotelCollection.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<UpdateResult> UpdateHotelChef(Hotel hotel)
+        {
+            var filter = Builders<Hotel>.Filter.Eq("_id", hotel.Id);
+            var update = Builders<Hotel>.Update
+                .Set("KøkkenChefId", hotel.KøkkenChefId)
+                .Set("KøkkenChefNavn", hotel.KøkkenChefNavn);
+
+            return await _hotelCollection.UpdateOneAsync(filter, update);
+        }
     }
 
 }

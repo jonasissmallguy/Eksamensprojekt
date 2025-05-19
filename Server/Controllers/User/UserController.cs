@@ -1,5 +1,8 @@
 ﻿using Core;
 using Microsoft.AspNetCore.Mvc;
+using DotNetEnv;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace Server
 {
@@ -9,10 +12,15 @@ namespace Server
     {
         
         private IUserRepository _userRepository;
+        private IHotelRepository _hotelRepository;
+        
+        private static Dictionary<string, (string Kode, DateTime Expiry)> verificeringsKoder = new();
 
-        public UserController(IUserRepository userRepository)
+
+        public UserController(IUserRepository userRepository, IHotelRepository hotelRepository)
         {
             _userRepository = userRepository;
+            _hotelRepository = hotelRepository;
         }
 
         [HttpGet]
@@ -43,6 +51,88 @@ namespace Server
                 return NotFound();
             }
             return Ok(allUsers);
+        }
+  
+        //Hjælpefunktion til at reset email
+        public async Task SendResetCodeEmail(string email, string verificeringsKode)
+        {
+            //Loader .env
+            Env.Load();
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+            
+            //Anvender SendGrid
+            var client = new SendGridClient(apiKey);
+
+            //Fra & Til
+            var from = new EmailAddress(email, "HR");
+            var to = new EmailAddress(email);
+            
+            //Indhold
+            var subject = "Nulstilling af Comwell adgangskode";
+            var plainTextContent =
+                $"Opret din nye adgangskode\t\n\t\t\n\t" +
+                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
+                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
+                $"{verificeringsKode}" +
+                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
+            
+            var htmlContent = $"{verificeringsKode}";
+            
+            //Generer email og sender
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+        }
+        
+        //Checker vores verificeringskode... i server memory
+        public async Task<bool> CheckVerficiationCode(string email, string kode)
+        {
+            if (verificeringsKoder.TryGetValue(email, out var output))
+            {
+                if (output.Kode == kode && output.Expiry > DateTime.Now)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        //Generer verificeringskode
+        public string GenerateResetCode(string email)
+        {
+            Random ran = new Random();
+            string verificeringsKode = String.Empty;
+                
+            string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
+            int size = 8;
+
+            for (int i = 0; i < size; i++)
+            {
+                //Tager et random index
+                int x = ran.Next(bogstaver.Length);
+                verificeringsKode = verificeringsKode + bogstaver[x];
+            }
+                
+            verificeringsKoder[email] = (verificeringsKode, DateTime.Now.AddMinutes(10));
+            
+            return verificeringsKode;
+        }
+        
+        [HttpGet]
+        [Route("{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetUserByEmail(email);
+            
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            
+            //Send reset kode
+            await SendResetCodeEmail("jonasdupontheidemann@gmail.com", GenerateResetCode(email));
+            
+            return Ok(user);
         }
 
         
@@ -81,15 +171,58 @@ namespace Server
         [HttpPost]
         public async Task<IActionResult> PostUser(BrugerCreateDTO user)
         {
-            string email = user.Email;
-            
-            var result = await _userRepository.CheckUnique(email);
+            //Validering
+            if (string.IsNullOrWhiteSpace(user.FirstName))
+                return Conflict("Venligst indtast et fornavn");
 
+            if (string.IsNullOrWhiteSpace(user.LastName))
+                return Conflict("Venligst indtast et efternavn");
+
+            if (string.IsNullOrWhiteSpace(user.Email))
+                return Conflict("Venligst indtast en e-mail");
+
+            if (!user.Mobile.HasValue)
+                return Conflict("Venligst indtast et mobilnummer");
+
+            if (string.IsNullOrWhiteSpace(user.Rolle))
+                return Conflict("Venligst vælg en rolle");
+
+            if (string.IsNullOrWhiteSpace(user.Køn))
+                return Conflict("Venligst angiv et køn");
+
+            // Tjekker unik email
+            var result = await _userRepository.CheckUnique(user.Email);
             if (!result)
-            {
                 return Conflict("Du har en bruger");
+
+            if (user.Rolle == "Elev")
+            {
+                if (user.StartDate == null)
+                    return Conflict("Venligst indsæt en startdato");
+
+                if (user.EndDate == null)
+                    return Conflict("Venligst angiv en slutdato");
+
+                if (user.StartDate > user.EndDate)
+                    return Conflict("Mismatch i start og slutdato");
+
+                if (string.IsNullOrWhiteSpace(user.Year))
+                    return Conflict("Venligst angiv en årgang");
+
+                if (string.IsNullOrWhiteSpace(user.Skole))
+                    return Conflict("Venligst angiv en skole");
+
+                if (string.IsNullOrWhiteSpace(user.Uddannelse))
+                    return Conflict("Venligst angiv en uddannelse");
             }
-            
+            Hotel hotel = null;
+            hotel = await _hotelRepository.GetHotelById(user.HotelId);
+
+            if (hotel == null)
+            {
+                return BadRequest();
+            }
+
             var nyBruger = new User
             {
                 FirstName = user.FirstName,
@@ -98,14 +231,37 @@ namespace Server
                 Email = user.Email,
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
-                //mangler hotel
-                StartDate = user.StartDate,
-                Skole = user.Skole,
-                Uddannelse = user.Uddannelse
+                HotelId = user.HotelId,
+                HotelNavn = hotel?.HotelNavn
             };
-            
-             var newUser = await _userRepository.SaveBruger(nyBruger);
-            
+
+            if (user.Rolle == "Elev")
+            {
+                nyBruger.StartDate = user.StartDate;
+                nyBruger.EndDate = user.EndDate;
+                nyBruger.Year = user.Year;
+                nyBruger.Skole = user.Skole;
+                nyBruger.Uddannelse = user.Uddannelse;
+            }
+
+            if (user.Rolle == "Køkkenchef")
+            {
+        
+                if (hotel != null && (hotel.KøkkenChefId != null || !string.IsNullOrEmpty(hotel.KøkkenChefNavn)))
+                {
+                    return Conflict("Dette hotel har allerede en køkkenchef");
+                }
+            }
+    
+            var newUser = await _userRepository.SaveBruger(nyBruger);
+    
+            if (user.Rolle == "Køkkenchef" && hotel != null)
+            {
+                hotel.KøkkenChefId = newUser.Id;
+                hotel.KøkkenChefNavn = newUser.FirstName + " " + newUser.LastName;
+                await _hotelRepository.UpdateHotelChef(hotel);
+            }
+    
             return Ok(newUser);
         }
 
@@ -160,10 +316,40 @@ namespace Server
             
             return Ok();
         }
-        
-        
-        
 
+        [HttpPut]
+        [Route("updatepassword/{email}")]
+        public async Task<IActionResult> UpdatePassword(string email, [FromBody] string updatedPassword)
+        {
+            var result = await _userRepository.UpadtePassword(email, updatedPassword);
+
+            if (result == null)
+            {
+                return BadRequest();
+            }
+            
+            return Ok(result);
+            
+        }
+
+        /// <summary>
+        /// Metode til at tjekke, at vores verificeringskoder er rigtige
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{email}/{kode}")]
+        public async Task<bool> CheckVerificationCoed(string email, string kode)
+        {
+            if (verificeringsKoder.TryGetValue(email, out var output))
+            {
+                if (output.Kode == kode && output.Expiry > DateTime.Now)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
     }
 
 }

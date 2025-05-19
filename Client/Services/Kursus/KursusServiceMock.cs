@@ -18,7 +18,6 @@ public class KursusServiceMock : IKursus
             EndDate = new  DateTime(2025, 7, 24, 15, 0, 0),
             Students = new List<User>
             {
-                new User {Id = 3, FirstName = "Jonas", Hotel = new Hotel{Id = 1, HotelNavn = "Aarhus Comwell"}}
             }
             
         }

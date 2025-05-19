@@ -26,16 +26,13 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task<List<ManagerDTO>> GetAllManagers()
-        {
-            throw new NotImplementedException();
-        }
+
         
         public async Task<User> OpretBruger(BrugerCreateDTO nyBruger)
         { 
             HttpResponseMessage response = await _client.PostAsJsonAsync($"{serverUrl}/users", nyBruger);
 
-            if (response.StatusCode == HttpStatusCode.Conflict)
+            if (!response.IsSuccessStatusCode)
             {
                 var message = await response.Content.ReadAsStringAsync();
                 throw new Exception(message);
