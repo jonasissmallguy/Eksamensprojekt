@@ -326,7 +326,7 @@
     private bool isChecked;
 
     private List<ElevOversigtDTO> alleElever = new();
-    private List<Hotel> alleHoteller;
+    private List<Hotel> alleHoteller = new();
     private HashSet<int> selectedStudentIds = new();
     
     private DateOnly? selectedSkolestartBefore = null;
@@ -455,7 +455,7 @@
     //Herunder koden til tilføj delmål
     private GoalCreationDTO newGoal = new();
 
-    private List<GoalNameDTO> alleTyper;
+    private List<GoalNameDTO> alleTyper = new();
 
     private int? selectedGoalId = null;
 
