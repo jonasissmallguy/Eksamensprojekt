@@ -1,6 +1,7 @@
 ﻿
 
 using Core;
+using Core.DTO.Kursus;
 
 namespace Client;
 
@@ -41,7 +42,12 @@ public class KursusServiceMock : IKursus
         return kursus;
     }
 
-    public Task AddCourse(Kursus kursus)
+    public Task SaveCourse(KursusCreationDTO kursus)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SaveCourse(Kursus kursus)
     {
         throw new NotImplementedException();
     }
@@ -91,5 +97,10 @@ public class KursusServiceMock : IKursus
                 }
             }
         }
+    }
+
+    public Task<List<KursusTemplate>> GetAllTemplates()
+    {
+        throw new NotImplementedException();
     }
 }
