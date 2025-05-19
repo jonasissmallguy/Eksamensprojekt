@@ -17,9 +17,6 @@
     <div class="searchbar">
         <TextInput @bind-value="@searchText" Placeholder="Søg ved navn..."></TextInput>
     </div>
-    <div>
-        <button @onclick="VisElever">Vis data</button>
-    </div>
 
     <!-- Dropdown til hotelvalg -->
     <div class="dropdownmenu">
@@ -146,11 +143,15 @@
         <th>Start</th>
         <th>Slut</th>
     </tr>
-    @if (alleElever == null)
+    @if (isLoading)
     {
         <p>Indlæser elever...</p>
     }
-    else if (alleElever != null)
+    else if (alleElever == null)
+    {
+        <p>Kan ikke indlæse elever...</p>
+    }
+    else
     {
         @foreach (var x in FiltreredElever)
         {
@@ -171,10 +172,6 @@
 
             </tr>
         }
-    }
-    else
-    {
-        <p>Kan ikke hente elever...</p>
     }
 </table>
 
@@ -332,6 +329,9 @@
     private DateOnly? selectedSkoleendBefore = null;
     private DateOnly? selectedSkoleendAfter = null;
     
+    private bool isLoading = false;
+
+    
     
     // Filter til søgetekst og til valg af hotel
     private IEnumerable<ElevOversigtDTO> FiltreredElever {
@@ -355,13 +355,27 @@
 
     protected override async Task OnInitializedAsync()
     {
-        alleElever = await IBrugerService.GetElevOversigt() ?? new List<ElevOversigtDTO>();
-        Console.WriteLine($"Number of students retrieved: {alleElever.Count}");
-        
-        alleHoteller = await IHotelService.GetAllHotelNames();
-        
-        alleTyper = await IGoalService.GetAllGoalTypes();
+        try
+        {
+            isLoading = true;
+            alleElever = await IBrugerService.GetElevOversigt() ?? new List<ElevOversigtDTO>();
+            Console.WriteLine($"Number of students retrieved: {alleElever.Count}");
+
+            alleHoteller = await IHotelService.GetAllHotelNames();
+
+            alleTyper = await IGoalService.GetAllGoalTypes();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged(); // Ensure UI updates
+        }
     }
+
 
     private async Task NavigateToElevPlan(int studentId)
     {
@@ -476,11 +490,6 @@
     {
         modalRef?.Open();
     }
-
-    private void VisElever()
-    {
-        StateHasChanged();
-    }
     
     // Lille sag der checker hvilke elever der er tjekket af
     private void LogSelectedStudents()
@@ -496,8 +505,6 @@
             Console.WriteLine(elev);
         }
     }
-
-
     
     
 }
