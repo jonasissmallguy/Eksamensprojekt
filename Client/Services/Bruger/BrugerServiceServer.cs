@@ -24,9 +24,18 @@ namespace Client
             return await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{userId}");
         }
 
-        public Task<bool> OpdaterBruger(int userId, User updateBruger)
+        public async Task<bool> OpdaterBruger(int userId, User updateBruger)
         {
-            throw new NotImplementedException();
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/users/update", updateBruger);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Update failed: {response.StatusCode} - {errorContent}");
+                return false;
+            }
+
+            return true;
         }
 
 
@@ -80,9 +89,9 @@ namespace Client
             return await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
         }
         
-        public async Task<List<User>> GetAllUsersWithOutCurrent(int userId)
+        public async Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId)
         {
-            return await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users/withoutmyself/{userId}");
+            return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"{serverUrl}/users/withoutmyself/{userId}");
         }
 
         public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
@@ -134,6 +143,11 @@ namespace Client
         public Task<User> GetUserById(int currentUserId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<KursusDeltagerListeDTO>> GetAllStudents()
+        {
+            return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"{serverUrl}/users/allstudents");
         }
 
         public Task<List<User>> GetStudentsForløb(int leaderId)
