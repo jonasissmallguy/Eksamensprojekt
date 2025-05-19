@@ -235,7 +235,13 @@ namespace Server
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
                 HotelId = user.HotelId,
-                HotelNavn = hotel?.HotelNavn
+                HotelNavn = hotel?.HotelNavn,
+                //mangler hotel
+                Year = user.Year,
+                StartDate = user.StartDate,
+                EndDate = user.EndDate,
+                Skole = user.Skole,
+                Uddannelse = user.Uddannelse
             };
 
             if (user.Rolle == "Elev")
