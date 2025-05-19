@@ -28,7 +28,7 @@ namespace Client
                  {
                      // Tilføjet af Rasmus
                      HotelId = hotel.Id,
-                     HotelName = hotel.HotelNavn
+                     HotelNavn = hotel.HotelNavn
                  });
             }
             return hotelNames;

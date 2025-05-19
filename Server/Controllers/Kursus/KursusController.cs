@@ -1,4 +1,5 @@
 ﻿using Core;
+using Core.DTO.Kursus;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server
@@ -61,5 +62,31 @@ namespace Server
             return success ? Ok() : NotFound();
             
         }
+
+        [HttpGet]
+        [Route("templates")]
+        public async Task<IActionResult> GetAllTemplates()
+        {
+            var kursus = await _kursusRepository.GetAllTemplates();
+            
+            return Ok(kursus);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> AddCourse(KursusCreationDTO kursus)
+        {
+            var kursusModel = new Kursus
+            {
+                Title = kursus.Title,
+                Location = kursus.Location,
+                StartDate = kursus.StartDate,
+                EndDate = kursus.EndDate
+            };
+            
+            await _kursusRepository.SaveCourse(kursusModel);
+
+            return Ok();
+        }
+        
     }
 }

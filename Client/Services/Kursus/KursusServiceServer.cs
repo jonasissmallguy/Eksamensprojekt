@@ -1,5 +1,6 @@
 ﻿using Core;
 using System.Net.Http.Json;
+using Core.DTO.Kursus;
 
 namespace Client
 {
@@ -27,8 +28,9 @@ namespace Client
         
         //Denne metode skal tilføje ny s
         public async Task AddCourse(Kursus kursus)
+        public async Task SaveCourse(KursusCreationDTO kursus)
         {
-            await _client.PostAsJsonAsync("kursus", kursus);
+             await _client.PostAsJsonAsync($"{serverUrl}/kursus", kursus);
         }
 
         public async Task UpdateCourse(Kursus kursus)
@@ -60,6 +62,11 @@ namespace Client
         public async Task AddStudentToCourse(int studentId, Kursus kursus)
         {
             await _client.PostAsJsonAsync($"{serverUrl}/kursus/addcourse{studentId}", kursus);
+        }
+
+        public async Task<List<KursusTemplate>> GetAllTemplates()
+        {
+            return await _client.GetFromJsonAsync<List<KursusTemplate>>($"{serverUrl}/kursus/templates");
         }
     }
 }
