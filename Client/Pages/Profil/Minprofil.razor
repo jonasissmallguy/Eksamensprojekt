@@ -14,7 +14,6 @@
             <div class="profile-image-container">
                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profil billede" class="profile-image"/> 
             </div>
-        <button class="change-pic-btn"> Ret billede</button>
         <button class="change-password-btn" @onclick="() => NavigateToResetPassword()">Rediger adgangskode</button>     
     </div>
     
@@ -64,6 +63,9 @@
 
     private User _minBruger { get; set; }
     
+    private byte[] _pictureByes;
+
+    
     protected override async Task OnInitializedAsync()
     {
         if (_currentUser == null)
@@ -83,5 +85,6 @@
     {
         await IBrugerService.OpdaterBruger(id, _minBruger);
     }
+    
 
 }

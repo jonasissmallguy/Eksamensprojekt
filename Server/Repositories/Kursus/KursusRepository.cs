@@ -16,9 +16,9 @@ namespace Server
 
         public KursusRepository()
         {
-            Env.Load();
-            var connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTIONSTRING");
-            _client = new MongoClient(connectionString);
+            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+            
+            _client = new MongoClient(ConnectionString);
             _database = _client.GetDatabase("comwell");
             _collection = _database.GetCollection<Kursus>("kurser");
             _collectionTemplate = _database.GetCollection<KursusTemplate>("kursertemplate");
@@ -67,6 +67,14 @@ namespace Server
             var update = Builders<Kursus>.Update.Set("Status", "Completed");
             var result = await _collection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
+        }
+
+        public Task AddStudentToCourse(User user, int kursusId)
+        {
+            var filter = Builders<Kursus>.Filter.Eq("_id", kursusId);
+            var update = Builders<Kursus>.Update.Push("Students", user);
+            
+            return _collection.UpdateOneAsync(filter, update);
         }
 
         public async Task AddStudentToCourse(int studentId, Kursus kursus)

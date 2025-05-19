@@ -35,7 +35,7 @@
             {
                 <tr>
                     <td>@x.FirstName</td>
-                    <td>@x.HotelNavn</td>
+                    <td>@x.Hotel</td>
                     <td>@x.Rolle</td>
                     <td>@x.Status</td>
                     <td>
@@ -102,7 +102,7 @@ else
 @code {
     
     //En liste af alle brugere
-    List<User> _allUsers = new();
+    List<BrugerAdministrationDTO> _allUsers = new();
     
     //En liste af alle vores hoteller
     List<Hotel> _allHotels = new();
@@ -117,7 +117,7 @@ else
     private ModalHotel hotelModal { get; set; }
     
     //En bruger, som vi ønsker at ændre rolle på
-    private User _userToChange { get; set; }
+    private BrugerAdministrationDTO _userToChange { get; set; }
 
     //Et array af mulige roller
     private string[] _roller = { "HR", "Kok", "Køkkenchef" };
@@ -126,7 +126,7 @@ else
     private string _searchText;
 
     //En IEnumerable liste, der er brugt til filtering   
-    private IEnumerable<User> _filteredUsers => _allUsers.Where(b =>
+    private IEnumerable<BrugerAdministrationDTO> _filteredUsers => _allUsers.Where(b =>
         (string.IsNullOrWhiteSpace(_searchText) || b.FirstName.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
     
     protected override async Task OnInitializedAsync()
@@ -141,13 +141,13 @@ else
         _allHotels = await IHotelService.GetHotels();
     }
 
-    private void ChangeRolle(User userChange)
+    private void ChangeRolle(BrugerAdministrationDTO userChange)
     {
         rolleModal.Open();
         _userToChange = userChange;
     }
     
-    private async Task ChangeHotel(User user)
+    private async Task ChangeHotel(BrugerAdministrationDTO user)
     {
         hotelModal.Open();
         _userToChange = user;

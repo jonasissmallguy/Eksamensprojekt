@@ -35,10 +35,6 @@
     </table>
 }
 
-else
-{
-    <p>Loading...</p>
-}
 <ModalKursus @ref="_modalKursus">
     <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
         <DataAnnotationsValidator />
@@ -62,7 +58,7 @@ else
             <label for="location">Lokation:</label>
             <InputText class="form-control" @bind-Value="newCourse.Location" />
         </div>
-        
+
         <div class="form-group mb-3">
             <label for="description">Beskrivelse:</label>
             <InputTextArea class="form-control" @bind-Value="newCourse.Description" />
@@ -72,6 +68,7 @@ else
             <label for="startDate">Start dato:</label>
             <InputDate class="form-select" @bind-Value="newCourse.StartDate" />
         </div>
+        
 
         <div class="form-group mb-3">
             <label for="endDate">Slut dato:</label>
