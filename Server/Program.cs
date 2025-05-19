@@ -46,10 +46,16 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseRouting();
+
 app.UseHttpsRedirection();
 app.UseCors("policy");
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles(); 
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
