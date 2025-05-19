@@ -63,8 +63,8 @@
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
         
-            elevPlan.TotalGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count);
-            elevPlan.CompletedGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count(g => g.Status == "Completed"));
+        elevPlan.TotalGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count);
+        elevPlan.CompletedGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count(g => g.Status == "Completed"));
 
     }
 
