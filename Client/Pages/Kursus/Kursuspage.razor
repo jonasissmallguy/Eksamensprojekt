@@ -7,6 +7,8 @@
 
 
 @page "/kursuspage/{kursusId:int}"
+
+
 <h3>Kursus information</h3>
 <h5>@_kursus.Title</h5>
 <h5>Start dato:@_kursus.StartDate</h5>
@@ -26,6 +28,7 @@
         </thead>
         <tbody>
         <tr>
+            
             @foreach (var x in _kursus.Students)
             {
                 <td>@x.FirstName</td>

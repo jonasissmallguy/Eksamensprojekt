@@ -5,52 +5,54 @@ namespace Client
 {
     public class KursusServiceServer : IKursus
     {
-        private readonly HttpClient _http;
+        private string serverUrl = "http://localhost:5075";
+        private readonly HttpClient _client;
+        
 
         public KursusServiceServer(HttpClient http)
         {
-            _http = http;
+            _client = http;
         }
 
         public async Task<List<Kursus>> GetAllCourses()
         {
-            return await _http.GetFromJsonAsync<List<Kursus>>("kursus");
+            return await _client.GetFromJsonAsync<List<Kursus>>($"{serverUrl}/kursus");
         }
 
         public async Task<Kursus> GetCourseById(int kursusId)
         {
-            return await _http.GetFromJsonAsync<Kursus>($"kursus/{kursusId}");
+            return await _client.GetFromJsonAsync<Kursus>($"{serverUrl}/kursus/{kursusId}");
         }
 
         public async Task AddCourse(Kursus kursus)
         {
-            await _http.PostAsJsonAsync("kursus", kursus);
+            await _client.PostAsJsonAsync("kursus", kursus);
         }
 
         public async Task UpdateCourse(Kursus kursus)
         {
-            await _http.PutAsJsonAsync("kursus", kursus);
+            await _client.PutAsJsonAsync("kursus", kursus);
         }
 
         public async Task DeleteCourse(Kursus kursus, int kursusId)
         {
-            await _http.DeleteAsync($"kursus/{kursusId}");
+            await _client.DeleteAsync($"kursus/{kursusId}");
         }
 
         public async Task StartCourse(Kursus kursus)
         {
-            await _http.PutAsJsonAsync("kursus/start", kursus);
+            await _client.PutAsJsonAsync("kursus/start", kursus);
         }
 
         public async Task RemoveStudentFromCourse(int studentId, Kursus kursus)
         {
             var url = $"kursus/remove-student?studentId={studentId}&kursusId={kursus.Id}";
-            await _http.PutAsync(url, null);
+            await _client.PutAsync(url, null);
         }
 
         public async Task CompleteCourse(Kursus kursus)
         {
-            await _http.PutAsJsonAsync("kursus/complete", kursus);
+            await _client.PutAsJsonAsync("kursus/complete", kursus);
         }
     }
 }
