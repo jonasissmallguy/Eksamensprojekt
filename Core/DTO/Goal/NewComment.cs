@@ -13,6 +13,9 @@ namespace Client
         
         public int CommentorId { get; set; }
         public string CommentName { get; set; }
+        
+        public DateTime CreatedAt { get; set; }
+        
 
     }
 

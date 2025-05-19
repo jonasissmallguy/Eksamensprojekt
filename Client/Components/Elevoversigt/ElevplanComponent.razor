@@ -96,7 +96,7 @@
                                                                         <div class="comment mb-2 p-2 bg-white rounded">
                                                                             <div class="d-flex justify-content-between">
                                                                                 <strong>@comment.CreatorName</strong>
-                                                                                <small class="text-muted">@DateTime.Now.ToString("dd-MM-yyyy HH:mm")</small>
+                                                                                <small class="text-muted">@comment.CreatedAt.ToString("dd-MM-yyyy HH:mm")</small>
                                                                             </div>
                                                                             <p class="mb-0">@comment.Text</p>
                                                                         </div>
@@ -134,7 +134,7 @@
                                         </Accordion>
                                     </Content>
                                 </AccordionItem>
-                            }
+                            }   
                         </Accordion>
                     </div>
                 </Content>

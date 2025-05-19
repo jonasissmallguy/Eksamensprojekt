@@ -14,5 +14,9 @@ namespace Core
         public string Text { get; set; }
         public int CreatorId { get; set; }
         public string CreatorName { get; set; }
+        
+        public DateTime CreatedAt { get; set; }
+        
+        
     }
 }

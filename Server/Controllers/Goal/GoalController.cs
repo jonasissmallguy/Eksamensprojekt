@@ -58,7 +58,8 @@ namespace Server
                     GoalId = comment.GoalId,
                     CreatorId = comment.CommentorId,
                     CreatorName = comment.CommentName,
-                    Text = comment.Comment
+                    Text = comment.Comment,
+                    CreatedAt = DateTime.Now
                 };
 
                 var commentToAdd = await _goalRepository.AddComment(newComment);
