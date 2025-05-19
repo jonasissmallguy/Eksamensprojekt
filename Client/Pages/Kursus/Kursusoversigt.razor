@@ -1,4 +1,5 @@
-﻿@using Core;
+﻿@using Client.Components.Kursus
+@using Core;
 
 @inject IGoal GoalService;
 @inject IKursus IKursusService;
@@ -6,6 +7,10 @@
 
 @page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
+
+@if (alleKurser != null)
+{
+<button @onclick="AddCourse">Tilføj kursus</button>
 
 <table>
     <tr>
@@ -17,29 +22,126 @@
     </tr>
     @foreach (var kursus in alleKurser)
     {
-        <tr>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Title</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Location</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.StartDate</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.EndDate</td>
-            <td>@kursus.Status</td>
-        </tr>
+    <tr>
+    <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.Title</td>
+    <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.Location</td>
+    <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.StartDate</td>
+    <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.EndDate</td>
+    <td>@kursus.Status</td>
+    </tr>
     }
 </table>
+<ModalKursus @ref="_modalKursus">
+    <div class="form-group mb-3">
+        <label for="courseSelect">Vælg kursus:</label>
+        <select id="courseSelect" class="form-control" @bind="selectedCourse">
+            <option value="">-- Vælg kursus --</option>
+            @if (Courses != null)
+            {
+                <!--
+                @foreach (var course in Courses)
+                {
+                    <option value="@course.Id">@course.Name</option>
+                }
+                -->
+            }
+        </select>
+    </div>
 
+    <div class="form-group mb-3">
+        <label for="location">Lokation:</label>
+        <input type="text" id="location" class="form-control" @bind="location" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="startDate">Startdato:</label>
+        <input type="date" id="startDate" class="form-control" @bind="startDate" />
+    </div>
+
+
+    <div class="form-group mb-3">
+        <label for="endDate">Slutdato:</label>
+        <input type="date" id="endDate" class="form-control" @bind="endDate" />
+    </div>
+
+    <div class="text-end mt-4">
+        <button type="button" class="btn btn-secondary me-2" @onclick="CloseCourseSelection">Annuller</button>
+        <!-- <button type="button" class="btn btn-primary" @onclick="SelectCourse" disabled="@(!IsFormValid())">Gem</button>-->
+    </div>
+</ModalKursus>    
+}
+
+else
+{
+    <p>Loading...</p>
+}
 
 @code {
 
     
     private List<Kursus> alleKurser;
+    private ModalKursus _modalKursus { get; set; }
+
+    private List<Kursus> Courses;
+    
+    private string? selectedCourse;
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private string? location;
     
     protected override async Task OnInitializedAsync()
     {
         alleKurser = await IKursusService.GetAllCourses();
     }
     
-    private void NavigateToKursus(int kursusId)
+    private void NavigateToCourse(int kursusId)
     {
         navMan.NavigateTo($"kursuspage/{kursusId}");
+    }
+
+    private void AddCourse()
+    {
+        _modalKursus.Open();
+    }
+
+    private void CloseCourseSelection()
+    {
+        _modalKursus.Close();
+    }
+
+    /*
+    public async Task SelectCourse()
+    {
+        if (IsFormValid())
+        {
+            var courseSelection = new CourseSelection
+            {
+                Title = selectedCourse,
+                Location = location,
+                StartDate = startDate.Value,
+                EndDate = endDate.Value
+            };
+            
+            await OnCourseSelected.InvokeAsync(courseSelection);
+            ResetForm();
+            CloseCourseSelection();
+        }
+    }
+    */
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrEmpty(selectedCourse) && 
+               startDate.HasValue && 
+               endDate.HasValue && 
+               !string.IsNullOrEmpty(location) &&
+               startDate <= endDate;
+    }
+    
+    private void ResetForm()
+    {
+        selectedCourse = null;
+        startDate = null;
+        endDate = null;
+        location = null;
     }
 }
