@@ -122,9 +122,9 @@ namespace Client
             }
         }
 
-        public Task<List<Goal>> GetAllGoalsForBruger(User bruger)
+        public async Task<List<Goal>> GetAllGoalsForBruger(User bruger)
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/all-for-user/{bruger.Id}");
         }
 
         public async Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string type)
