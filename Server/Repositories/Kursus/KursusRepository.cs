@@ -1,6 +1,7 @@
 ﻿using Core;
 using MongoDB.Driver;
 using DotNetEnv;
+using MongoDB.Bson;
 
 namespace Server
 {
@@ -10,6 +11,8 @@ namespace Server
         private IMongoDatabase _database;
         private IMongoCollection<Kursus> _collection;
         private IMongoCollection<KursusTemplate> _collectionTemplate;
+        private readonly IMongoCollection<BsonDocument> _countersCollection;
+
 
         public KursusRepository()
         {
@@ -19,6 +22,21 @@ namespace Server
             _database = _client.GetDatabase("comwell");
             _collection = _database.GetCollection<Kursus>("kurser");
             _collectionTemplate = _database.GetCollection<KursusTemplate>("kursertemplate");
+            _countersCollection = _database.GetCollection<BsonDocument>("counters"); 
+        }
+        
+        public async Task<int> GetNextSequenceValue(string sequenceName)
+        {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", sequenceName);
+            var update = Builders<BsonDocument>.Update.Inc("seq", 1);
+            var options = new FindOneAndUpdateOptions<BsonDocument>
+            {
+                ReturnDocument = ReturnDocument.After,
+                IsUpsert = true
+            };
+
+            var result = await _countersCollection.FindOneAndUpdateAsync(filter, update, options); 
+            return result["seq"].AsInt32;
         }
 
         public async Task<List<Kursus>> GetAllCourses()
@@ -61,12 +79,13 @@ namespace Server
         public async Task<List<KursusTemplate>> GetAllTemplates()
         {
             var filter = Builders<KursusTemplate>.Filter.Empty;
+            
             return await _collectionTemplate.Find(filter).ToListAsync();
         }
 
         public async Task SaveCourse(Kursus kursus)
         {
-            kursus.Id = 9996;
+            kursus.Id = await GetNextSequenceValue("kursusId");
             _collection.InsertOne(kursus);
         }
     }
