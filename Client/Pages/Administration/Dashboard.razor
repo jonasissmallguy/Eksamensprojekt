@@ -27,7 +27,7 @@
                 <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
                 @foreach (var y in alleHoteller)
                 {
-                    <DropdownItem @onclick="() => SelectHotel(y.HotelId)">@y.HotelName</DropdownItem>
+                    <DropdownItem @onclick="() => SelectHotel(y.Id)">@y.HotelNavn</DropdownItem>
                 }
             </DropdownMenu>
         </Dropdown>
@@ -321,7 +321,7 @@
     private bool isChecked;
 
     private List<ElevOversigtDTO> alleElever = new();
-    private List<HotelNameDTO> alleHoteller;
+    private List<Hotel> alleHoteller;
     private HashSet<int> selectedStudentIds = new();
     
     private DateOnly? selectedSkolestartBefore = null;
@@ -361,7 +361,7 @@
             alleElever = await IBrugerService.GetElevOversigt() ?? new List<ElevOversigtDTO>();
             Console.WriteLine($"Number of students retrieved: {alleElever.Count}");
 
-            alleHoteller = await IHotelService.GetAllHotelNames();
+            alleHoteller = await IHotelService.GetHotels();
 
             alleTyper = await IGoalService.GetAllGoalTypes();
         }
@@ -384,8 +384,8 @@
 
     private string GetHotelName(int? hotelId)
     {
-        var hotel = alleHoteller.FirstOrDefault(h => h.HotelId == hotelId);
-        return hotel?.HotelName ?? "Ukendt Hotel";
+        var hotel = alleHoteller.FirstOrDefault(h => h.Id == hotelId);
+        return hotel?.HotelNavn ?? "Ukendt Hotel";
     }
 
     private void SelectHotel(int? hotelId)
