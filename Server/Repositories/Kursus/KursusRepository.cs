@@ -9,6 +9,7 @@ namespace Server
         private IMongoClient _client;
         private IMongoDatabase _database;
         private IMongoCollection<Kursus> _collection;
+        private IMongoCollection<KursusTemplate> _collectionTemplate;
 
         public KursusRepository()
         {
@@ -17,6 +18,7 @@ namespace Server
             _client = new MongoClient(connectionString);
             _database = _client.GetDatabase("comwell");
             _collection = _database.GetCollection<Kursus>("kurser");
+            _collectionTemplate = _database.GetCollection<KursusTemplate>("kursertemplate");
         }
 
         public async Task<List<Kursus>> GetAllCourses()
@@ -45,6 +47,18 @@ namespace Server
             var update = Builders<Kursus>.Update.Set("Status", "Completed");
             var result = await _collection.UpdateOneAsync(filter, update);
             return result.ModifiedCount > 0;
+        }
+
+        public async Task<List<KursusTemplate>> GetAllTemplates()
+        {
+            var filter = Builders<KursusTemplate>.Filter.Empty;
+            return await _collectionTemplate.Find(filter).ToListAsync();
+        }
+
+        public async Task SaveCourse(Kursus kursus)
+        {
+            kursus.Id = 9996;
+            _collection.InsertOne(kursus);
         }
     }
 }

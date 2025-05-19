@@ -1,5 +1,6 @@
 ﻿using Core;
 using System.Net.Http.Json;
+using Core.DTO.Kursus;
 
 namespace Client
 {
@@ -24,9 +25,9 @@ namespace Client
             return await _client.GetFromJsonAsync<Kursus>($"{serverUrl}/kursus/{kursusId}");
         }
 
-        public async Task AddCourse(Kursus kursus)
+        public async Task SaveCourse(KursusCreationDTO kursus)
         {
-            await _client.PostAsJsonAsync("kursus", kursus);
+             await _client.PostAsJsonAsync($"{serverUrl}/kursus", kursus);
         }
 
         public async Task UpdateCourse(Kursus kursus)
@@ -53,6 +54,11 @@ namespace Client
         public async Task CompleteCourse(Kursus kursus)
         {
             await _client.PutAsJsonAsync("kursus/complete", kursus);
+        }
+
+        public async Task<List<KursusTemplate>> GetAllTemplates()
+        {
+            return await _client.GetFromJsonAsync<List<KursusTemplate>>($"{serverUrl}/kursus/templates");
         }
     }
 }
