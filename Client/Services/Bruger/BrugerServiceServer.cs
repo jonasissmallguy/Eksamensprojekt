@@ -60,10 +60,9 @@ namespace Client
                 {
                     Id = elev.Id,
                     Name = elev.FirstName,
-                    // HotelId = elev.Hotel.Id,
-                    // Hotel = "test",
+                    HotelId = elev.HotelId,
+                    HotelNavn = elev.HotelNavn,
                     Roller = elev.Rolle,
-                    // Ansvarlig = "test ansvarlig",
                     Year = elev.Year,
                     Skole = elev.Skole,
                     Uddannelse = elev.Uddannelse,

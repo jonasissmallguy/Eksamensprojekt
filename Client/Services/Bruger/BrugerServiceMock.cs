@@ -166,7 +166,7 @@ namespace Client
                     Id = elev.Id,
                     Name = elev.FirstName,
                     HotelId = elev.HotelId,
-                    Hotel = "test",
+                    HotelNavn = "test",
                     Roller = elev.Rolle,
                     Ansvarlig = "test ansvarlig",
                     Year = elev.Year,
