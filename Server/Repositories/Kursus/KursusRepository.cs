@@ -69,6 +69,14 @@ namespace Server
             return result.ModifiedCount > 0;
         }
 
+        public Task AddStudentToCourse(User user, int kursusId)
+        {
+            var filter = Builders<Kursus>.Filter.Eq("_id", kursusId);
+            var update = Builders<Kursus>.Update.Push("Students", user);
+            
+            return _collection.UpdateOneAsync(filter, update);
+        }
+
         public async Task AddStudentToCourse(int studentId, Kursus kursus)
         {
             var filter = Builders<Kursus>.Filter.Eq("_id", kursus.Id);

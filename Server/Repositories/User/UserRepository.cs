@@ -2,7 +2,7 @@
 using DotNetEnv;
 using MongoDB.Driver;
 using MongoDB.Bson;
-
+using MongoDB.Driver.GridFS;
 namespace Server
 {
 
@@ -12,6 +12,7 @@ namespace Server
         private IMongoDatabase _userDatabase;
         private IMongoCollection<User> _userCollection;
         private readonly IMongoCollection<BsonDocument> _countersCollection;
+        private GridFSBucket _imageBucket;
 
 
         public UserRepository()
@@ -23,6 +24,7 @@ namespace Server
             _userDatabase = _userClient.GetDatabase("comwell");
             _userCollection = _userDatabase.GetCollection<User>("users");
             _countersCollection = _userDatabase.GetCollection<BsonDocument>("counters"); 
+            _imageBucket = new GridFSBucket(_userDatabase, new GridFSBucketOptions{ BucketName = "billeder" });
 
         }
 
@@ -59,17 +61,6 @@ namespace Server
             return await _userCollection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<List<User>> GetAllManagersWithOutHotel()
-        {
-            var filter1 = Builders<User>.Filter.Eq("Rolle", "Køkkenchef");
-            var filter2 = Builders<User>.Filter.Eq("HotelName", BsonType.Null);
-            var filter3 = Builders<User>.Filter.Eq("HotelId", BsonType.Null);
-
-            var filter = Builders<User>.Filter.And(filter1, filter2, filter3);
-            
-            return await _userCollection.Find(filter).ToListAsync();
-            
-        }
 
         public async Task<User> SaveBruger(User bruger)
         {
@@ -138,6 +129,18 @@ namespace Server
             var update = Builders<User>.Update.Set("Password", updatedPassword);
             
             return await _userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<bool> UpdateUser(User user)
+        {
+            
+            return true;
+        }
+
+        public async Task<List<User>> GetAllStudents()
+        {
+            var filter = Builders<User>.Filter.Eq("Rolle", "Elev");
+            return await _userCollection.Find(filter).ToListAsync();
         }
     }
 }

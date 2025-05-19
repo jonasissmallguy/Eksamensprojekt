@@ -17,7 +17,7 @@ namespace Client
         
         Task<List<KursusTemplate>> GetAllTemplates();
         
-        Task AddStudentToCourse(int studentId, Kursus kursus);
+        Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId);
 
     }
 }
