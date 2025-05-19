@@ -21,6 +21,7 @@
                 <p class="telefon">Telefon: @elev.Mobile </p>
                 <p class="mail">Mail: @elev.Email</p>
                 <p class="restaurant">Restaurant: @elev.HotelNavn</p>
+                <p class="total-goals">Udførte mål: @elevPlan.CompletedGoals / @elevPlan.TotalGoals</p>
             </div>
         </div>
     }
@@ -61,6 +62,10 @@
     {
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
+        
+            elevPlan.TotalGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count);
+            elevPlan.CompletedGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count(g => g.Status == "Completed"));
+
     }
 
     private async Task AddComment(NewComment comment)
