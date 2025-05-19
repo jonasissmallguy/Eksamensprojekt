@@ -1,8 +1,18 @@
-
+using DotNetEnv;
 using Server;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    Env.Load();
+}
+
+builder.Configuration.AddEnvironmentVariables();
+
+var mongoConnString = builder.Configuration["MONGO_CONNECTION_STRING"];
+var sendGridKey = builder.Configuration["SENDGRID_API_KEY"];
 
 
 builder.Services.AddControllers();

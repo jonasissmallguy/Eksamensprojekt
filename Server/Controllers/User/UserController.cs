@@ -71,8 +71,7 @@ namespace Server
         //Hjælpefunktion til at reset email
         public async Task SendResetCodeEmail(string email, string verificeringsKode)
         {
-            //Loader .env
-            Env.Load();
+
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             
             //Anvender SendGrid

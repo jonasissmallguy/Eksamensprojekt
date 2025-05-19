@@ -17,9 +17,7 @@ namespace Server
 
         public ElevplanRepository()
         {
-            Env.Load();
-            
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTIONSTRING");
+            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
             
             _elevplanClient = new MongoClient(ConnectionString);
             _elevplanDatabase = _elevplanClient.GetDatabase("comwell");
