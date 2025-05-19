@@ -6,7 +6,7 @@ namespace Client
 {
     public class GoalServiceServer : IGoal
     {
-        
+
         private string serverUrl = "http://localhost:5075";
         private HttpClient _client;
 
@@ -14,7 +14,7 @@ namespace Client
         {
             _client = client;
         }
-        
+
         public async Task DeleteGoal(Goal goal, int studentId)
         {
             await _client.DeleteAsync($"{serverUrl}/goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
@@ -25,26 +25,62 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public Task StartGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
-            throw new NotImplementedException();
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/startgoal", mentor);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var goal = await response.Content.ReadFromJsonAsync<Goal>();
+                return goal;
+            }
+
+            return null;
         }
 
-        public Task ProcessGoal(ElevplanComponent.MentorAssignment bruger)
+        public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment bruger)
         {
-            throw new NotImplementedException();
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/processgoal", bruger);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var goal = await response.Content.ReadFromJsonAsync<Goal>();
+                return goal;
+            }
+            return null;
+            
         }
 
-        public Task ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment leder)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(leder.MentorName);
+            
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirmgoal", leder);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var goal = await response.Content.ReadFromJsonAsync<Goal>();
+                return goal;
+            }
+
+            return null;
         }
 
-        public async Task AddComment(NewComment comment, BrugerLoginDTO currentUser)
+        public async Task<Comment> AddComment(NewComment comment)
         {
-            await _client.PostAsJsonAsync($"{serverUrl}/goals/comment", comment);
+            var response = await _client.PostAsJsonAsync($"{serverUrl}/goals/comment", comment);
+            if (response.IsSuccessStatusCode)
+            {
+                var addedComment = await response.Content.ReadFromJsonAsync<Comment>();
+                return addedComment;
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error adding comment: {response.StatusCode}, {errorContent}");
+                return null;
+            }
         }
-
         public Task DeleteComment(int goalId, int commentId)
         {
             throw new NotImplementedException();
@@ -61,24 +97,46 @@ namespace Client
             return goalTypes;
         }
 
-        public Task<List<Goal>> GetAwaitingApproval()
+        public async Task<List<Goal>> GetAwaitingApproval()
+        {
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/awaiting-approval");
+        }
+
+        public async Task<List<Goal>> GetMissingCourses(User bruger)
+        {
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/missing-courses/{bruger.Id}");
+        }
+
+        public async Task<List<Goal>> GetOutOfHouse()
+        {
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/out-of-house");
+        }
+
+        public async Task ConfirmGoalFromHomePage(Goal goal)
+        {
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm", goal);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Fejl ved opdatering af mål: {error}");
+            }
+        }
+
+        public Task<List<Goal>> GetAllGoalsForBruger(User bruger)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Goal>> GetMissingCourses(User bruger)
+        public async Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string type)
         {
-            throw new NotImplementedException();
+            var response = await _client.GetFromJsonAsync<List<Goal>>(
+                $"{serverUrl}/goals/type/{type}/user/{bruger.Id}"
+            );
+
+            return response;
         }
 
-        public Task<List<Goal>> GetOutOfHouse()
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task ConfirmGoalFromHomePage(Goal goal)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
+    

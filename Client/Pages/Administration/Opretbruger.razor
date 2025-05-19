@@ -14,7 +14,7 @@
                 <h1 class="form-title">Opret ny bruger</h1>
                 <p class="form-description">Udfyld nedenstående felter for at oprette en ny bruger i systemet.</p>
             </div>
-            <EditForm Model="newUser" OnValidSubmit="@HandleNewUser">
+            <EditForm Model="newUser" OnSubmit="@HandleNewUser">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <scan style="color: red">@errorText</scan>
@@ -55,50 +55,56 @@
                         }
                     </InputSelect>
                 </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Start Dato</label>
-                    <InputDate class="form-control" @bind-Value="newUser.StartDate" placeholder="Indtast ansættelsedato" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Afslutnings Dato</label>
-                    <InputDate class="form-control" @bind-Value="newUser.EndDate" placeholder="Indtast afslutningsdatoedato" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Hotel</label>
-                    <InputSelect class="form-select" @bind-Value="newUser.HotelId">
-                        @foreach (var x in hoteller)
-                        {
-                            <option value="@x.HotelId">@x.HotelName</option>
-                        }
-                    </InputSelect>
-                </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Årgang</label>
-                    <InputSelect class="form-select" @bind-Value="newUser.Year">
-                        @foreach (var x in år)
-                        {
-                            <option value="@x">@x</option>
-                        }
-                    </InputSelect>
-                </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Skole</label>
-                    <InputSelect class="form-select" @bind-Value="newUser.Skole">
-                        @foreach (var s in skole)
-                        {
-                            <option value="@s">@s</option>
-                        }
-                    </InputSelect>
-                </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Uddannelse</label>
-                    <InputSelect class="form-select" @bind-Value="newUser.Uddannelse">
-                        @foreach (var u in uddannelse)
-                        {
-                            <option value="@u">@u</option>
-                        }
-                    </InputSelect>
-                </div>
+                @if (newUser.Rolle != "HR")
+                {
+                    <div class="form-group">
+                        <label class="form-label required-field">Hotel</label>
+                        <InputSelect class="form-select" @bind-Value="newUser.HotelId">
+                            @foreach (var x in hoteller)
+                            {
+                                <option value="@x.Id">@x.HotelNavn</option>
+                            }
+                        </InputSelect>
+                    </div>
+                }
+                @if (newUser.Rolle == "Elev")
+                {
+                    <div class="form-group">
+                        <label class="form-label required-field">Start Dato</label>
+                        <InputDate class="form-control" @bind-Value="newUser.StartDate" placeholder="Indtast ansættelsedato"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required-field">Afslutnings Dato</label>
+                        <InputDate class="form-control" @bind-Value="newUser.EndDate" placeholder="Indtast afslutningsdatoedato"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required-field">Årgang</label>
+                        <InputSelect class="form-select" @bind-Value="newUser.Year">
+                            @foreach (var x in år)
+                            {
+                                <option value="@x">@x</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required-field">Skole</label>
+                        <InputSelect class="form-select" @bind-Value="newUser.Skole">
+                            @foreach (var s in skole)
+                            {
+                                <option value="@s">@s</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required-field">Uddannelse</label>
+                        <InputSelect class="form-select" @bind-Value="newUser.Uddannelse">
+                            @foreach (var u in uddannelse)
+                            {
+                                <option value="@u">@u</option>
+                            }
+                        </InputSelect>
+                    </div>
+                }
                 <button type="submit" class="submit-btn">Opret bruger</button>
             </EditForm>
         </div>
@@ -111,8 +117,8 @@
 
 @code {
     private BrugerCreateDTO newUser = new();
-    private List<HotelNameDTO> hoteller = new();
-    private string[] roller = { "Elev", "Køkkenchef", "Funktionær", "HR" };
+    private List<Hotel> hoteller = new();
+    private string[] roller = {"Elev", "Køkkenchef", "Kok", "HR" };
     private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
     private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
     private string[] år = { "År 1", "År 2", "År 3" };
@@ -128,16 +134,8 @@
         newUser.Year = år[0];
         newUser.Uddannelse = uddannelse[0];
         newUser.Skole = skole[0];
-
-        try
-        {
-            hoteller = await IHotelService.GetAllHotelNames();
-            newUser.HotelId = hoteller.Select(x => x.HotelId).FirstOrDefault();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Fejl ved hentning af hoteller: {ex.Message}");
-        }
+        hoteller = await IHotelService.GetHotels();
+        newUser.HotelId = hoteller.Select(x => x.Id).FirstOrDefault();
     }
 
     private async Task HandleNewUser()
@@ -145,31 +143,27 @@
         try
         {
             var user = await IBrugerService.OpretBruger(newUser);
-            navMan.NavigateTo($"opretelevplan/{user.Id}");
-
+            
+            if (newUser.Rolle.Equals("Elev"))
+            {
+                navMan.NavigateTo($"/opretelevplan/{user.Id}");
+            }
+            else
+            {
+                navMan.NavigateTo("");
+            }
         }
         catch (Exception e)
         {
-            //Er der allerede en bruger på de informationer, kommer der fejltekst
             if (e.Message.Contains("Du har en bruger"))
             {
                 errorText = "Du har en bruger venligst gå til login";
             }
+            
             else
             {
-                errorText = "Ukendt fejl";
+                errorText = e.Message;
             }
         }
-
-
-        if (newUser.Rolle.Equals("Elev"))
-        {
-            navMan.NavigateTo($"/opretelevplan/{newUser.Id}");
-        }
-        else
-        {
-            navMan.NavigateTo("");
-        }
-        
     }
 }
