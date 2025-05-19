@@ -1,61 +1,73 @@
 ﻿@using Core;
 
 @inject IKursus IKursusService;
+@inject IBruger IBrugerService;
 @inject IGoal GoalService;
 @inject IBruger BrugerService;
 @inject NavigationManager navMan;
 
 
 @page "/kursuspage/{kursusId:int}"
-<h3>Kursus information</h3>
-<h5>@_kursus.Title</h5>
-<h5>Start dato:@_kursus.StartDate</h5>
-<h5>Start dato:@_kursus.EndDate</h5>
 
 
+@if (_kursus != null)
+{
 
-<h6>Deltagerliste</h6>
-<div class="full-course-information">
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Navn</th>
-            <th>Resteruant</th>
-            <th>Slet fra kursus</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
+    <h3>Kursus information</h3>
+    <h5>@_kursus.Title</h5>
+    <h5>Start dato:@_kursus.StartDate</h5>
+    <h5>Start dato:@_kursus.EndDate</h5>
+    
+    <h6>Deltagerliste</h6>
+    <div class="full-course-information">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Resteruant</th>
+                <th>Slet fra kursus</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+       
             @foreach (var x in _kursus.Students)
             {
                 <td>@x.FirstName</td>
-                <td>@x.Hotel.HotelNavn</td>
+                <td>@x.HotelNavn</td>
                 <td>
-                    <button clsas="btn btn-primary" @onclick="() => RemoveStudent(x)"></button>
+                    <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
                 </td>
             }
-        </tr>
-        </tbody>
-    </table>
-</div>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-<button @onclick="() => FinishCourse() ">Afslut kursus</button>
+    <button @onclick="() => FinishCourse() ">Afslut kursus</button>
+}
+else
+{
+    <p>Loading...</p>
+}
+
 
 @code {
 
     [Parameter] public int kursusId { get; set; }
 
     private Kursus _kursus;
-    
-
     protected override async Task OnInitializedAsync()
     {
         _kursus = await IKursusService.GetCourseById(kursusId);
-
     }
+    
+    
 
     private async Task FinishCourse()
     {
+        
+
         await IKursusService.CompleteCourse(_kursus);
         navMan.NavigateTo("kursusoversigt");
     }
@@ -64,6 +76,11 @@
     {
         await IKursusService.RemoveStudentFromCourse(user.Id, _kursus);
 
+        //Fjerner en studerende hvis slettet
+        _kursus.Students = _kursus.Students.Where(x => x.Id != user.Id).ToList();
 
     }
+
+
+
 }

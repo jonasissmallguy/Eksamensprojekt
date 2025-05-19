@@ -14,7 +14,7 @@
                 <Content>
                     <div class="mt-3">
                         <Accordion>
-                            @foreach (var forløb in Plan.Forløbs.Where(f => f.Semester == semester))
+                            @foreach (var forløb in (Plan?.Forløbs ?? Enumerable.Empty<Forløb>()).Where(f => f.Semester == semester))
                             {
                                 <AccordionItem IsCollapsed="false">
                                     <TitleTemplate>
@@ -69,18 +69,18 @@
                                                             {
                                                                 @if (StartGoal && goal.Status == "Active")
                                                                 {
-                                                                    <button class="btn btn-sm btn-primary" @onclick="() => StartGoalNow(goal.Id)">Påbegynd</button>
+                                                                    <button class="btn btn-sm btn-primary" @onclick="() => StartGoalNow(goal)">Påbegynd</button>
                                                                 }
                                                                 else if (StartGoal && goal.Status == "InProgress" && goal.Type == "Delmål")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
-                                                                        <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>
+                                                                        <button class="btn btn-success" @onclick="() => ProcessGoal(goal)">Godkend delmål</button>
                                                                     </div>
                                                                 }
                                                                 else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef" && goal.Type == "Delmål")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
-                                                                        <button class="btn btn-success" @onclick="() => ProcessGoal(goal.Id)">Godkend delmål</button>
+                                                                        <button class="btn btn-success" @onclick="() => ProcessGoal(goal)">Godkend delmål</button>
                                                                     </div>
                                                                 }
                                                             }
@@ -96,7 +96,7 @@
                                                                         <div class="comment mb-2 p-2 bg-white rounded">
                                                                             <div class="d-flex justify-content-between">
                                                                                 <strong>@comment.CreatorName</strong>
-                                                                                <small class="text-muted">@DateTime.Now.ToString("dd-MM-yyyy HH:mm")</small>
+                                                                                <small class="text-muted">@comment.CreatedAt.ToString("dd-MM-yyyy HH:mm")</small>
                                                                             </div>
                                                                             <p class="mb-0">@comment.Text</p>
                                                                         </div>
@@ -134,7 +134,7 @@
                                         </Accordion>
                                     </Content>
                                 </AccordionItem>
-                            }
+                            }   
                         </Accordion>
                     </div>
                 </Content>
@@ -208,6 +208,8 @@
     // // Hjælpe klasse skal laves om
     public class MentorAssignment
     {
+        public int PlanId { get; set; }
+        public int ForløbId { get; set; }
         public int GoalId { get; set; }
         public int MentorId { get; set; }
         public string MentorName { get; set; }
@@ -233,8 +235,10 @@
                 CommentorId = bruger.Id,
                 CommentName = bruger.FirstName
             };
-            
+            Console.WriteLine($"Commenting on Goal: PlanId={goal.PlanId}, ForløbId={goal.ForløbId}, GoalId={goal.Id}");
+
             await OnAddCommentClick.InvokeAsync(newComment);
+            StateHasChanged();
             comments[goal.Id] = string.Empty;
         }
     }
@@ -261,12 +265,14 @@
     //Active -> InProgress
     [Parameter]
     public EventCallback<MentorAssignment> OnStartGoal { get; set; }
-    private async Task StartGoalNow(int goalId)
+    private async Task StartGoalNow(Goal goal)
     {
 
         var newStarter = new MentorAssignment
         {
-            GoalId = goalId,
+            PlanId = goal.PlanId,
+            ForløbId = goal.ForløbId,
+            GoalId = goal.Id,
             MentorId = _currentUser.Id,
             MentorName = _currentUser.FirstName
         };
@@ -279,11 +285,13 @@
     [Parameter]
     public EventCallback<MentorAssignment> OnProcessGoal { get; set; }
 
-    private async Task ProcessGoal(int goalId)
+    private async Task ProcessGoal(Goal goal)
     {
         var newConfirmer = new MentorAssignment
         {
-            GoalId = goalId,
+            PlanId = goal.PlanId,
+            ForløbId = goal.ForløbId,
+            GoalId = goal.Id,
             MentorId = _currentUser.Id,
             MentorName = _currentUser.FirstName
         };
@@ -291,15 +299,6 @@
         await OnProcessGoal.InvokeAsync(newConfirmer);
     }
     
-    //
-    [Parameter]
-    public EventCallback<int> OnFinishGoal { get; set; }
-
-    private async Task FinishGoal(int goalId)
-    {
-        await OnFinishGoal.InvokeAsync(goalId);
-    }
-
     private void OpenModal(Goal goal)
     {
         _currentGoal = goal;

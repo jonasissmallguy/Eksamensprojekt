@@ -20,7 +20,7 @@
                 <h3 class="navn">@elev.FirstName </h3>
                 <p class="telefon">Telefon: @elev.Mobile </p>
                 <p class="mail">Mail: @elev.Email</p>
-                <!--<p class="restaurant">Restaurant: @elev.Hotel.HotelNavn</p>-->
+                <p class="restaurant">Restaurant: @elev.HotelNavn</p>
             </div>
         </div>
     }
@@ -55,45 +55,99 @@
     [Parameter] public int studentId { get; set; }
     private User elev;
     private Plan? elevPlan;
-    
+
 
     protected override async Task OnInitializedAsync()
     {
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
-        
-        //elevPlan = await IElevPlanService.GetPlanByStudentId(studentId); 
-
-        //Dette er bare brugt til visning til COmwell - dette skal slettes!!!!!!
-        /*if (elevPlan == null)
-        {
-            elevPlan = await IElevPlanService.CreateElevPlan(studentId);
-        }
-        */
     }
 
     private async Task AddComment(NewComment comment)
     {
-        await IGoalService.AddComment(comment, _currentUser);
-        StateHasChanged();
+        var addedComment = await IGoalService.AddComment(comment);
+        if (addedComment != null)
+        {
+            var forløb = elevPlan.Forløbs.FirstOrDefault(f => f.Id == addedComment.ForløbId);
+            if (forløb != null)
+            {
+                var goal = forløb.Goals.FirstOrDefault(g => g.Id == addedComment.GoalId);
+                if (goal != null)
+                {
+                    if (goal.Comments == null)
+                        goal.Comments = new List<Comment>();
 
+                    goal.Comments.Add(addedComment);
+                    StateHasChanged();
+                }
+            }
+        }
     }
-
-    private async Task HandlingGoalStart(ElevplanComponent.MentorAssignment newMentor)
+    
+    //Skal alt det her under laves om? 
+    private async Task HandlingGoalStart(ElevplanComponent.MentorAssignment assignment)
     {
-        await IGoalService.StartGoal(newMentor);
+        var updatedGoal = await IGoalService.StartGoal(assignment);
+
+        if (updatedGoal != null)
+        {
+            var localGoal = elevPlan.Forløbs
+                .FirstOrDefault(f => f.Id == updatedGoal.ForløbId)?
+                .Goals.FirstOrDefault(g => g.Id == updatedGoal.Id);
+
+            if (localGoal != null)
+            {
+                localGoal.Status = updatedGoal.Status;
+                localGoal.StarterId = updatedGoal.StarterId;
+                localGoal.StarterName = updatedGoal.StarterName;
+                localGoal.StartedAt = updatedGoal.StartedAt;
+                StateHasChanged();
+            }
+        }
     }
-    
-    
+
+
     private async Task ConfirmGoal(ElevplanComponent.MentorAssignment bruger)
     {
-        @if (_currentUser.Rolle == "Kok")
+        if (_currentUser.Rolle == "Kok")
         {
-            await IGoalService.ProcessGoal(bruger);
+            var processedGoal = await IGoalService.ProcessGoal(bruger);
+
+            if (processedGoal != null)
+            {
+                var localGoal = elevPlan.Forløbs
+                    .FirstOrDefault(f => f.Id == processedGoal.ForløbId)?
+                    .Goals.FirstOrDefault(g => g.Id == processedGoal.Id);
+
+                if (localGoal != null)
+                {
+                    localGoal.Status = processedGoal.Status;
+                    localGoal.StarterId = processedGoal.StarterId;
+                    localGoal.StarterName = processedGoal.StarterName;
+                    localGoal.StartedAt = processedGoal.StartedAt;
+                    StateHasChanged();
+                }
+            }
         }
         else if (_currentUser.Rolle == "Køkkenchef")
         {
-            await IGoalService.ConfirmGoal(bruger);
+            Console.WriteLine("dette er en køkkenchef");
+            var confirmedGoal = await IGoalService.ConfirmGoal(bruger);
+
+            if (confirmedGoal != null)
+            {
+                var localGoal = elevPlan.Forløbs
+                    .FirstOrDefault(f => f.Id == confirmedGoal.ForløbId)?
+                    .Goals.FirstOrDefault(g => g.Id == confirmedGoal.Id);
+
+                if (localGoal != null)
+                {
+                    localGoal.Status = confirmedGoal.Status;
+                    localGoal.CompletedAt = confirmedGoal.CompletedAt;
+                    StateHasChanged();
+                }
+            }
         }
     }
 }
+

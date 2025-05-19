@@ -1,4 +1,5 @@
 ﻿using Core;
+using Core.DTO.Kursus;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server
@@ -29,20 +30,63 @@ namespace Server
             return Ok(kursus);
         }
 
-        [HttpPut("remove-student")]
+        [HttpDelete]
+        [Route("removestudent/{studentId}/{kursusId}")]
         public async Task<IActionResult> RemoveStudent(int studentId, int kursusId)
         {
             var success = await _kursusRepository.RemoveStudentFromCourse(studentId, kursusId);
-            if (success) return Ok();
-            return NotFound();
+            return Ok(success);
         }
 
-        [HttpPut("complete")]
+        /// <summary>
+        /// Tilføjer en elev til et kursus og assigner i deres elevplan
+        /// </summary>
+        /// <param name="kursus"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("addcourse/{studentId}")]
+        public async Task AddStudentToCourse(int studentId, [FromBody] Kursus kursus)
+        {
+            
+        }
+        
+
+        [HttpPut]
+        [Route("complete")]
         public async Task<IActionResult> CompleteCourse([FromBody] Kursus kursus)
         {
+            
+            
             var success = await _kursusRepository.CompleteCourse(kursus);
-            if (success) return Ok();
-            return BadRequest();
+            
+            return success ? Ok() : NotFound();
+            
         }
+
+        [HttpGet]
+        [Route("templates")]
+        public async Task<IActionResult> GetAllTemplates()
+        {
+            var kursus = await _kursusRepository.GetAllTemplates();
+            
+            return Ok(kursus);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> AddCourse(KursusCreationDTO kursus)
+        {
+            var kursusModel = new Kursus
+            {
+                Title = kursus.Title,
+                Location = kursus.Location,
+                StartDate = kursus.StartDate,
+                EndDate = kursus.EndDate
+            };
+            
+            await _kursusRepository.SaveCourse(kursusModel);
+
+            return Ok();
+        }
+        
     }
 }

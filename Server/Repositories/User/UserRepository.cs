@@ -11,6 +11,8 @@ namespace Server
         private IMongoClient _userClient;
         private IMongoDatabase _userDatabase;
         private IMongoCollection<User> _userCollection;
+        private readonly IMongoCollection<BsonDocument> _countersCollection;
+
 
         public UserRepository()
         {
@@ -20,12 +22,22 @@ namespace Server
             _userClient = new MongoClient(ConnectionString);
             _userDatabase = _userClient.GetDatabase("comwell");
             _userCollection = _userDatabase.GetCollection<User>("users");
+            _countersCollection = _userDatabase.GetCollection<BsonDocument>("counters"); 
+
         }
 
-        public async Task<int> GetNextId() //Hjælpefunktion til at få fortløbende id
+        public async Task<int> GetNextSequenceValue(string sequenceName)
         {
-            long count = await _userCollection.CountDocumentsAsync(new BsonDocument());
-            return (int)count + 1;
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", sequenceName);
+            var update = Builders<BsonDocument>.Update.Inc("seq", 1);
+            var options = new FindOneAndUpdateOptions<BsonDocument>
+            {
+                ReturnDocument = ReturnDocument.After,
+                IsUpsert = true
+            };
+
+            var result = await _countersCollection.FindOneAndUpdateAsync(filter, update, options); 
+            return result["seq"].AsInt32;
         }
 
 
@@ -41,9 +53,27 @@ namespace Server
             return await _userCollection.Find(filter).ToListAsync();
         }
 
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var filter = Builders<User>.Filter.Eq("Email", email);
+            return await _userCollection.Find(filter).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<User>> GetAllManagersWithOutHotel()
+        {
+            var filter1 = Builders<User>.Filter.Eq("Rolle", "Køkkenchef");
+            var filter2 = Builders<User>.Filter.Eq("HotelName", BsonType.Null);
+            var filter3 = Builders<User>.Filter.Eq("HotelId", BsonType.Null);
+
+            var filter = Builders<User>.Filter.And(filter1, filter2, filter3);
+            
+            return await _userCollection.Find(filter).ToListAsync();
+            
+        }
+
         public async Task<User> SaveBruger(User bruger)
         {
-            int id = await GetNextId();
+            int id = await GetNextSequenceValue("userId");
             bruger.Id = id;
 
             await _userCollection.InsertOneAsync(bruger);
@@ -102,6 +132,13 @@ namespace Server
             
         }
         
+        public async Task<UpdateResult> UpadtePassword(string email, string updatedPassword)
+        {
+            var filter = Builders<User>.Filter.Eq("Email", email);
+            var update = Builders<User>.Update.Set("Password", updatedPassword);
+            
+            return await _userCollection.UpdateOneAsync(filter, update);
+        }
     }
 }
 

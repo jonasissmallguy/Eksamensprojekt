@@ -16,7 +16,7 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddBlazoredLocalStorage();
 
 //Services
-builder.Services.AddScoped<IAuth, AuthServiceMock>();
+builder.Services.AddScoped<IAuth, AuthServiceServer>();
 builder.Services.AddScoped<IBruger, BrugerServiceServer>();
 builder.Services.AddScoped<IHotel, HotelServiceServer>();
 builder.Services.AddScoped<IElevPlan, ElevPlanServiceServer>();

@@ -14,9 +14,9 @@ namespace Client
             _client = client;
         }
         
-        public Task<List<HotelNameDTO>> GetAllHotelNames()
+        public async Task<List<HotelNameDTO>> GetAllHotelNames()
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<HotelNameDTO>>($"{serverUrl}/api/hotel");
         }
 
         public async Task<List<Hotel>> GetHotels()

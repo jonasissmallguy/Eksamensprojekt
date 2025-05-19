@@ -33,7 +33,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        nyElevPlan = await IElevPlanService.CreateElevPlan(studentId);
+        elev = await IBrugerService.GetBrugerById(studentId);
+
+        if (elev.ElevPlan != null)
+        {
+            nyElevPlan = elev.ElevPlan;
+        }
+        else
+        {
+            nyElevPlan = await IElevPlanService.CreateElevPlan(studentId);
+        }
     }
     
     private async Task HandleDeleteGoal(Goal goal)

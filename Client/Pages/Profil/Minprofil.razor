@@ -1,4 +1,4 @@
-﻿@page "/minprofil/{_currentUserId:int}"
+﻿@page "/minprofil/{id:int}"
 @inherits LayoutComponentBase
 
 @inject NavigationManager navMan;
@@ -7,7 +7,9 @@
 @using Core;
 
 
-<div class="min-profil">
+@if (_minBruger != null)
+{
+    <div class="min-profil">
     <div class="profile-sidebar">
             <div class="profile-image-container">
                 <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profil billede" class="profile-image"/> 
@@ -41,19 +43,6 @@
                     <label for="rolle">Rolle</label>
                     <InputText id="rolle" @bind-Value="@_minBruger.Rolle" disabled />
                 </div>
-
-                @if (_minBruger.Rolle == "Elev")
-                {
-                    <div class="mentor-card">
-                        <div class="restaurant-info">
-                            <div class="input-group">
-                                <label for="restaurant">Restaurant</label>
-                                <InputText id="restaurant" @bind-Value="@_minBruger.Hotel.HotelNavn" disabled />
-                            </div>
-                        </div>
-                    </div>
-            
-                }
             </div>
 
             <div class="mt-6 flex gap-3">
@@ -62,25 +51,27 @@
         </EditForm>
     </div>
 </div>
+}
+
 
 @code {
     
     [Parameter]
-    public int _currentUserId { get; set; }
+    public int id { get; set; }
 
     [CascadingParameter] 
     private BrugerLoginDTO _currentUser { get; set; }
 
-    private User _minBruger = new();
+    private User _minBruger { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
         if (_currentUser == null)
         {
-            navMan.NavigateTo($"login/minside{_currentUserId}");
+            navMan.NavigateTo($"login/minside{id}");
             return;
         }
-        _minBruger = await IBrugerService.GetBrugerById(_currentUserId);
+        _minBruger = await IBrugerService.GetBrugerById(id);
     }
     
     private void NavigateToResetPassword()
@@ -90,7 +81,7 @@
     
     private async Task UpdateDetails()
     {
-        await IBrugerService.OpdaterBruger(_currentUserId, _minBruger);
+        await IBrugerService.OpdaterBruger(id, _minBruger);
     }
 
 }

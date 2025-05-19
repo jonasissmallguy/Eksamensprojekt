@@ -1,4 +1,6 @@
-﻿@using Core;
+﻿@using Client.Components.Kursus
+@using Core;
+@using Core.DTO.Kursus
 
 @inject IGoal GoalService;
 @inject IKursus IKursusService;
@@ -7,39 +9,201 @@
 @page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
 
-<table>
-    <tr>
-        <th>Titel</th>
-        <th>Lokation</th>
-        <th>Start dato</th>
-        <th>Slut dato</th>
-        <th>Status</th>
-    </tr>
-    @foreach (var kursus in alleKurser)
-    {
-        <tr>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Title</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.Location</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.StartDate</td>
-            <td @onclick="@(() => NavigateToKursus(kursus.Id))">@kursus.EndDate</td>
-            <td>@kursus.Status</td>
-        </tr>
-    }
-</table>
+@if (alleKurser != null)
+{
+    <button @onclick="AddCourse">Tilføj kursus</button>
 
+    <table>
+        <tr>
+            <th>Titel</th>
+            <th>Lokation</th>
+            <th>Start dato</th>
+            <th>Slut dato</th>
+            <th>Status</th>
+        </tr>
+
+        @foreach (var kursus in alleKurser)
+        {
+            <tr>
+                <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.Title</td>
+                <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.Location</td>
+                <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.StartDate</td>
+                <td @onclick="@(() => NavigateToCourse(kursus.Id))">@kursus.EndDate</td>
+                <td>@kursus.Status</td>
+            </tr>
+        }
+    </table>
+}
+<!--
+<ModalKursus @ref="_modalKursus">
+    <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+        <div class="form-group mb-3">
+            <label for="courseSelect">Vælg kursus:</label>
+            <InputSelect class="form-select" @bind-Value="newCourse.Title">
+                <option value="">-- Vælg kursus --</option>
+                @if (CoursesTemplates != null)
+                {
+                    @foreach (var course in CoursesTemplates)
+                    {
+                        <option value="@course.Id">@course.Title</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+        <div class="form-group mb-3">
+            <label for="location">Lokation:</label>
+            <InputText class="form-control" @bind-Value="newCourse.Location"/>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="startDate">Start dato:</label>
+            <InputDate class="form-select" @bind-Value="newCourse.StartDate"/>
+        </div>
+
+
+        <div class="form-group mb-3">
+            <label for="endDate">Slut dato:</label>
+            <inputDate class="form-select" @bind-Value="newCourse.EndDate"/>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="button" class="btn btn-secondary me-2" @onclick="CloseCourseSelection">Annuller</button>
+            <button type="submit" class="submit-btn">Gem kursus</button>
+        </div>
+    </EditForm>
+    
+</ModalKursus>    
+}
+
+else
+{
+    <p>Loading...</p>
+}-->
+<ModalKursus @ref="_modalKursus">
+    <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group mb-3">
+            <label for="courseSelect">Vælg kursus:</label>
+            <InputSelect class="form-select" @bind-Value="newCourse.TemplateId">
+                <option value="">-- Vælg kursus --</option>
+                @if (CoursesTemplates != null)
+                {
+                    @foreach (var course in CoursesTemplates)
+                    {
+                        <option value="@course.Id">@course.Title</option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="location">Lokation:</label>
+            <InputText class="form-control" @bind-Value="newCourse.Location" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="startDate">Start dato:</label>
+            <InputDate class="form-select" @bind-Value="newCourse.StartDate" />
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="endDate">Slut dato:</label>
+            <InputDate class="form-select" @bind-Value="newCourse.EndDate" />
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="button" class="btn btn-secondary me-2" @onclick="CloseCourseSelection">Annuller</button>
+            <button type="submit" class="submit-btn">Gem kursus</button>
+        </div>
+    </EditForm>
+</ModalKursus>
 
 @code {
-
-    
     private List<Kursus> alleKurser;
-    
+    private ModalKursus _modalKursus { get; set; }
+    private KursusCreationDTO newCourse = new();
+    private List<Kursus> Courses;
+    private List<KursusTemplate> CoursesTemplates;
+
+    private string? selectedCourse;
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private string? location;
+
     protected override async Task OnInitializedAsync()
     {
         alleKurser = await IKursusService.GetAllCourses();
     }
-    
-    private void NavigateToKursus(int kursusId)
+
+    private async Task AddCourse()
+    {
+        _modalKursus.Open();
+        CoursesTemplates = await IKursusService.GetAllTemplates();
+    }
+
+    private void CloseCourseSelection()
+    {
+        _modalKursus.Close();
+    }
+
+    private async Task SaveCourse()
+    {
+        var selected = CoursesTemplates.FirstOrDefault(c => c.Id == newCourse.TemplateId);
+        if (selected != null)
+        {
+            newCourse.Title = selected.Title;
+        }
+
+        await IKursusService.SaveCourse(newCourse);
+        _modalKursus.Close();
+        alleKurser = await IKursusService.GetAllCourses();
+    }
+
+    private void NavigateToCourse(int kursusId)
     {
         navMan.NavigateTo($"kursuspage/{kursusId}");
     }
+
+    /*
+    private List<Kursus> alleKurser;
+    private ModalKursus _modalKursus { get; set; }
+    private KursusCreationDTO newCourse = new();
+    private List<Kursus> Courses;
+    private List<KursusTemplate> CoursesTemplates;
+
+    private string? selectedCourse;
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private string? location;
+
+    protected override async Task OnInitializedAsync()
+    {
+        alleKurser = await IKursusService.GetAllCourses();
+    }
+
+    private void NavigateToCourse(int kursusId)
+    {
+        navMan.NavigateTo($"kursuspage/{kursusId}");
+    }
+
+    private async Task AddCourse()
+    {
+        _modalKursus.Open();
+        CoursesTemplates = await IKursusService.GetAllTemplates();
+    }
+
+    private void CloseCourseSelection()
+    {
+        _modalKursus.Close();
+    }
+
+    private async Task SaveCourse(KursusCreationDTO kursus)
+    {
+        await IKursusService.SaveCourse(kursus);
+        navMan.NavigateTo("kursusoversigt");
+    }*/
 }

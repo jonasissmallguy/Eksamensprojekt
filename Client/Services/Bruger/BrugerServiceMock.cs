@@ -21,11 +21,6 @@ namespace Client
                 Password = "123456",
                 Rolle = "Køkkenchef",
                 FirstName = "Theis",
-                Hotel = new Hotel
-                {
-                    Id = 1,
-                    HotelNavn = "Aarhus"
-                }
             },
             new User
             {
@@ -34,11 +29,6 @@ namespace Client
                 Password = "123456",
                 Rolle = "Elev",
                 FirstName = "Charles",
-                Hotel = new Hotel
-                {
-                    Id = 1,
-                    HotelNavn = "Aarhus"
-                },
                 Year = "År 1",
                 Skole = "Kold Kollege",
                 Uddannelse = "EUX",
@@ -52,11 +42,7 @@ namespace Client
                 Password = "123456",
                 Rolle = "Kok",
                 FirstName = "Kok",
-                Hotel = new Hotel
-                {
-                    Id = 1,
-                    HotelNavn = "Aarhus"
-                }
+        
             }
         };
 
@@ -155,11 +141,7 @@ namespace Client
                 Rolle = nyBruger.Rolle,
                 StartDate = nyBruger.StartDate,
                 EndDate = nyBruger.EndDate,
-                Hotel = new Hotel
-                {
-                    Id = nyBruger.Id,
-                    HotelNavn = "Aarhus"
-                },
+        
                 Year = nyBruger.Year,
                 Skole = nyBruger.Skole,
                 Uddannelse = nyBruger.Uddannelse
@@ -183,8 +165,8 @@ namespace Client
                 {
                     Id = elev.Id,
                     Name = elev.FirstName,
-                    HotelId = elev.Hotel.Id,
-                    Hotel = "test",
+                    HotelId = elev.HotelId,
+                    HotelNavn = "test",
                     Roller = elev.Rolle,
                     Ansvarlig = "test ansvarlig",
                     Year = elev.Year,
@@ -271,8 +253,7 @@ namespace Client
 
             if (user != null)
             {
-                user.Hotel.Id = hotel.Id;
-                user.Hotel.HotelNavn = hotel.HotelNavn;
+                user.HotelId = hotel.Id;
             }
 
    

@@ -19,7 +19,7 @@
         <thead>
         <tr>
             <th>Navn</th>
-            <!--<th>Hotel</th>-->
+            <th>Hotel</th>
             <th>Rolle</th>
             <th>Status</th>
             <th>Rediger rolle</th>
@@ -35,7 +35,7 @@
             {
                 <tr>
                     <td>@x.FirstName</td>
-                    <!--<td>@x.Hotel.HotelNavn</td>-->
+                    <td>@x.HotelNavn</td>
                     <td>@x.Rolle</td>
                     <td>@x.Status</td>
                     <td>
@@ -167,17 +167,40 @@ else
     private async Task DeActivateUser(int userId)
     {
         await IBrugerService.DeActivateUser(userId);
+        
+        var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+        if (user != null)
+        {
+            user.Status = "Deactivated";
+        }
+        
         StateHasChanged();
     }
 
     private async Task HandleNewRolle(string rolle)
     {
         await IBrugerService.ChangeRolle(rolle, _userToChange.Id);
+
+        var user = _allUsers.FirstOrDefault(x => x.Id == _userToChange.Id);
+        if (user != null)
+        {
+            user.Rolle = rolle;
+        }
+        
+        StateHasChanged();
+
     }
 
     private async Task AktiverUser(int userId)
     {
         await IBrugerService.ActivateUser(userId);
+
+        var user = _allUsers.FirstOrDefault(x => x.Id == userId);
+        if (user != null)
+        {
+            user.Status = "Active";
+        }
+        
         StateHasChanged();
     }
 

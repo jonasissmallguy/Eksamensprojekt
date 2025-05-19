@@ -14,9 +14,8 @@ namespace Core
         public int? Mobile { get; set; }
         public string Email { get; set; }
         public string Rolle { get; set; } 
-        
-        public Hotel Hotel { get; set; }
-        
+        public int HotelId { get; set; }
+        public string HotelNavn { get; set; }
         public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string Year { get; set; }

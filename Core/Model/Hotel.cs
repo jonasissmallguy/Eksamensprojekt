@@ -12,8 +12,11 @@ namespace Core
         public string HotelNavn { get; set; }
         public string Address { get; set; }
         public int? Zip { get; set; }
+        
+        public string Region { get; set; }
+        
         public string City { get; set; }
-        public Region Region { get; set; } // hvad skal det her?
-        public User KøkkenChef { get; set; } // hvad skal det her?
+        public int? KøkkenChefId { get; set; }
+        public string KøkkenChefNavn { get; set; }
     }
 }

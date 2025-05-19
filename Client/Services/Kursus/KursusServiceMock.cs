@@ -1,6 +1,7 @@
 ﻿
 
 using Core;
+using Core.DTO.Kursus;
 
 namespace Client;
 
@@ -18,7 +19,6 @@ public class KursusServiceMock : IKursus
             EndDate = new  DateTime(2025, 7, 24, 15, 0, 0),
             Students = new List<User>
             {
-                new User {Id = 3, FirstName = "Jonas", Hotel = new Hotel{Id = 1, HotelNavn = "Aarhus Comwell"}}
             }
             
         }
@@ -42,7 +42,12 @@ public class KursusServiceMock : IKursus
         return kursus;
     }
 
-    public Task AddCourse(Kursus kursus)
+    public Task SaveCourse(KursusCreationDTO kursus)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SaveCourse(Kursus kursus)
     {
         throw new NotImplementedException();
     }
@@ -92,5 +97,15 @@ public class KursusServiceMock : IKursus
                 }
             }
         }
+    }
+
+    public Task AddStudentToCourse(int studentId, Kursus kursus)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<List<KursusTemplate>> GetAllTemplates()
+    {
+        throw new NotImplementedException();
     }
 }
