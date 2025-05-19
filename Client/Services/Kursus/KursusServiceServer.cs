@@ -28,6 +28,9 @@ namespace Client
         
         //Denne metode skal tilføje ny s
         public async Task AddCourse(Kursus kursus)
+        {
+            
+        }
         public async Task SaveCourse(KursusCreationDTO kursus)
         {
              await _client.PostAsJsonAsync($"{serverUrl}/kursus", kursus);
