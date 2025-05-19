@@ -9,24 +9,25 @@ namespace Client
 
     public class BrugerServiceServer : IBruger
     {
-        private string serverUrl = "http://localhost:5075";
+        private readonly string _severUrl;
         private HttpClient _client = new();
         
         private List<User> _allUsers = new();
 
-        public BrugerServiceServer(HttpClient client)
+        public BrugerServiceServer(HttpClient client, IConfiguration config)
         {
             _client = client;
+            _severUrl = config["ApiBaseUrl"];
         }
 
         public async Task<User> GetBrugerById(int userId)
         {
-            return await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{userId}");
+            return await _client.GetFromJsonAsync<User>($"{_severUrl}/users/{userId}");
         }
 
         public async Task<bool> OpdaterBruger(int userId, User updateBruger)
         {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/users/update", updateBruger);
+            var response = await _client.PutAsJsonAsync($"{_severUrl}/users/update", updateBruger);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -42,7 +43,7 @@ namespace Client
         
         public async Task<User> OpretBruger(BrugerCreateDTO nyBruger)
         { 
-            HttpResponseMessage response = await _client.PostAsJsonAsync($"{serverUrl}/users", nyBruger);
+            HttpResponseMessage response = await _client.PostAsJsonAsync($"{_severUrl}/users", nyBruger);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -57,7 +58,7 @@ namespace Client
 
         public async Task<List<ElevOversigtDTO>> GetElevOversigt()
         {
-            var allUsers = await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
+            var allUsers = await _client.GetFromJsonAsync<List<User>>($"{_severUrl}/users");
             
             var elevOversigt = new List<ElevOversigtDTO>();
             
@@ -86,12 +87,12 @@ namespace Client
 
         public async Task<List<User>> GetAllUsers()
         {
-            return await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
+            return await _client.GetFromJsonAsync<List<User>>($"{_severUrl}/users");
         }
         
         public async Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId)
         {
-            return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"{serverUrl}/users/withoutmyself/{userId}");
+            return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"{_severUrl}/users/withoutmyself/{userId}");
         }
 
         public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
@@ -112,22 +113,22 @@ namespace Client
 
         public async Task DeleteUser(int userId)
         {
-            await _client.DeleteAsync($"{serverUrl}/users/{userId}");
+            await _client.DeleteAsync($"{_severUrl}/users/{userId}");
         }
 
         public async Task ChangeRolle(string newRolle, int userId)
         {
-            await _client.PutAsJsonAsync($"{serverUrl}/users/updaterolle/{userId}/{newRolle}", new{});
+            await _client.PutAsJsonAsync($"{_severUrl}/users/updaterolle/{userId}/{newRolle}", new{});
         }
 
         public async Task DeActivateUser(int userId)
         { 
-            await _client.PutAsJsonAsync($"{serverUrl}/users/deactivate/{userId}", userId);
+            await _client.PutAsJsonAsync($"{_severUrl}/users/deactivate/{userId}", userId);
         }
 
         public async Task ActivateUser(int userId)
         {
-            await _client.PutAsJsonAsync($"{serverUrl}/users/activate/{userId}", userId);
+            await _client.PutAsJsonAsync($"{_severUrl}/users/activate/{userId}", userId);
         }
 
         public Task UpdateHotel(Hotel hotel, int userId)
@@ -147,7 +148,7 @@ namespace Client
 
         public async Task<List<KursusDeltagerListeDTO>> GetAllStudents()
         {
-            return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"{serverUrl}/users/allstudents");
+            return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"{_severUrl}/users/allstudents");
         }
 
         public Task<List<User>> GetStudentsForløb(int leaderId)

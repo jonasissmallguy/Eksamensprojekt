@@ -19,6 +19,8 @@
       <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
+    
+
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Components\Elevplan\TabControl.razor" />
       <_ContentIncludedByDefault Remove="Components\Elevplan\TabPage.razor" />
