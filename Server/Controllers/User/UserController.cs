@@ -289,7 +289,6 @@ namespace Server
             await _userRepository.DeactivateUser(userId);
             
             return Ok();
-
         }
         
         /// <summary>
