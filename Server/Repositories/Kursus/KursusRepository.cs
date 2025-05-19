@@ -21,12 +21,14 @@ namespace Server
 
         public async Task<List<Kursus>> GetAllCourses()
         {
-            return await _collection.Find(_ => true).ToListAsync();
+            var filter = Builders<Kursus>.Filter.Empty;
+            return await _collection.Find(filter).ToListAsync();
         }
 
         public async Task<Kursus> GetCourseById(int kursusId)
         {
-            return await _collection.Find(k => k.Id == kursusId).FirstOrDefaultAsync();
+            var filter = Builders<Kursus>.Filter.Eq("_id", kursusId);
+            return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
         public async Task<bool> RemoveStudentFromCourse(int studentId, int kursusId)
