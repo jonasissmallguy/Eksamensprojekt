@@ -10,7 +10,7 @@ namespace Client
         
         //Goals
         Task DeleteGoal(Goal goal, int studentId);
-        Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates);
+        Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates); //denne skal ikke bruges
         
         //Goal progress
         Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor); //goal.status -> InProgress
@@ -19,16 +19,23 @@ namespace Client
         
         //Comments
         Task<Comment> AddComment(NewComment comment);
-        Task DeleteComment(int goalId, int commentId);
+        Task DeleteComment(int goalId, int commentId); //denne skal ikke bruges
         
-        Task<List<GoalNameDTO>> GetAllGoalTypes();
+        Task<List<GoalNameDTO>> GetAllGoalTypes(); //denne skal ikke bruges
 
-        Task<List<Goal>> GetAwaitingApproval();
-        Task<List<Goal>> GetMissingCourses(User bruger);
-        Task<List<Goal>> GetOutOfHouse();
-        Task ConfirmGoalFromHomePage(Goal goal);
-        Task<List<Goal>> GetAllGoalsForBruger(User bruger);
-        Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string kursus);
+        Task<List<AwaitingApprovalDTO>> GetAwaitingApproval(int hotelId); //done
+        Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId); //done
+        
+        Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId); //done
+        
+        
+        
+        Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId); //mangler... skole + kursus,
+        
+        Task<bool> ConfirmGoalFromHomePage(AwaitingApprovalDTO goal); //done
+        Task<List<Goal>> GetAllGoalsForBruger(User bruger); //denne bruges ikke?
+        Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string kursus); //denne bruges ikke?
+        
     }
 
 }

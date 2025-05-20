@@ -123,7 +123,7 @@
             </div>
             <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
             <div class="export-button">
-                <Button class="btn btn-primary">Eksporter fil</Button>
+                <Button @onclick="() => SendExcelFile(selectedStudentIds)" class="btn btn-primary">Eksporter fil</Button>
             </div>
         }
 
@@ -510,4 +510,10 @@
             Console.WriteLine(elev);
         }
     }
+    
+    private async Task SendExcelFile(HashSet<int> hashSet)
+    {
+       await IBrugerService.SendEmail(hashSet);
+    }
+
 }

@@ -176,87 +176,98 @@ namespace Server
             return goal;
         }
 
-        public async Task<List<Goal>> GetAwaitingApproval()
+        public async Task<List<User>> GetActionGoals(int elevId)
         {
-        var filter = Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f =>
-        f.Goals.Any(g => g.Status == "AwaitingApproval"));
-
-        var users = await _goalCollection.Find(filter).ToListAsync();
-        var goals = new List<Goal>();
-
-        foreach (var user in users)
-        {
-        foreach (var forløb in user.ElevPlan.Forløbs)
-        {
-            goals.AddRange(forløb.Goals.Where(g => g.Status == "AwaitingApproval"));
-        }
-        }
-
-        return goals;
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.Id, elevId),
+                Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
+                    Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
+                        Builders<Goal>.Filter.And(
+                            Builders<Goal>.Filter.Eq(g => g.Type, "Delmål"),
+                            Builders<Goal>.Filter.In(g => g.Status, new[] { "InProgress", "AwaitingApproval" })
+                        )
+                    )
+                )
+            );
+            
+            return await _goalCollection.Find(filter).ToListAsync();
         }
 
-        public async Task<List<Goal>> GetMissingCourses(int userId)
-        {
-        var user = await _goalCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
-        var missing = new List<Goal>();
 
-        if (user != null)
+        //Finder en køkkenchefs manglende godkendelser
+        public async Task<List<User>> GetAwaitingApproval(int hotelId)
         {
-        foreach (var forløb in user.ElevPlan.Forløbs)
-        {
-            missing.AddRange(forløb.Goals.Where(g => g.Type == "Kursus" && g.Status != "Finished"));
-        } 
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.HotelId, hotelId),
+                Builders<User>.Filter.Eq(u => u.Rolle, "Elev"),
+                Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
+                    Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
+                        Builders<Goal>.Filter.Eq(g => g.Status, "AwaitingApproval")
+                    )
+                )
+            );
+            return await _goalCollection.Find(filter).ToListAsync();
         }
 
-        return missing;
+
+        public async Task<List<User>> GetMissingCourses(int hotelId)
+        {
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.HotelId, hotelId),
+                Builders<User>.Filter.Eq(u => u.Rolle, "Elev"),
+                Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
+                    Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
+                        Builders<Goal>.Filter.And(
+                            Builders<Goal>.Filter.Eq(g => g.Type, "Kursus"),
+                            Builders<Goal>.Filter.Eq(g => g.Status, "Active") 
+                        )
+                    )
+                )
+            );
+            return await _goalCollection.Find(filter).ToListAsync();
+        }
+        
+        
+        public async Task<List<User>> GetOutOfHouse(int hotelId)
+        {
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.HotelId, hotelId),
+                Builders<User>.Filter.Eq(u => u.Rolle, "Elev"),
+                Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
+                    Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
+                        Builders<Goal>.Filter.And(
+                            Builders<Goal>.Filter.In(g => g.Type, new[] { "Kursus", "Skoleforløb" }),
+                            Builders<Goal>.Filter.Eq(g => g.Status, "Active")
+                        )
+                    )
+                )
+            );
+
+            return await _goalCollection.Find(filter).ToListAsync();
         }
 
-        public async Task<List<Goal>> GetOutOfHouse()
+        public async Task<bool> ConfirmGoalFromHomePage(int planId, int forløbId, int goalId)
         {
-        var filter = Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f =>
-        f.Goals.Any(g => g.Type == "Skole"));
-
-        var users = await _goalCollection.Find(filter).ToListAsync();
-        var result = new List<Goal>();
-
-        foreach (var user in users)
-        {
-        foreach (var forløb in user.ElevPlan.Forløbs)
-        {
-            result.AddRange(forløb.Goals.Where(g => g.Type == "Skole"));
-        }
-        }
-
-        return result;
-        }
-
-        public async Task<bool> ConfirmGoalFromHomePage(Goal goal)
-        {
-            if (goal == null || goal.Id <= 0)
-                return false;
-
-            // Find user som indeholder et forløb med målet
-            var filter = Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f =>
-                f.Goals.Any(g => g.Id == goal.Id));
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
 
             var update = Builders<User>.Update
-                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "Finished")
-                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].ConfirmedAt", DateTime.Now);
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "Completed")
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].CompletedAt", DateTime.Now);
 
             var arrayFilters = new List<ArrayFilterDefinition>
             {
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f.Goals._id", goal.Id)),
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goal.Id))
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", forløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
             };
 
             var options = new UpdateOptions { ArrayFilters = arrayFilters };
 
             var result = await _goalCollection.UpdateOneAsync(filter, update, options);
-
+            
             if (result.ModifiedCount == 0)
-                Console.WriteLine($"ConfirmGoalFromHomePage: Kunne ikke opdatere mål med Id={goal.Id}");
+                return false;
 
-            return result.ModifiedCount > 0;
+            return true;
         }
 
 
@@ -278,6 +289,7 @@ namespace Server
             return result;
         }
 
+        //Denne skal slettes
         public async Task<List<string>> GetAllGoalTypes()
         {
             // Antag at alle måltyper kan findes ved at aggregere over alle goals og hente unikke typer
@@ -317,4 +329,4 @@ namespace Server
         }
 
     }
-}
+    }

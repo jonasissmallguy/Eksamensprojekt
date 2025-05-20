@@ -1,8 +1,11 @@
-﻿using Core;
+﻿using System.Xml.Linq;
+using Core;
 using Microsoft.AspNetCore.Mvc;
 using DotNetEnv;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Server
 {
@@ -58,7 +61,7 @@ namespace Server
                 brugers.Add(new BrugerAdministrationDTO
                 {
                     Id = x.Id,
-                    FirstName = x.FirstName,
+                    FirstName = x.FirstName + " " + x.LastName,
                     Hotel = x.HotelNavn,
                     Rolle = x.Rolle,
                     Status = x.Status
@@ -400,6 +403,92 @@ namespace Server
             }
             
             return Ok(students);
+        }
+
+        //Generer excel fil
+        [NonAction]
+        public async Task<bool> GenerateExcelFile(List<User> users)
+        {
+            byte[] fileBytes;
+            
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Dashboard");
+                
+                //Overskrifter
+                worksheet.Cell("A1").Value = "Navn";
+                worksheet.Cell("B1").Value = "Hotel";
+                worksheet.Cell("C1").Value = "Status"; //Afvent vi får lavet hjælpefunktion, den Rasmus bruger til elevoversigt
+                worksheet.Cell("D1").Value = "År";
+                worksheet.Cell("E1").Value = "Skole";
+                worksheet.Cell("F1").Value = "Uddannelse";
+                worksheet.Cell("G1").Value = "Start";
+                worksheet.Cell("H1").Value = "Slut";
+
+                //Data 
+                int row = 2;
+                foreach (var user in users)
+                {
+                    worksheet.Cell(row, 1 ).Value = user.FirstName + " " + user.LastName;
+                    worksheet.Cell(row, 2 ).Value = user.HotelNavn;
+                    worksheet.Cell(row, 3 ).Value = user.Status;
+                    worksheet.Cell(row, 4 ).Value = user.Year;
+                    worksheet.Cell(row, 5 ).Value = user.Skole;
+                    worksheet.Cell(row, 6 ).Value = user.Uddannelse;
+                    worksheet.Cell(row, 7 ).Value = user.StartDate.ToString();
+                    worksheet.Cell(row, 8 ).Value = user.EndDate.ToString();
+                    row++;
+                }
+                
+                //Juster kolonner, så de fitter
+                worksheet.Columns().AdjustToContents();
+
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    fileBytes = stream.ToArray();
+                }
+                
+            }
+            
+            string base64 = Convert.ToBase64String(fileBytes);
+            
+            //Send mail - skal laves pænere, evt. lav en fælles hjælpe funktion Jonas
+            Env.Load();
+            
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+            var client = new SendGridClient(apiKey);
+            
+            //fra og til skal ændres dynamisk... brugt til test.
+            var from = new EmailAddress("jonasdupontheidemann@gmail.com", "Jonas Heidemann");
+            var subject = "Alle produkter";
+            var to = new EmailAddress("tjoernevej53@gmail.com", "Example User");
+            var plainTextContent = "and easy to do anywhere, even with C#";
+            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            
+            msg.AddAttachment("data.xlsx", base64, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            
+            var sendEmail = await client.SendEmailAsync(msg);
+
+            return true;
+        }
+
+        //Skal gøres specifik - afventer Rasmus elevoversigt ændringer
+        [HttpPost]
+        [Route("sendemail")]
+        public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds)
+        {
+            //Skal laves specifik til hvem der ser??
+            var students = await _userRepository.GetAllStudents();
+            
+            var filter = students.Where(x => studentIds.Contains(x.Id)).ToList();
+
+            var emailStatus = await GenerateExcelFile(filter);
+            
+            return Ok(emailStatus);
+
         }
         
     }

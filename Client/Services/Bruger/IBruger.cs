@@ -21,6 +21,8 @@ namespace Client
         Task<User> GetUserById(int currentUserId);
         
         Task<List<KursusDeltagerListeDTO>> GetAllStudents();
-        
+
+        Task<bool> SendEmail(HashSet<int> studentIds);
+
     }
 }
