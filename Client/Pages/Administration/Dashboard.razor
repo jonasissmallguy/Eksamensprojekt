@@ -114,13 +114,16 @@
             </Dropdown>
         </div>
 
-
-        @if (selectedStudentIds.Any())
+        @if (selectedStudentIds.Count == 1)
         {
             <!-- Knap til at tilføje et delmål-->
             <div class="addgoal-button">
                 <Button class="btn btn-primary" @onclick="OpenModal">Tilføj delmål</Button>
             </div>
+        }
+
+        @if (selectedStudentIds.Any())
+        {
             <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
             <div class="export-button">
                 <Button class="btn btn-primary">Eksporter fil</Button>
