@@ -56,7 +56,7 @@
                 <DropdownMenu>
                     <DropdownItem @onclick="() => SelectSkole(String.Empty)">Alle skoler</DropdownItem>
                     <DropdownItem @onclick="@(() => SelectSkole("Kold Kollege"))">Kold Kollege</DropdownItem>
-                    <DropdownItem @onclick="@(() => SelectSkole("Bæskolen Kronjylland"))">Bæskolen Kronjylland</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectSkole("EUX Kronjylland"))">EUX Kronjylland</DropdownItem>
                     <DropdownItem @onclick="@(() => SelectSkole("Hansted Kokkeskole"))">Hansted Kokkeskole</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
@@ -461,7 +461,7 @@
     private int? selectedGoalId = null;
 
     private string[] år = { "År 1", "År 2", "År 3" };
-    private string[] skole = { "Kold Kollege", "Bæskolen Kronjylland", "Hansted Kokkeskole" };
+    private string[] skole = { "Kold Kollege", "EUX Kronjylland", "Hansted Kokkeskole" };
     private string[] uddannelse = { "EUX", "Voksenelev" };
 
     private string GetGoalName(int? goalId)
