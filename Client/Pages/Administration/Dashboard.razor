@@ -237,13 +237,27 @@
                         </InputDate>
                     </div>
                 </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="SkoleStart">Skoleafslutning</label>
-                        <InputDate class="form-select" @bind-Value="newGoal.SkoleEnd">
-                        </InputDate>
-                    </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="SkoleStart">Skoleafslutning</label>
+                    <InputDate class="form-select" @bind-Value="newGoal.SkoleEnd">
+                    </InputDate>
                 </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Forløb">Forløb:</label>
+                    <InputSelect class="form-select" @bind-Value="selectedForløbId">
+                        @if (elevPlan?.Forløbs != null)
+                        {
+                            @foreach (var e in elevPlan.Forløbs)
+                            {
+                                <option value="@e.Id">@e.Title</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+            </div>
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
                         <button class="btn btn-primary">Tilføj</button>
@@ -259,7 +273,7 @@
 
     // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
-
+    private int? selectedForløbId = null;
     private string selectedYear = String.Empty;
     private int? selectedHotelId = null;
     private bool isSelected(int id) => selectedStudentId == id;
@@ -276,6 +290,7 @@
     private List<Hotel> alleHoteller = new();
     private HashSet<int> selectedStudentIds = new();
     private BrugerLoginDTO _currentUser;
+    private List<Forløb> alleForløb = new();
 
     private DateOnly? selectedSkolestartBefore = null;
     private DateOnly? selectedSkolestartAfter = null;
@@ -283,6 +298,10 @@
     private DateOnly? selectedSkoleendAfter = null;
 
     private bool isLoading = false;
+    
+    [Parameter] public int studentId { get; set; }
+    private User elev;
+    private Plan? elevPlan;
 
 
 
@@ -330,6 +349,12 @@
                 _currentUserHotelId = matchingUser.HotelId;
                 selectedHotelId = matchingUser.HotelId;
             }
+            
+            
+            elev = await IBrugerService.GetBrugerById(studentId);
+            alleForløb = elev.ElevPlan.Forløbs;
+
+            selectedForløbId = elevPlan?.Forløbs?.FirstOrDefault()?.Id;
 
         }
         catch (Exception ex)
@@ -435,6 +460,7 @@
         var goal = alleTyper.FirstOrDefault(t => t.GoalId == goalId);
         return goal?.GoalName ?? "Ukendt";
     }
+    
 
     private void SelectType(int? goalId)
     {
@@ -457,11 +483,26 @@
     // Herunder kode til Modaldialog
 
     private ModalTilføjDelmål? modalRef;
-
+    /*
     private void OpenModal()
     {
         modalRef?.Open();
     }
+    */
+    private async Task OpenModal()
+    {
+        var elevId = selectedStudentIds.FirstOrDefault();
+        if (elevId == 0) return;
+        
+        elev = await IBrugerService.GetBrugerById(elevId);
+        elevPlan = elev.ElevPlan;
+        
+        selectedForløbId = elevPlan?.Forløbs?.FirstOrDefault()?.Id;
+
+        modalRef.Open();
+        StateHasChanged();
+    }
+
 
     // Lille sag der checker hvilke elever der er tjekket af
     private void LogSelectedStudents()
@@ -477,6 +518,8 @@
             Console.WriteLine(elev);
         }
     }
+    
+    
 
 
 }
