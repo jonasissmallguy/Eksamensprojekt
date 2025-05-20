@@ -7,6 +7,7 @@
 @inject IBruger IBrugerService;
 @inject IHotel IHotelService;
 @inject IGoal IGoalService;
+@inject IAuth AuthService;
 
 
 @page "/dashboard"
@@ -22,19 +23,30 @@
             <TextInput @bind-value="@searchText" Placeholder="Søg ved navn..."></TextInput>
         </div>
 
-        <!-- Dropdown til hotelvalg -->
-        <div class="dropdownmenu">
-            <Dropdown Color="DropdownColor.Secondary">
-                <DropdownToggleButton>@(selectedHotelId == null ? "Hotel" : GetHotelName(selectedHotelId))</DropdownToggleButton>
-                <DropdownMenu>
-                    <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
-                    @foreach (var y in alleHoteller)
-                    {
-                        <DropdownItem @onclick="() => SelectHotel(y.Id)">@y.HotelNavn</DropdownItem>
-                    }
-                </DropdownMenu>
-            </Dropdown>
-        </div>
+        @if (_currentUser.Rolle == "HR")
+        {
+            <!-- Dropdown til hotelvalg -->
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(selectedHotelId == null ? "Hotel" : GetHotelName(selectedHotelId))</DropdownToggleButton>
+                    <DropdownMenu>
+                        <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
+                        @foreach (var y in alleHoteller)
+                        {
+                            <DropdownItem @onclick="() => SelectHotel(y.Id)">@y.HotelNavn</DropdownItem>
+                        }
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+        }
+        else
+        {
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(GetCurrentUserHotelName())</DropdownToggleButton>
+                </Dropdown>
+            </div>
+        }
 
         <!-- Dropdown til rolle -->
         <div class="dropdownmenu">
@@ -131,7 +143,7 @@
         }
 
     </div>
-
+    
     <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
     <table>
         <tr>
@@ -255,13 +267,15 @@
     private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
     private string selectedSkole = String.Empty;
     private string selectedUddannelse = String.Empty;
+    private int? _currentUserHotelId = null;
 
     private bool isChecked;
-    
+
     private List<Forløb> selectedForløb = new();
     private List<ElevOversigtDTO> alleElever = new();
     private List<Hotel> alleHoteller = new();
     private HashSet<int> selectedStudentIds = new();
+    private BrugerLoginDTO _currentUser;
 
     private DateOnly? selectedSkolestartBefore = null;
     private DateOnly? selectedSkolestartAfter = null;
@@ -304,6 +318,19 @@
             alleHoteller = await IHotelService.GetHotels();
 
             alleTyper = await IGoalService.GetAllGoalTypes();
+
+            _currentUser = await AuthService.GetBruger();
+
+            var _allUsers = await IBrugerService.GetAllUsers();
+
+            var matchingUser = _allUsers.FirstOrDefault(u => u.Id == _currentUser.Id);
+
+            if ((matchingUser != null) && (_currentUser.Rolle != "HR"))
+            {
+                _currentUserHotelId = matchingUser.HotelId;
+                selectedHotelId = matchingUser.HotelId;
+            }
+
         }
         catch (Exception ex)
         {
@@ -316,6 +343,11 @@
         }
     }
 
+    private string GetCurrentUserHotelName()
+    {
+        var hotel = alleHoteller.FirstOrDefault(h => h.Id == _currentUserHotelId);
+        return hotel?.HotelNavn ?? "Ukendt Hotel";
+    }
 
     private async Task NavigateToElevPlan(int studentId)
     {
@@ -430,6 +462,7 @@
     {
         modalRef?.Open();
     }
+
     // Lille sag der checker hvilke elever der er tjekket af
     private void LogSelectedStudents()
     {
@@ -444,4 +477,6 @@
             Console.WriteLine(elev);
         }
     }
+
+
 }
