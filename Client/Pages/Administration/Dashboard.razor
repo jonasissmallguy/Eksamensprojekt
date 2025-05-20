@@ -1,6 +1,6 @@
 ﻿@using System.Reflection.Metadata
-@using Core
 @using Core.DTO.Goal
+@using Core
 @using Client.Components
 
 @inject NavigationManager navMan;
@@ -197,8 +197,22 @@
         <EditForm Model="newGoal" class="row p-3">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
-            
-                <div class="row justify-content-center">
+
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Forløb">Forløb:</label>
+                    <InputSelect class="form-select" @bind-Value="selectedForløbId">
+                        @if (elevPlan?.Forløbs != null)
+                        {
+                            @foreach (var e in elevPlan.Forløbs)
+                            {
+                                <option value="@e.Id">@e.Title</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
                         <label for="Titel">Titel:</label>
                         <InputText id="Titel" @bind-Value="newGoal.Title"
@@ -232,35 +246,7 @@
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
-                        <label for="SkoleStart">Skolestart</label>
-                        <InputDate class="form-select" @bind-Value="newGoal.SkoleStart">
-                        </InputDate>
-                    </div>
-                </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="SkoleStart">Skoleafslutning</label>
-                    <InputDate class="form-select" @bind-Value="newGoal.SkoleEnd">
-                    </InputDate>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Forløb">Forløb:</label>
-                    <InputSelect class="form-select" @bind-Value="selectedForløbId">
-                        @if (elevPlan?.Forløbs != null)
-                        {
-                            @foreach (var e in elevPlan.Forløbs)
-                            {
-                                <option value="@e.Id">@e.Title</option>
-                            }
-                        }
-                    </InputSelect>
-                </div>
-            </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <button class="btn btn-primary">Tilføj</button>
+                        <button class="btn btn-primary" type="submit">Tilføj</button>
                     </div>
                 </div>
 
