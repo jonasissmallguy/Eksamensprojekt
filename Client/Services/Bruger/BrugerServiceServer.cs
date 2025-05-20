@@ -76,7 +76,9 @@ namespace Client
                     Skole = elev.Skole,
                     Uddannelse = elev.Uddannelse,
                     StartDate = elev.StartDate,
-                    EndDate = elev.EndDate
+                    EndDate = elev.EndDate,
+                    TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f=> f.Goals?.Count) ?? 0,
+                    CompletedGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g=> g.Status == "Completed")) ?? 0,
                     
                 });
             }
