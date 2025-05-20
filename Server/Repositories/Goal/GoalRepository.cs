@@ -71,7 +71,6 @@ namespace Server
     
             var arrayFilters = new List<ArrayFilterDefinition>
             {
-                // Notice the use of _id instead of Id based on your document structure
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", comment.ForløbId)),
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", comment.GoalId))
             };
