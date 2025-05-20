@@ -16,17 +16,58 @@
             <h5 class="card-title">Velkomst Boks</h5>
             <p>Velkommen til din side @_currentUser?.FirstName</p>
         </div>
+
         <div class="dashboard-card">
             <h5 class="card-title">Kommende Skoleophold</h5>
-            <p>Du har følgende skoleophold</p>
+            @if (_elevSkoleophold != null && _elevSkoleophold.Any())
+            {
+                <ul class="list-reset">
+                    @foreach (var ophold in _elevSkoleophold)
+                    {
+                        <li>
+                            @ophold.Title – @ophold.SkoleStart?.ToShortDateString() til @ophold.SkoleEnd?.ToShortDateString()
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Du har ingen planlagte skoleophold</p>
+            }
         </div>
+
         <div class="dashboard-card">
             <h5 class="card-title">Aktive Delmål</h5>
-            <p>Igangværende delmål</p>
+            @if (_elevDelmål != null && _elevDelmål.Any())
+            {
+                <ul class="list-reset">
+                    @foreach (var mål in _elevDelmål)
+                    {
+                        <li>@mål.Title – Status: @mål.Status</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Du har ingen aktive delmål</p>
+            }
         </div>
+
         <div class="dashboard-card">
             <h5 class="card-title">Kommende Kurser</h5>
-            <p>Følgende kurser kommer i den næste periode</p>
+            @if (_elevKurser != null && _elevKurser.Any())
+            {
+                <ul class="list-reset">
+                    @foreach (var kursus in _elevKurser)
+                    {
+                        <li>@kursus.Title – Deadline: @kursus.DeadLineAt.ToShortDateString()</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Der er ingen kommende kurser i din plan</p>
+            }
         </div>
     }
     else if (_currentUser?.Rolle == "Køkkenchef")
@@ -48,7 +89,6 @@
                 <p>Ingen kurser fundet for dette år</p>
             }
         </div>
-
 
         <div class="dashboard-card">
             <h5 class="card-title">Kommende Skoleophold</h5>
@@ -83,6 +123,7 @@
                 </ul>
             }
         </div>
+
         <div class="dashboard-card">
             <h5 class="card-title">Elevers mål der afventer dine godkendelser</h5>
             <p>Du har følgende notifikationer</p>
@@ -102,8 +143,6 @@
     }
 </div>
 
-
-
 @code {
     private BrugerLoginDTO _currentUser;
     private User _bruger;
@@ -112,50 +151,72 @@
     private List<Goal> _outOfHouse;
     private List<Goal> _upcomingCourses;
 
+    // Elev-data
+    private List<Goal> _elevSkoleophold;
+    private List<Goal> _elevDelmål;
+    private List<Goal> _elevKurser;
+
     protected override async Task OnInitializedAsync()
     {
-            _currentUser = await AuthService.GetBruger();
-            if (_currentUser == null)
-            {
-                navMan.NavigateTo("login/");
-                return;
-            }
+        _currentUser = await AuthService.GetBruger();
 
-            _bruger = await IBrugerService.GetUserById(_currentUser.Id);
-
-            // Redirect HR og kok til Dashboard
-            if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Kok")
-            {
-                navMan.NavigateTo("/Dashboard");
-                return;
-            }
-
-            // Hvis det er køkkenchef, indlæser vi de relevante data
-            if (_currentUser.Rolle == "Køkkenchef")
-            {
-                _awaitingApproval = await IGoalService.GetAwaitingApproval();
-                _missingCourses = await IGoalService.GetMissingCourses(_bruger);
-                _outOfHouse = await IGoalService.GetOutOfHouse();
-                _upcomingCourses = await IGoalService.GetGoalsByTypeForUser(_bruger, "Kursus");
-                
-                var allGoals = await IGoalService.GetAllGoalsForBruger(_bruger); 
-                _upcomingCourses = allGoals
-                    .Where(g => g.Type == "Kursus" && g.Status == "Active")
-                    .Where(g => g.Semester == "1" || g.Semester == "2" || g.Semester == "3") 
-                    .Where(g => g.ForløbId == _bruger.ForløbId)
-                    .OrderBy(g => g.Semester)
-                    .ThenBy(g => g.DeadLineAt)
-                    .ToList();
-            }
-        }
-       
-        private async Task ApproveGoal(Goal goal)
+        if (_currentUser == null)
         {
-            await IGoalService.ConfirmGoalFromHomePage(goal);
+            navMan.NavigateTo("login/");
+            return;
+        }
 
-            if (goal.Id != null)
-            {
-                _awaitingApproval = _awaitingApproval.Where(g => g.Id != goal.Id).ToList();
-            }
+        _bruger = await IBrugerService.GetUserById(_currentUser.Id);
+
+        if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Kok")
+        {
+            navMan.NavigateTo("/Dashboard");
+            return;
+        }
+
+        if (_currentUser.Rolle == "Køkkenchef")
+        {
+            _awaitingApproval = await IGoalService.GetAwaitingApproval();
+            _missingCourses = await IGoalService.GetMissingCourses(_bruger);
+            _outOfHouse = await IGoalService.GetOutOfHouse();
+
+            var allGoals = await IGoalService.GetAllGoalsForBruger(_bruger);
+            _upcomingCourses = allGoals
+                .Where(g => g.Type == "Kursus" && g.Status == "Active")
+                .Where(g => g.Semester == "1" || g.Semester == "2" || g.Semester == "3")
+                .Where(g => g.ForløbId == _bruger.ForløbId)
+                .OrderBy(g => g.Semester)
+                .ThenBy(g => g.DeadLineAt)
+                .ToList();
+        }
+
+        if (_currentUser.Rolle == "Elev")
+        {
+            var elevGoals = await IGoalService.GetAllGoalsForBruger(_bruger);
+
+            _elevSkoleophold = elevGoals
+                .Where(g => g.Type == "Skole" && g.SkoleStart != null && g.SkoleStart >= DateTime.Now)
+                .OrderBy(g => g.SkoleStart)
+                .ToList();
+
+            _elevDelmål = elevGoals
+                .Where(g => g.Type == "Kompetence" && g.Status == "Active")
+                .OrderBy(g => g.SortOrder)
+                .ToList();
+
+            _elevKurser = elevGoals
+                .Where(g => g.Type == "Kursus" && g.Status == "Active" && g.DeadLineAt >= DateTime.Now)
+                .OrderBy(g => g.DeadLineAt)
+                .ToList();
         }
     }
+
+    private async Task ApproveGoal(Goal goal)
+    {
+        await IGoalService.ConfirmGoalFromHomePage(goal);
+        if (goal.Id != null)
+        {
+            _awaitingApproval = _awaitingApproval.Where(g => g.Id != goal.Id).ToList();
+        }
+    }
+}

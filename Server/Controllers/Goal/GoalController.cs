@@ -170,7 +170,21 @@ namespace Server
             return Ok(goals);
         }
 
-        
+        [HttpGet("types")]
+        public async Task<IActionResult> GetAllGoalTypes()
+        {
+            var types = await _goalRepository.GetAllGoalTypes();
+            return Ok(types);
+        }
+
+        [HttpGet("all-for-user/{userId}")]
+        public async Task<IActionResult> GetAllGoalsForUser(int userId)
+        {
+            var goals = await _goalRepository.GetAllGoalsForUser(userId);
+            if (goals == null || !goals.Any())
+                return NotFound("Ingen mål fundet for brugeren.");
+            return Ok(goals);
+        }
     }
 
 }

@@ -49,7 +49,18 @@ namespace Server
         /// Henter aktive mål for en bruger og type.
         /// </summary>
         Task<List<Goal>> GetGoalsByTypeForUser(string type, int userId);
+
+        /// <summary>
+        /// Henter alle målnavne / typer.
+        /// </summary>
+        Task<List<string>> GetAllGoalTypes();
+        
+        /// <summary>
+        /// Henter alle mål for en given bruger.
+        /// </summary>
+        Task<List<Goal>> GetAllGoalsForUser(int userId);
     }
+
 
 
 }
