@@ -13,6 +13,7 @@ namespace Client
         private HttpClient _client;
         private ILocalStorageService _localStorage;
         private IBruger _bruger;
+        private readonly string _serverUrl;
 
         public AuthServiceServer(HttpClient client, ILocalStorageService localStorage, IBruger bruger)
         {

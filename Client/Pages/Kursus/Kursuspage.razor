@@ -30,15 +30,18 @@
             </thead>
             <tbody>
             <tr>
-       
-            @foreach (var x in _kursus.Students)
+            @if (_kursus.Students != null)
             {
-                <td>@x.FirstName</td>
-                <td>@x.HotelNavn</td>
-                <td>
-                    <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
-                </td>
+                @foreach (var x in _kursus.Students)
+                {
+                    <td>@x.FirstName</td>
+                    <td>@x.HotelNavn</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
+                    </td>
+                }
             }
+         
             </tr>
             </tbody>
         </table>
@@ -51,15 +54,53 @@ else
     <p>Loading...</p>
 }
 
+<!--Skal slettes og på forsiden -->
+@if (allStudents != null)
+{
+    
+    <h6>Tildel elever</h6>
+    <div class="full-course-information">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Tildel kursus</th>
+            </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in allStudents)
+                {
+                    <tr>
+                    <td>@x.Navn</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => AddToCourse(x)">Tildel kursus </button>
+                    </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+else
+{
+    <p>Loading...</p>
+}
 
 @code {
 
     [Parameter] public int kursusId { get; set; }
 
     private Kursus _kursus;
+
+    
+    private List<KursusDeltagerListeDTO> allStudents = new List<KursusDeltagerListeDTO>(); //skal slettes kun brugt i test
+    
     protected override async Task OnInitializedAsync()
     {
         _kursus = await IKursusService.GetCourseById(kursusId);
+        allStudents = await IBrugerService.GetAllStudents();
+
     }
     
     
@@ -67,7 +108,6 @@ else
     private async Task FinishCourse()
     {
         
-
         await IKursusService.CompleteCourse(_kursus);
         navMan.NavigateTo("kursusoversigt");
     }
@@ -76,11 +116,16 @@ else
     {
         await IKursusService.RemoveStudentFromCourse(user.Id, _kursus);
 
-        //Fjerner en studerende hvis slettet
-        _kursus.Students = _kursus.Students.Where(x => x.Id != user.Id).ToList();
-
+        if (_kursus != null)
+        {
+            //Fjerner en studerende hvis slettet
+            _kursus.Students = _kursus.Students.Where(x => x.Id != user.Id).ToList();    
+        }
+        
     }
 
-
-
+    private async Task AddToCourse(KursusDeltagerListeDTO user)
+    {
+        await IKursusService.AddStudentToCourse(user, kursusId);
+    }
 }

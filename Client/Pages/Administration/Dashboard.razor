@@ -56,7 +56,7 @@
                 <DropdownMenu>
                     <DropdownItem @onclick="() => SelectSkole(String.Empty)">Alle skoler</DropdownItem>
                     <DropdownItem @onclick="@(() => SelectSkole("Kold Kollege"))">Kold Kollege</DropdownItem>
-                    <DropdownItem @onclick="@(() => SelectSkole("Bæskolen Kronjylland"))">Bæskolen Kronjylland</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectSkole("EUX Kronjylland"))">EUX Kronjylland</DropdownItem>
                     <DropdownItem @onclick="@(() => SelectSkole("Hansted Kokkeskole"))">Hansted Kokkeskole</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
@@ -166,7 +166,7 @@
                     </td>
                     <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
                     <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.HotelNavn</td>
-                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">11/47</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.CompletedGoals / @x.TotalGoals</td>
                     <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
                     <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Skole</td>
                     <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Uddannelse</td>
@@ -322,24 +322,25 @@
     private string selectedSkole = String.Empty;
     private string selectedUddannelse = String.Empty;
 
-
     private bool isChecked;
-
-    private List<ElevOversigtDTO> alleElever = new();
-    private List<Hotel> alleHoteller;
-    private HashSet<int> selectedStudentIds = new();
     
+    private List<Forløb> selectedForløb = new();
+    private List<ElevOversigtDTO> alleElever = new();
+    private List<Hotel> alleHoteller = new();
+    private HashSet<int> selectedStudentIds = new();
+
     private DateOnly? selectedSkolestartBefore = null;
     private DateOnly? selectedSkolestartAfter = null;
     private DateOnly? selectedSkoleendBefore = null;
     private DateOnly? selectedSkoleendAfter = null;
-    
+
     private bool isLoading = false;
 
-    
-    
+
+
     // Filter til søgetekst og til valg af hotel
-    private IEnumerable<ElevOversigtDTO> FiltreredElever {
+    private IEnumerable<ElevOversigtDTO> FiltreredElever
+    {
         get
         {
             var filtered = alleElever.Where((a =>
@@ -353,7 +354,7 @@
                 (!selectedSkolestartAfter.HasValue || a.StartDate >= selectedSkolestartAfter) &&
                 (!selectedSkoleendBefore.HasValue || a.EndDate <= selectedSkoleendBefore) &&
                 (!selectedSkoleendAfter.HasValue || a.EndDate >= selectedSkoleendAfter)));
-            
+
             return filtered;
         }
     }
@@ -428,14 +429,14 @@
         {
             selectedStudentIds.Remove(studentId);
         }
-        
+
         LogSelectedStudents();
     }
 
     private void ToggleSelectAll(ChangeEventArgs e)
     {
         bool shouldSelectAll = (bool)e.Value;
-        
+
         if (shouldSelectAll)
         {
             foreach (var elev in FiltreredElever)
@@ -451,17 +452,17 @@
             }
         }
     }
-    
+
     //Herunder koden til tilføj delmål
     private GoalCreationDTO newGoal = new();
 
-    private List<GoalNameDTO> alleTyper;
+    private List<GoalNameDTO> alleTyper = new();
 
     private int? selectedGoalId = null;
 
     private string[] år = { "År 1", "År 2", "År 3" };
-    private string[] skole = { "Kold Kollege", "Bæskolen Kronjylland", "Hansted Kokkeskole" };
-    private string[] uddannelse = { "EUX", "Voksenelev"};
+    private string[] skole = { "Kold Kollege", "EUX Kronjylland", "Hansted Kokkeskole" };
+    private string[] uddannelse = { "EUX", "Voksenelev" };
 
     private string GetGoalName(int? goalId)
     {
@@ -473,29 +474,28 @@
     {
         selectedGoalId = goalId;
     }
-    
+
     private void ResetStartDateFilters()
     {
         selectedSkolestartBefore = null;
         selectedSkolestartAfter = null;
     }
-    
+
     private void ResetEndDateFilters()
     {
         selectedSkoleendBefore = null;
         selectedSkoleendAfter = null;
     }
 
-    
+
     // Herunder kode til Modaldialog
 
     private ModalTilføjDelmål? modalRef;
-    
+
     private void OpenModal()
     {
         modalRef?.Open();
     }
-    
     // Lille sag der checker hvilke elever der er tjekket af
     private void LogSelectedStudents()
     {
@@ -510,6 +510,4 @@
             Console.WriteLine(elev);
         }
     }
-    
-    
 }

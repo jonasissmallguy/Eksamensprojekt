@@ -9,7 +9,7 @@ namespace Server
         Task<bool> RemoveStudentFromCourse(int studentId, int kursusId);
         Task<bool> CompleteCourse(Kursus kursus);
         
-        Task AddStudentToCourse(int studentId, Kursus kursus);
+        Task AddStudentToCourse(User user, int kursusId);
         
         
         Task<List<KursusTemplate>> GetAllTemplates();

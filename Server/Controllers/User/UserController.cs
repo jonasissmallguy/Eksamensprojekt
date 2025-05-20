@@ -44,21 +44,34 @@ namespace Server
         [Route("withoutmyself/{id:int}")]
         public async Task<IActionResult> GetAllUsersWithOutMyself(int id)
         {
+            List<BrugerAdministrationDTO> brugers = new();
+            
             var allUsers = await _userRepository.GetAllUsersWithOutMyself(id);
-
+            
             if (allUsers == null)
             {
                 return NotFound();
             }
-            return Ok(allUsers);
+
+            foreach (var x in allUsers)
+            {
+                brugers.Add(new BrugerAdministrationDTO
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    Hotel = x.HotelNavn,
+                    Rolle = x.Rolle,
+                    Status = x.Status
+                });
+            }
+            return Ok(brugers);
         }
   
         [NonAction]
         //Hjælpefunktion til at reset email
         public async Task SendResetCodeEmail(string email, string verificeringsKode)
         {
-            //Loader .env
-            Env.Load();
+
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             
             //Anvender SendGrid
@@ -326,6 +339,16 @@ namespace Server
         }
 
         [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> UpdateUser([FromBody] User updateBruger)
+        {
+            var user = await _userRepository.UpdateUser(updateBruger);
+            
+            return Ok(user);
+        }
+        
+
+        [HttpPut]
         [Route("updatepassword/{email}")]
         public async Task<IActionResult> UpdatePassword(string email, [FromBody] string updatedPassword)
         {
@@ -356,6 +379,27 @@ namespace Server
                 }
             }
             return false;
+        }
+        
+        //BRUGES KUN TIL TEST MENS VI VENTER!!
+        [HttpGet]
+        [Route("allstudents")]
+        public async Task<IActionResult> GetAllStudents()
+        {
+            List<KursusDeltagerListeDTO> students = new();
+            var users = await _userRepository.GetAllStudents();
+
+            foreach (var user in users)
+            {
+                students.Add(new KursusDeltagerListeDTO
+                {
+                    Id = user.Id,
+                    Hotel = user.HotelNavn,
+                    Navn = user.FirstName + "  " + user.LastName
+                });
+            }
+            
+            return Ok(students);
         }
         
     }

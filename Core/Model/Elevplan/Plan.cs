@@ -17,6 +17,9 @@ namespace Core
         
         public string Status { get; set;  }
         
+        public int TotalGoals { get; set; }
+        public int CompletedGoals { get; set; }
+        
     }
 
 }

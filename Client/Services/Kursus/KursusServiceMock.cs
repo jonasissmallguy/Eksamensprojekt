@@ -15,8 +15,8 @@ public class KursusServiceMock : IKursus
             Id = 1,
             Title = "Bæredygtighed",
             Location = "Comwell Hovedkontor",
-            StartDate = new DateOnly(2025, 7, 24),
-            EndDate = new  DateOnly(2025, 7, 24),
+            StartDate = new DateTime(2025, 7, 24, 10, 0, 0),
+            EndDate = new  DateTime(2025, 7, 24, 15, 0, 0),
             Students = new List<User>
             {
             }
@@ -43,6 +43,11 @@ public class KursusServiceMock : IKursus
     }
 
     public Task SaveCourse(KursusCreationDTO kursus)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SaveCourse(Kursus kursus)
     {
         throw new NotImplementedException();
     }
@@ -100,6 +105,16 @@ public class KursusServiceMock : IKursus
     }
 
     public Task<List<KursusTemplate>> GetAllTemplates()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public Task AddStudentToCourse(User user, int kursusId)
     {
         throw new NotImplementedException();
     }

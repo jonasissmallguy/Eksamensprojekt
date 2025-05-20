@@ -186,10 +186,10 @@ namespace Client
             return  _allUsers;
         }
 
-        public async Task<List<User>> GetAllUsersWithOutCurrent(int userId)
+        public async Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId)
         {
             var list = _allUsers.Where(x => x.Id != userId).ToList();
-            return list;
+            return new List<BrugerAdministrationDTO>();
         }
 
         public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
@@ -274,6 +274,11 @@ namespace Client
         {
             var user = _allUsers.FirstOrDefault(x => x.Id == currentUserId);
             return Task.FromResult(user);
+        }
+
+        public Task<List<KursusDeltagerListeDTO>> GetAllStudents()
+        {
+            throw new NotImplementedException();
         }
     }
 }

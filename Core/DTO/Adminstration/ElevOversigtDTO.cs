@@ -15,6 +15,8 @@
         public string Uddannelse { get; set; }
         public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
+        public int TotalGoals { get; set; }
+        public int CompletedGoals { get; set; }
 
     }
 
