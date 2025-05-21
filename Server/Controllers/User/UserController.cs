@@ -481,9 +481,14 @@ namespace Server
                 int row = 2;
                 foreach (var user in users)
                 {
+                    //Alle mål og gennemførte
+                    var TotalGoals = user.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0;
+                    var CompletedGoals =
+                        user.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0;
+                    
                     worksheet.Cell(row, 1 ).Value = user.FirstName + " " + user.LastName;
                     worksheet.Cell(row, 2 ).Value = user.HotelNavn;
-                    worksheet.Cell(row, 3 ).Value = user.Status;
+                    worksheet.Cell(row, 3 ).Value = $"{CompletedGoals} / {TotalGoals}";
                     worksheet.Cell(row, 4 ).Value = user.Year;
                     worksheet.Cell(row, 5 ).Value = user.Skole;
                     worksheet.Cell(row, 6 ).Value = user.Uddannelse;
@@ -526,8 +531,7 @@ namespace Server
 
             return true;
         }
-
-        //Skal gøres specifik - afventer Rasmus elevoversigt ændringer
+        
         [HttpPost]
         [Route("sendemail")]
         public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds)
