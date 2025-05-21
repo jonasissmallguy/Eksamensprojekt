@@ -8,6 +8,7 @@ namespace Server
         //Get
         Task<User> GetUserById(int id);
         Task<List<User>> GetAllUsers();
+        Task<List<User>> GetAllActiveUsers();
         Task<List<User>> GetAllUsersWithOutMyself(int userId);
         Task<User> GetUserByEmail(string email);
         
@@ -26,7 +27,9 @@ namespace Server
         Task UpdateRolle(string rolle, int userId);
         Task<UpdateResult> UpadtePassword(string email, string updatedPassword);
         
+        
         Task<bool> UpdateUser(User user);
+        Task<UpdateResult> UpdateHotel(int userId, int hotelId, string updatedHotelNavn);
 
         Task<List<User>> GetAllStudents();
 

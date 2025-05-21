@@ -126,14 +126,15 @@
     private string[] uddannelse = { "EUX", "Voksenelev"};
     private string errorText;
 
-// rasmus skiftet "void" til "Task"
     protected override async Task OnInitializedAsync()
     {
         newUser.Rolle = roller[0];
         newUser.Køn = køn[2]; //prefixed til "Ikke angivet"
+        
         newUser.Year = år[0];
         newUser.Uddannelse = uddannelse[0];
         newUser.Skole = skole[0];
+        
         hoteller = await IHotelService.GetHotels();
         newUser.HotelId = hoteller.Select(x => x.Id).FirstOrDefault();
     }

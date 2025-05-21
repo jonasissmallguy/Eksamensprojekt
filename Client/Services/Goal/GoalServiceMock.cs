@@ -41,9 +41,9 @@ namespace Client
             return goalTypes;
         }
 
-        public async Task<List<AwaitingApprovalDTO>> GetAwaitingApproval(int hotelId)
+        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
         {
-            return new List<AwaitingApprovalDTO>();
+            return new List<StartedGoalsDTO>();
         }
 
         public async Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId)
@@ -62,9 +62,9 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public async Task<bool> ConfirmGoalFromHomePage(AwaitingApprovalDTO goal)
+        public async Task<bool> ConfirmGoalFromHomePage(StartedGoalsDTO goalDto)
         {
-            var existingGoal = _goals.FirstOrDefault(g => g.Id == goal.GoalId);
+            var existingGoal = _goals.FirstOrDefault(g => g.Id == goalDto.GoalId);
             if (existingGoal != null)
             {
                 existingGoal.Status = "Completed";
@@ -72,6 +72,11 @@ namespace Client
             }
 
             return true;
+        }
+
+        public Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<List<Goal>> GetAllGoalsForBruger(User bruger)

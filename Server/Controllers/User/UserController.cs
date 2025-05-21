@@ -265,13 +265,7 @@ namespace Server
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
                 HotelId = user.HotelId,
-                HotelNavn = hotel?.HotelNavn,
-                //mangler hotel
-                Year = user.Year,
-                StartDate = user.StartDate,
-                EndDate = user.EndDate,
-                Skole = user.Skole,
-                Uddannelse = user.Uddannelse
+                HotelNavn = hotel?.HotelNavn
             };
 
             if (user.Rolle == "Elev")
@@ -304,12 +298,21 @@ namespace Server
             return Ok(newUser);
         }
 
+        /// <summary>
+        /// Sletter en bruger
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="rolle"></param>
+        /// <returns></returns>
         [HttpDelete]
-        [Route("{id:int}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [Route("{userId}/{rolle}")]
+        public async Task<IActionResult> DeleteUser(int userId, string rolle)
         {
-            await _userRepository.DeleteUser(id);
-
+            if (rolle == "Køkkenchef")
+            {
+                await _hotelRepository.RemoveManagerFromHotel(userId);
+            }
+            await _userRepository.DeleteUser(userId);
             return Ok();
         }
 
@@ -319,11 +322,15 @@ namespace Server
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("deactivate/{userId}")]
-        public async Task<IActionResult> DeactivateUser(int userId)
+        [Route("deactivate/{userId}/{rolle}")]
+        public async Task<IActionResult> DeactivateUser(int userId, string rolle)
         {
-            await _userRepository.DeactivateUser(userId);
+            if (rolle == "Køkkenchef")
+            {
+                await _hotelRepository.RemoveManagerFromHotel(userId);
+            }
             
+            await _userRepository.DeactivateUser(userId);
             return Ok();
         }
         
@@ -504,6 +511,49 @@ namespace Server
             return Ok(emailStatus);
 
         }
+
+        [HttpPut]
+        [Route("updatehotel/{userId}/{hotelId}")]
+        public async Task<IActionResult> UpdateUser(int userId, int hotelId, [FromBody] string hotelNavn)
+        {
+            var result = await _userRepository.UpdateHotel(userId, hotelId, hotelNavn);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("active")]
+        public async Task<IActionResult> GetAllActiveUsers()
+        {
+            var activeUsers = await _userRepository.GetAllActiveUsers();
+
+            if (activeUsers == null)
+            {
+                return NotFound();
+            }
+
+            List<BrugerLoginDTO> users = new();
+
+            foreach (var user in activeUsers)
+            {
+                users.Add(new BrugerLoginDTO
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    Email = user.Email,
+                    Password = user.Password,
+                    HotelId = user.HotelId,
+                    Rolle = user.Rolle
+                });
+                
+            }
+            return Ok(users);
+        }
+        
         
     }
 

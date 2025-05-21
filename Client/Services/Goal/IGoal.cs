@@ -20,19 +20,17 @@ namespace Client
         //Comments
         Task<Comment> AddComment(NewComment comment);
         Task DeleteComment(int goalId, int commentId); //denne skal ikke bruges
-        
         Task<List<GoalNameDTO>> GetAllGoalTypes(); //denne skal ikke bruges
 
-        Task<List<AwaitingApprovalDTO>> GetAwaitingApproval(int hotelId); //done
+        Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId); //done
         Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId); //done
-        
         Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId); //done
-        
-        
-        
         Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId); //mangler... skole + kursus,
+        Task<bool> ConfirmGoalFromHomePage(StartedGoalsDTO goalDto); //done
         
-        Task<bool> ConfirmGoalFromHomePage(AwaitingApprovalDTO goal); //done
+        Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId);
+        
+        
         Task<List<Goal>> GetAllGoalsForBruger(User bruger); //denne bruges ikke?
         Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string kursus); //denne bruges ikke?
         

@@ -335,7 +335,7 @@ else
 
             _currentUser = await AuthService.GetBruger();
 
-            var _allUsers = await IBrugerService.GetAllUsers();
+            var _allUsers = await IBrugerService.GetAllActiveUsers();
 
             var matchingUser = _allUsers.FirstOrDefault(u => u.Id == _currentUser.Id);
 

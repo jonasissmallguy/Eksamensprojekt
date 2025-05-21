@@ -61,6 +61,17 @@ else
             <div class="dashboard-card">
                 <h5 class="card-title">Aktive Delmål</h5>
                 <p>Her kan du se delmål, som du kan hjælpe en kollega med at få færdiggjort</p>
+                @if (_inProgress != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _inProgress)
+                        {
+                            <li style="cursor: pointer">
+                                Delmål: @g.FullName - @g.GoalTitle
+                            </li>
+                        }
+                    </ul>
+                }
             </div>
         }
         
@@ -143,9 +154,7 @@ else
         @foreach (var kursus in _matchingCourses)
         {
             <p>@kursus.Title @kursus.Location @kursus.StartDate <button @onclick="() => TilmeldKursus(kursus)">Tilmeld kursus</button></p>
-
         }
-
     </div>
 </ModalDialog>
 
@@ -154,16 +163,18 @@ else
 
     private bool _loading = true;
 
+    
     private BrugerLoginDTO _currentUser;
 
     //Elev instant variabl
     private List<GoalNeedActionDTO> _needAction; //Indeholder liste med delmål, hvor eleven mangler godkendelse
+    private List<FutureSchoolDTO> _futureSchool; //Indeholder liste med kommende skoleophold
 
     //Kok instans variabel
-    private List<AwaitingApprovalDTO> _inProgress;
+    private List<StartedGoalsDTO> _inProgress; //Indeholder liste med delmål der er startet men ikke godkendt
 
     //Køkkenchef instans variabler
-    private List<AwaitingApprovalDTO> _missingApproval; //Indeholder liste med delmål der mangler godkendelse
+    private List<StartedGoalsDTO> _missingApproval; //Indeholder liste med delmål der mangler godkendelse
     private List<KursusKommendeDTO> _currentCourses; //Indeholder liste med kommende kurser
     private List<KursusManglendeDTO> _missingCourses; //Indeholder liste med manglende kurser
     private List<OutOfHouseDTO> _outOfHouse; //Indeholder liste med elever der er ude af huset hvilke dage
@@ -193,7 +204,7 @@ else
 
         if (_currentUser.Rolle == "Kok")
         {
-            _inProgress = await IGoalService.GetAwaitingApproval(_currentUser.HotelId);
+            _inProgress = await IGoalService.GetStartedGoals(_currentUser.HotelId);
         }
 
         if (_currentUser.Rolle == "Køkkenchef")
@@ -207,17 +218,16 @@ else
             //Elever ude af huset
             _outOfHouse = await IGoalService.GetOutOfHouse(_currentUser.HotelId);
         }
-
         _loading = false;
     }
 
-    private async Task ConfirmGoal(AwaitingApprovalDTO goal)
+    private async Task ConfirmGoal(StartedGoalsDTO goalDto)
     {
-        var success = await IGoalService.ConfirmGoalFromHomePage(goal);
+        var success = await IGoalService.ConfirmGoalFromHomePage(goalDto);
 
-        if (success && goal != null)
+        if (success && goalDto != null)
         {
-            _missingApproval = _missingApproval.Where(g => g.GoalId != goal.GoalId).ToList();
+            _missingApproval = _missingApproval.Where(g => g.GoalId != goalDto.GoalId).ToList();
             StateHasChanged();
         }
     }
