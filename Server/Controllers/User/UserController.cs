@@ -13,10 +13,10 @@ namespace Server
     [Route("users")]
     public class UserController : ControllerBase
     {
-        
+
         private IUserRepository _userRepository;
         private IHotelRepository _hotelRepository;
-        
+
         private static Dictionary<string, (string Kode, DateTime Expiry)> verificeringsKoder = new();
 
 
@@ -29,8 +29,8 @@ namespace Server
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var allUsers =  await _userRepository.GetAllUsers();
-            
+            var allUsers = await _userRepository.GetAllUsers();
+
             List<BrugerLoginDTO> brugerLogins = new();
 
             foreach (User user in allUsers)
@@ -45,10 +45,12 @@ namespace Server
                     HotelId = user.HotelId
                 });
             }
+
             if (allUsers == null)
             {
                 return NotFound();
             }
+
             return Ok(brugerLogins);
         }
 
@@ -62,9 +64,9 @@ namespace Server
         public async Task<IActionResult> GetAllUsersWithOutMyself(int id)
         {
             List<BrugerAdministrationDTO> brugers = new();
-            
+
             var allUsers = await _userRepository.GetAllUsersWithOutMyself(id);
-            
+
             if (allUsers == null)
             {
                 return NotFound();
@@ -81,23 +83,24 @@ namespace Server
                     Status = x.Status
                 });
             }
+
             return Ok(brugers);
         }
-  
+
         [NonAction]
         //Hjælpefunktion til at reset email
         public async Task SendResetCodeEmail(string email, string verificeringsKode)
         {
 
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-            
+
             //Anvender SendGrid
             var client = new SendGridClient(apiKey);
 
             //Fra & Til
             var from = new EmailAddress(email, "HR");
             var to = new EmailAddress(email);
-            
+
             //Indhold
             var subject = "Nulstilling af Comwell adgangskode";
             var plainTextContent =
@@ -106,14 +109,14 @@ namespace Server
                 $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
                 $"{verificeringsKode}" +
                 $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
-            
+
             var htmlContent = $"{verificeringsKode}";
-            
+
             //Generer email og sender
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
         }
-        
+
         [NonAction]
         //Checker vores verificeringskode... i server memory
         public async Task<bool> CheckVerficiationCode(string email, string kode)
@@ -125,16 +128,17 @@ namespace Server
                     return true;
                 }
             }
+
             return false;
         }
-        
+
         [NonAction]
         //Generer verificeringskode
         public string GenerateResetCode(string email)
         {
             Random ran = new Random();
             string verificeringsKode = String.Empty;
-                
+
             string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
             int size = 8;
 
@@ -144,37 +148,37 @@ namespace Server
                 int x = ran.Next(bogstaver.Length);
                 verificeringsKode = verificeringsKode + bogstaver[x];
             }
-                
+
             verificeringsKoder[email] = (verificeringsKode, DateTime.Now.AddMinutes(10));
-            
+
             return verificeringsKode;
         }
-        
+
         [HttpGet]
         [Route("{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             var user = await _userRepository.GetUserByEmail(email);
-            
+
 
             if (user == null)
             {
                 return NotFound();
             }
-            
+
             //Send reset kode
             await SendResetCodeEmail("jonasdupontheidemann@gmail.com", GenerateResetCode(email));
-            
+
             return Ok(user);
         }
 
-        
+
         [HttpGet]
         [Route("{id:int}")]
         public async Task<IActionResult> GetUserById(int id)
         {
             var user = await _userRepository.GetUserById(id);
-            
+
             return Ok(user);
         }
 
@@ -194,7 +198,7 @@ namespace Server
 
             return password;
         }
-        
+
 
         /// <summary>
         /// Metode til at opret en bruger
@@ -248,6 +252,7 @@ namespace Server
                 if (string.IsNullOrWhiteSpace(user.Uddannelse))
                     return Conflict("Venligst angiv en uddannelse");
             }
+
             Hotel hotel = null;
             hotel = await _hotelRepository.GetHotelById(user.HotelId);
 
@@ -285,22 +290,22 @@ namespace Server
 
             if (user.Rolle == "Køkkenchef")
             {
-        
+
                 if (hotel != null && (hotel.KøkkenChefId != null || !string.IsNullOrEmpty(hotel.KøkkenChefNavn)))
                 {
                     return Conflict("Dette hotel har allerede en køkkenchef");
                 }
             }
-    
+
             var newUser = await _userRepository.SaveBruger(nyBruger);
-    
+
             if (user.Rolle == "Køkkenchef" && hotel != null)
             {
                 hotel.KøkkenChefId = newUser.Id;
                 hotel.KøkkenChefNavn = newUser.FirstName + " " + newUser.LastName;
                 await _hotelRepository.UpdateHotelChef(hotel);
             }
-    
+
             return Ok(newUser);
         }
 
@@ -323,10 +328,10 @@ namespace Server
         public async Task<IActionResult> DeactivateUser(int userId)
         {
             await _userRepository.DeactivateUser(userId);
-            
+
             return Ok();
         }
-        
+
         /// <summary>
         /// Aktiver en bruger der er deaktiveret
         /// </summary>
@@ -337,9 +342,9 @@ namespace Server
         public async Task<IActionResult> ActivateUser(int userId)
         {
             await _userRepository.ActivateUser(userId);
-            
+
             return Ok();
-            
+
         }
 
         /// <summary>
@@ -351,7 +356,7 @@ namespace Server
         public async Task<IActionResult> UpdateRole(string newRolle, int userId)
         {
             await _userRepository.UpdateRolle(newRolle, userId);
-            
+
             return Ok();
         }
 
@@ -360,10 +365,10 @@ namespace Server
         public async Task<IActionResult> UpdateUser([FromBody] User updateBruger)
         {
             var user = await _userRepository.UpdateUser(updateBruger);
-            
+
             return Ok(user);
         }
-        
+
 
         [HttpPut]
         [Route("updatepassword/{email}")]
@@ -375,9 +380,9 @@ namespace Server
             {
                 return BadRequest();
             }
-            
+
             return Ok(result);
-            
+
         }
 
         /// <summary>
@@ -395,9 +400,10 @@ namespace Server
                     return true;
                 }
             }
+
             return false;
         }
-        
+
         //BRUGES KUN TIL TEST MENS VI VENTER!!
         [HttpGet]
         [Route("allstudents")]
@@ -415,10 +421,10 @@ namespace Server
                     Navn = user.FirstName + "  " + user.LastName
                 });
             }
-            
+
             return Ok(students);
         }
-        
+
         [HttpGet]
         [Route("oversigt")]
         public async Task<IActionResult> GetElevOversigt()
@@ -441,16 +447,17 @@ namespace Server
                     StartDate = elev.StartDate,
                     EndDate = elev.EndDate,
                     TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0,
-                    CompletedGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
+                    CompletedGoals =
+                        elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
                 });
             }
 
             return Ok(elevOversigt);
         }
 
-        
 
-        //Generer excel fil
+
+    //Generer excel fil
         [NonAction]
         public async Task<bool> GenerateExcelFile(List<User> users)
         {

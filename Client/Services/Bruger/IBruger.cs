@@ -11,7 +11,6 @@ namespace Client
         Task<List<ElevOversigtDTO>> GetElevOversigt();
         Task<List<BrugerLoginDTO>> GetAllUsers();
         Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId);
-        Task<List<User>> GetAllUsersByStudentId(List<int> studentIds);
         Task DeleteUser(int userId);
         Task ChangeRolle(string newRolle, int userId);
         Task DeActivateUser(int userId);
