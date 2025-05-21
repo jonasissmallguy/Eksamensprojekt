@@ -418,6 +418,37 @@ namespace Server
             
             return Ok(students);
         }
+        
+        [HttpGet]
+        [Route("oversigt")]
+        public async Task<IActionResult> GetElevOversigt()
+        {
+            var users = await _userRepository.GetAllStudents();
+            var elevOversigt = new List<ElevOversigtDTO>();
+
+            foreach (var elev in users.Where(x => x.Rolle == "Elev"))
+            {
+                elevOversigt.Add(new ElevOversigtDTO
+                {
+                    Id = elev.Id,
+                    Name = elev.FirstName + " " + elev.LastName,
+                    HotelId = elev.HotelId,
+                    HotelNavn = elev.HotelNavn,
+                    Roller = elev.Rolle,
+                    Year = elev.Year,
+                    Skole = elev.Skole,
+                    Uddannelse = elev.Uddannelse,
+                    StartDate = elev.StartDate,
+                    EndDate = elev.EndDate,
+                    TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0,
+                    CompletedGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
+                });
+            }
+
+            return Ok(elevOversigt);
+        }
+
+        
 
         //Generer excel fil
         [NonAction]

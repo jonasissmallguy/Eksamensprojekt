@@ -14,7 +14,11 @@
 
 @if (isLoading)
 {
-    
+    <p>Indlæser elever...</p>
+}
+else if (alleElever == null)
+{
+    <p>Kunne ikke indlæse elever.</p>
 }
 else
 {
