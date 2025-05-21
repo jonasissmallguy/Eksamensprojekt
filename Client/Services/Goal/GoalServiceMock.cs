@@ -93,7 +93,12 @@ namespace Client
             Console.WriteLine(forløb.Title);
         }
 
-        
+        public Task<bool> AddGoal(Goal goal, int studentId)
+        {
+            throw new NotImplementedException();
+        }
+
+
         //God
         public async Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløb, List<GoalTemplate> goalTemplates)
         {
