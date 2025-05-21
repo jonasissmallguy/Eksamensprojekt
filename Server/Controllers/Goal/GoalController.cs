@@ -221,8 +221,8 @@ namespace Server
                             FullName = name,
                             GoalId = goal.Id,
                             GoalTitle = goal.Title,
-                            StartDate = goal.SkoleStart,
-                            EndDate = goal.SkoleEnd
+                            StartDate = goal.StartDate,
+                            EndDate = goal.EndDate
                         });
                     }
                 }

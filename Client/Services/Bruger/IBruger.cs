@@ -9,7 +9,7 @@ namespace Client
         Task<bool> OpdaterBruger(int userId, User updateBruger);
         Task<User> OpretBruger(BrugerCreateDTO nyBruger);
         Task<List<ElevOversigtDTO>> GetElevOversigt();
-        Task<List<User>> GetAllUsers();
+        Task<List<BrugerLoginDTO>> GetAllUsers();
         Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId);
         Task<List<User>> GetAllUsersByStudentId(List<int> studentIds);
         Task DeleteUser(int userId);

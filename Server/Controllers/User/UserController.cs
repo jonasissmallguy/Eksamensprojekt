@@ -30,12 +30,26 @@ namespace Server
         public async Task<IActionResult> GetAllUsers()
         {
             var allUsers =  await _userRepository.GetAllUsers();
+            
+            List<BrugerLoginDTO> brugerLogins = new();
 
+            foreach (User user in allUsers)
+            {
+                brugerLogins.Add(new BrugerLoginDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Password = user.Password,
+                    Rolle = user.Rolle,
+                    FirstName = user.FirstName,
+                    HotelId = user.HotelId
+                });
+            }
             if (allUsers == null)
             {
                 return NotFound();
             }
-            return Ok(allUsers);
+            return Ok(brugerLogins);
         }
 
         /// <summary>

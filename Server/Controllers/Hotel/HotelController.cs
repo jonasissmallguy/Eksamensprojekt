@@ -29,7 +29,8 @@ namespace Server
                 HotelNavn = newHotel.HotelNavn,
                 Address = newHotel.Address,
                 Zip = newHotel.Zip,
-                City = newHotel.City
+                City = newHotel.City,
+                Region = newHotel.Region
             };
             
             await _hotelRepository.SaveHotel(hotel);

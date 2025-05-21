@@ -21,8 +21,9 @@
 }
 
 @code {
+    
     [Parameter]
-    public string? Title { get; set; } = "Ændrer Hotel";
+    public string? Title { get; set; } = "Tilføj delmål";
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -35,11 +36,18 @@
         Close();
     }
     
+    [Parameter]
+    public EventCallback<string> OnRolleSelected { get; set; }
+    public async Task SelectRolle(string rolle)
+    {
+        await OnRolleSelected.InvokeAsync(rolle);
+        Close();
+    }
 
     private string modalDisplay = "none;";
     private string modalClass = string.Empty;
     private bool showBackdrop = false;
-    
+
 
     public void Open()
     {

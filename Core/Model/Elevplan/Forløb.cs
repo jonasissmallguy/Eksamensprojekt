@@ -11,9 +11,7 @@ namespace Core
         public int Id { get; set; }
         public string Title { get; set; }
         public string Semester { get; set; }
-        public DateOnly StartDate { get; set; } //skal slettes!
         public List<Goal> Goals { get; set; } 
         public string Status { get; set; }
-        
     }
 }

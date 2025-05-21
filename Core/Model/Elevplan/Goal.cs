@@ -18,7 +18,7 @@ namespace Core
         public string Title { get; set; }
         public string Description { get; set; }
         public string Status { get; set; } = "Active";
-        public string Semester { get; set; } // denne skal måske være på forløb?
+        public string Semester { get; set; }
         
         //Kompetence
         public int? StarterId { get; set; } 
@@ -32,13 +32,10 @@ namespace Core
         //Skole
         public string SkoleNavn { get; set; }
         
-        public DateTime DeadLineAt { get; set; }
-        public int SortOrder { get; set; }
-        
         public List<Comment> Comments { get; set; }
         
-        public DateTime? SkoleStart { get; set; }
-        public DateTime? SkoleEnd { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }       

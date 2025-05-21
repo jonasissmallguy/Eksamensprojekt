@@ -34,6 +34,8 @@
       <_ContentIncludedByDefault Remove="Components\Elevplan\TabControl.razor" />
       <_ContentIncludedByDefault Remove="Components\Elevplan\TabPage.razor" />
       <_ContentIncludedByDefault Remove="Components\Modaldialog\AddGoalComponent.razor" />
+      <_ContentIncludedByDefault Remove="Components\Administration\ModalHotel.razor" />
+      <_ContentIncludedByDefault Remove="Components\Administration\ModalRolle.razor" />
     </ItemGroup>
 
 </Project>
