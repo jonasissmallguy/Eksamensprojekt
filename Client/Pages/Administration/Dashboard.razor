@@ -11,9 +11,15 @@
 
 
 @page "/dashboard"
-<h3>Dashboard</h3>
 
-@if (alleElever != null)
+@if (isLoading)
+{
+    
+}
+else
+{
+    <h3>Dashboard</h3>
+    @if (alleElever != null)
 {
 
     <div class="dashboard-topline">
@@ -254,6 +260,9 @@
     </ModalTilføjDelmål>
 
 }
+    
+}
+
 
 @code {
 
