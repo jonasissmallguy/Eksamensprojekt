@@ -19,18 +19,15 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<Kursus>>($"{serverUrl}/kursus");
         }
-
         public async Task<Kursus> GetCourseById(int kursusId)
         {
             return await _client.GetFromJsonAsync<Kursus>($"{serverUrl}/kursus/{kursusId}");
         }
         
-
         public async Task SaveCourse(KursusCreationDTO kursus)
         {
              await _client.PostAsJsonAsync($"{serverUrl}/kursus", kursus);
         }
-
         public async Task UpdateCourse(Kursus kursus)
         {
             await _client.PutAsJsonAsync("kursus", kursus);
@@ -65,6 +62,11 @@ namespace Client
         public async Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
         {
             await _client.PutAsJsonAsync($"{serverUrl}/kursus/addstudent/{kursusId}", user);
+        }
+
+        public async Task<List<KursusKommendeDTO>> GetFutureCourses()
+        {
+            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"{serverUrl}/kursus/nextup");
         }
     }
 }

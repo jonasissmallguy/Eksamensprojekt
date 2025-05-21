@@ -151,6 +151,20 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"{serverUrl}/users/allstudents");
         }
+        
+        //Skal også tage brugerens email som parameter, altså hvem er logget ind og hvem skal vi sendetil!
+
+        public async Task<bool> SendEmail(HashSet<int> studentIds)
+        {
+            var response = await _client.PostAsJsonAsync($"{serverUrl}/users/sendemail", studentIds);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         public Task<List<User>> GetStudentsForløb(int leaderId)
         {

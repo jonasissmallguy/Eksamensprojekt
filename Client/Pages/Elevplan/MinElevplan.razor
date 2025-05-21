@@ -41,7 +41,7 @@
         }
         else if (elev != null && _currentUser.Rolle == "Elev")
         {
-            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart"/>
         }
         else
         {

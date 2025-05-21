@@ -96,5 +96,16 @@ namespace Server
             kursus.Id = await GetNextSequenceValue("kursusId");
             _collection.InsertOne(kursus);
         }
+
+        public async Task<List<Kursus>> GetFutureCourses()
+        {
+            var cutOff = DateOnly.FromDateTime(DateTime.Now).AddDays(90);
+            
+            var filter1 = Builders<Kursus>.Filter.Lte("StartDate", cutOff);
+            var filter2 = Builders<Kursus>.Filter.Eq("Status", "Active");
+            var filter = Builders<Kursus>.Filter.And(filter1, filter2);
+            
+            return await _collection.Find(filter).ToListAsync();
+        }
     }
 }

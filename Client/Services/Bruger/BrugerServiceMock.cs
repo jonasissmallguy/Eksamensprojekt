@@ -280,5 +280,10 @@ namespace Client
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> SendEmail(HashSet<int> studentIds)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

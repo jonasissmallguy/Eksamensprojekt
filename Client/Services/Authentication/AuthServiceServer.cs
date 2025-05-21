@@ -37,7 +37,8 @@ namespace Client
                 Email = loggedInBruger.Email,
                 Password = loggedInBruger.Password,
                 Rolle = loggedInBruger.Rolle,
-                FirstName = loggedInBruger.FirstName
+                FirstName = loggedInBruger.FirstName,
+                HotelId = loggedInBruger.HotelId,
             };
         }
         
@@ -56,7 +57,8 @@ namespace Client
                         Email = username,
                         Password = password,
                         Rolle = bruger.Rolle,
-                        FirstName  = bruger.FirstName
+                        FirstName  = bruger.FirstName,
+                        HotelId = bruger.HotelId
                     };
                 }
             }

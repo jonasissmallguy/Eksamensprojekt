@@ -37,10 +37,7 @@ namespace Server
             var success = await _kursusRepository.RemoveStudentFromCourse(studentId, kursusId);
             return Ok(success);
         }
-
-
         
-
         [HttpPut]
         [Route("complete")]
         public async Task<IActionResult> CompleteCourse([FromBody] Kursus kursus)
@@ -96,6 +93,34 @@ namespace Server
             return Ok();
 
         }
+
+        [HttpGet]
+        [Route("nextup")]
+        public async Task<IActionResult> GetNextCommingCourses()
+        {
+            var comingCourses = await _kursusRepository.GetFutureCourses();
+            
+            if (comingCourses == null) return NotFound();
+
+            List<KursusKommendeDTO> kursusListe = new();
+            
+            if (comingCourses != null)
+            {
+                foreach (var kursus in comingCourses)
+                {
+                    kursusListe.Add(new KursusKommendeDTO
+                    {
+                        Title = kursus.Title,
+                        Location = kursus.Location,
+                        StartDate = kursus.StartDate,
+                    });
+                }
+            }
+            return Ok(kursusListe);
+
+        }
+        
+        
         
     }
 }

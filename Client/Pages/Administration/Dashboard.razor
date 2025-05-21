@@ -11,9 +11,15 @@
 
 
 @page "/dashboard"
-<h3>Dashboard</h3>
 
-@if (alleElever != null)
+@if (isLoading)
+{
+    
+}
+else
+{
+    <h3>Dashboard</h3>
+    @if (alleElever != null)
 {
 
     <div class="dashboard-topline">
@@ -138,7 +144,7 @@
         {
             <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
             <div class="export-button">
-                <Button class="btn btn-primary">Eksporter fil</Button>
+                <Button @onclick="() => SendExcelFile(selectedStudentIds)" class="btn btn-primary">Eksporter fil</Button>
             </div>
         }
 
@@ -254,6 +260,9 @@
     </ModalTilføjDelmål>
 
 }
+    
+}
+
 
 @code {
 
@@ -504,6 +513,12 @@
             Console.WriteLine(elev);
         }
     }
+    
+    private async Task SendExcelFile(HashSet<int> hashSet)
+    {
+       await IBrugerService.SendEmail(hashSet);
+    }
+
     
     
 
