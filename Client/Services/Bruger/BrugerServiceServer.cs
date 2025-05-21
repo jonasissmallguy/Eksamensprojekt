@@ -68,7 +68,7 @@ namespace Client
                 elevOversigt.Add(new ElevOversigtDTO
                 {
                     Id = elev.Id,
-                    Name = elev.FirstName,
+                    Name = elev.FirstName + " " + elev.LastName,
                     HotelId = elev.HotelId,
                     HotelNavn = elev.HotelNavn,
                     Roller = elev.Rolle,

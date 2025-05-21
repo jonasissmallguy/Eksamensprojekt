@@ -1,12 +1,14 @@
 ﻿using Client;
 using Client.Components.Elevoversigt;
 using Core;
+using Core.DTO.Goal;
 
 namespace Server
 {
 
     public interface IGoalRepository
     {
+        
         /// <summary>
         /// Sletter et mål for en given elev og plan.
         /// </summary>
