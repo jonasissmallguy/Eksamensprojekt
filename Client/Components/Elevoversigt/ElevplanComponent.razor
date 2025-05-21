@@ -1,6 +1,5 @@
 ﻿@using Core
 @using System.Linq
-@using Client.Components.Administration
 @inject NavigationManager navMan
 
 
@@ -148,7 +147,7 @@
     }
     
     
-    <ModalShowHistory @ref=_goalHistoryModal Title="Historie">
+    <ModalDialog @ref=_goalHistoryModal Title="Historie">
         <div class="hotel-list">
             @if (_currentGoal != null)
             {
@@ -174,7 +173,7 @@
                 <p>Ingen information tilgængelig</p>
             }
         </div>
-    </ModalShowHistory>
+    </ModalDialog>
 
     
     
@@ -198,7 +197,7 @@
     [CascadingParameter] 
     private BrugerLoginDTO _currentUser { get; set; }
     
-    private ModalShowHistory _goalHistoryModal { get; set; }
+    private ModalDialog _goalHistoryModal { get; set; }
     
 
     public string[] semestre = { "År 1", "År 2", "År 3" };

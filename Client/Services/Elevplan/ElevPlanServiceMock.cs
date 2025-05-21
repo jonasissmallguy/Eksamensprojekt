@@ -47,7 +47,7 @@ namespace Client
                     Id = GenerateId(),
                     Title = forløbTemplate.Title,
                     Semester = forløbTemplate.Semester,
-                    StartDate = DateOnly.MaxValue, 
+                    //StartDate = DateOnly.MaxValue, 
                     Goals = new List<Goal>() 
                 };
         

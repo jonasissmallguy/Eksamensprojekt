@@ -14,12 +14,6 @@ namespace Core
         public string Description { get; set; }
         public List<Forløb> Forløbs { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        
-        public string Status { get; set;  }
-        
-        public int TotalGoals { get; set; }
-        public int CompletedGoals { get; set; }
-        
     }
 
 }

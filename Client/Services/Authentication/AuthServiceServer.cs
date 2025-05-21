@@ -47,19 +47,11 @@ namespace Client
         {
             var _allUsers = await _bruger.GetAllUsers();
             
-            foreach (User bruger in _allUsers)
+            foreach (BrugerLoginDTO bruger in _allUsers)
             {
                 if (bruger.Email.Equals(username) && bruger.Password.Equals(password))
                 {
-                    return new BrugerLoginDTO
-                    {
-                        Id = bruger.Id,
-                        Email = username,
-                        Password = password,
-                        Rolle = bruger.Rolle,
-                        FirstName  = bruger.FirstName,
-                        HotelId = bruger.HotelId
-                    };
+                    return bruger;
                 }
             }
             return null;

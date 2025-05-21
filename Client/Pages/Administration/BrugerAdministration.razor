@@ -1,4 +1,4 @@
-﻿@using Client.Components.Administration
+﻿@using Client.Components
 @using Core;
 
 @inject IBruger IBrugerService;
@@ -80,23 +80,23 @@ else
 }
 
 
-<ModalRolle @ref=rolleModal Title="Opdater Rolle" OnRolleSelected="HandleNewRolle">
+<ModalDialog @ref=rolleModal Title="Opdater Rolle" OnRolleSelected="HandleNewRolle">
     <div class="rolle-list">
         @foreach (var rolle in _roller)
         {
             <p @onclick="() => rolleModal.SelectRolle(rolle)" style="cursor: pointer" >@rolle</p>
         }
     </div>
-</ModalRolle>
+</ModalDialog>
 
-<ModalHotel @ref=hotelModal Title="Opdater Hotel" OnHotelChange="HandleNewHotel">
+<ModalDialog @ref=hotelModal Title="Opdater Hotel" OnHotelChange="HandleNewHotel">
     <div class="hotel-list">
         @foreach (var x in _allHotels)
         {
             <p @onclick="() => hotelModal.SelectHotel(x)" style="cursor: pointer" >@x.HotelNavn</p>
         }
     </div>
-</ModalHotel>
+</ModalDialog>
 
 
 @code {
@@ -111,10 +111,10 @@ else
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
 
     //En ModalRolle  variabel
-    private ModalRolle rolleModal { get; set; }
+    private ModalDialog rolleModal { get; set; }
     
     //En ModalHotel variabel
-    private ModalHotel hotelModal { get; set; }
+    private ModalDialog hotelModal { get; set; }
     
     //En bruger, som vi ønsker at ændre rolle på
     private BrugerAdministrationDTO _userToChange { get; set; }

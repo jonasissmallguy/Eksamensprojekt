@@ -1,7 +1,5 @@
-﻿@using Client.Components.Administration
-@using Core
+﻿@using Core
 @using Client.Components
-
 
 @inject IAuth AuthService;
 @inject NavigationManager navMan;
@@ -140,7 +138,7 @@ else
     </div>
 }
 
-<ModalHotel @ref=_kursusModal Title="Ledige kurser">
+<ModalDialog @ref=_kursusModal Title="Ledige kurser">
     <div class="kursus-list">
         @foreach (var kursus in _matchingCourses)
         {
@@ -149,7 +147,7 @@ else
         }
 
     </div>
-</ModalHotel>
+</ModalDialog>
 
 
 @code {
@@ -171,7 +169,7 @@ else
     private List<OutOfHouseDTO> _outOfHouse; //Indeholder liste med elever der er ude af huset hvilke dage
 
     //Modal dialog
-    private ModalHotel _kursusModal { get; set; }
+    private ModalDialog _kursusModal { get; set; }
     private string _selectedCourse;
     private List<KursusKommendeDTO> _matchingCourses = new();
 

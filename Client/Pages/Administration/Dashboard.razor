@@ -199,7 +199,7 @@ else
         }
     </table>
 
-    <ModalTilføjDelmål @ref="modalRef" Title="Tilføj delmål">
+    <ModalDialog @ref="modalRef" Title="Tilføj delmål">
         <EditForm Model="newGoal" class="row p-3">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
@@ -257,7 +257,7 @@ else
                 </div>
 
         </EditForm>
-    </ModalTilføjDelmål>
+    </ModalDialog>
 
 }
     
@@ -477,7 +477,7 @@ else
 
     // Herunder kode til Modaldialog
 
-    private ModalTilføjDelmål? modalRef;
+    private ModalDialog? modalRef;
     /*
     private void OpenModal()
     {

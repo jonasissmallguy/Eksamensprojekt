@@ -181,9 +181,9 @@ namespace Client
             return await Task.FromResult(elevOversigt);
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<BrugerLoginDTO>> GetAllUsers()
         {
-            return  _allUsers;
+            return  new List<BrugerLoginDTO>();
         }
 
         public async Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId)

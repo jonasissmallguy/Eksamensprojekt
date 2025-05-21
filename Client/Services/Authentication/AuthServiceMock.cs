@@ -30,7 +30,7 @@ namespace Client
 
         public async Task OnInitialized()
         {
-            _allUsers = await _brugerService.GetAllUsers();
+            //_allUsers = await _brugerService.GetAllUsers();
         }
         
         public async Task<BrugerLoginDTO?> GetBruger()
