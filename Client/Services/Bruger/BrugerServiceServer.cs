@@ -54,36 +54,10 @@ namespace Client
     
             return createdUser;
         }
-
+        
         public async Task<List<ElevOversigtDTO>> GetElevOversigt()
         {
-            var allUsers = await _client.GetFromJsonAsync<List<User>>($"{serverUrl}/users");
-            
-            var elevOversigt = new List<ElevOversigtDTO>();
-            
-            var elever = allUsers.Where(x => x.Rolle == "Elev").ToList();
-
-            foreach (var elev in elever)
-            {
-                elevOversigt.Add(new ElevOversigtDTO
-                {
-                    Id = elev.Id,
-                    Name = elev.FirstName + " " + elev.LastName,
-                    HotelId = elev.HotelId,
-                    HotelNavn = elev.HotelNavn,
-                    Roller = elev.Rolle,
-                    Year = elev.Year,
-                    Skole = elev.Skole,
-                    Uddannelse = elev.Uddannelse,
-                    StartDate = elev.StartDate,
-                    EndDate = elev.EndDate,
-                    TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f=> f.Goals?.Count) ?? 0,
-                    CompletedGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g=> g.Status == "Completed")) ?? 0,
-                    
-                });
-            }
-
-            return await Task.FromResult(elevOversigt);
+            return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"{serverUrl}/users/oversigt");
         }
 
         public async Task<List<BrugerLoginDTO>> GetAllUsers()
