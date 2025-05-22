@@ -145,7 +145,7 @@ namespace Server
         {
             var users = await _goalRepository.GetAwaitingApproval(hotelId);
 
-            var result = new List<AwaitingApprovalDTO>();
+            var result = new List<StartedGoalsDTO>();
 
             foreach (var user in users)
             {
@@ -161,11 +161,51 @@ namespace Server
                 {
                     foreach (var goal in awaitingApprovalGoals)
                     {
-                        result.Add(new AwaitingApprovalDTO
+                        result.Add(new StartedGoalsDTO
                         {
                             FullName = name,
                             PlanId = goal.PlanId,
                             ForløbId = goal.ForløbId,
+                            GoalId = goal.Id,
+                            GoalTitle = goal.Title
+                        });
+                    }
+                }
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Indeholder mål der er InProgress
+        /// </summary>
+        /// <param name="hotelId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("started-goals/{hotelId}")]
+        public async Task<IActionResult> GetStartedGoals(int hotelId)
+        {
+            var users = await _goalRepository.GetStartedGoals(hotelId);
+            
+            var result = new List<StartedGoalsDTO>();
+
+            foreach (var user in users)
+            {
+                var name = user.FirstName + " " + user.LastName;
+                
+                var inProgressGoals = user.ElevPlan.Forløbs
+                    .SelectMany(f => f.Goals)
+                    .Where(g => g.Status == "InProgress")
+                    .ToList();
+
+                if (inProgressGoals != null)
+                {
+                    foreach (var goal in inProgressGoals)
+                    {
+                        result.Add(new StartedGoalsDTO
+                        {
+                            FullName = name,
+                            PlanId = goal.PlanId,
+                            ForløbId = goal.ForløbId, 
                             GoalId = goal.Id,
                             GoalTitle = goal.Title
                         });
@@ -250,6 +290,36 @@ namespace Server
             
             return Ok(result);
         }
+        
+        
+        [HttpGet]
+        [Route("future-schools/{elevId}")]
+        public async Task<IActionResult> GetFutureSchools(int elevId)
+        {
+            if (elevId <= 0 || elevId == null)
+                return BadRequest();
+
+            var goals = await _goalRepository.GetFutureSchools(elevId);
+
+            if (goals == null || !goals.Any())
+                return NotFound();
+
+            List<FutureSchoolDTO> futureSchools = new ();
+            
+            foreach (var goal in goals)
+            {
+                futureSchools.Add(new FutureSchoolDTO
+                {
+                    Title = goal.Title,
+                    SkoleNavn = goal.SkoleNavn,
+                    SkoleStart = goal.StartDate,
+                    SkoleEnd = goal.EndDate
+                });
+                
+            }
+            return Ok(futureSchools);
+        }
+
 
         /// <summary>
         /// Starter goal
@@ -299,18 +369,19 @@ namespace Server
         
 
         [HttpPut("confirm")]
-        public async Task<IActionResult> ConfirmGoalFromHomePage([FromBody] AwaitingApprovalDTO goal)
+        public async Task<IActionResult> ConfirmGoalFromHomePage([FromBody] StartedGoalsDTO goalDto)
         {
-            if (goal == null || goal.GoalId <= 0)
-                return BadRequest("Ugyldigt mål data.");
+            if (goalDto == null || goalDto.GoalId <= 0)
+                return BadRequest();
             
-            var updated = await _goalRepository.ConfirmGoalFromHomePage(goal.PlanId, goal.ForløbId, goal.GoalId);
+            var updated = await _goalRepository.ConfirmGoalFromHomePage(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
             if (updated)
                 return Ok();
             return NotFound("Mål ikke fundet til opdatering.");
         }
 
-        
+
+        //Hvad bruges den her til?
         [HttpGet("type/{type}/user/{userId}")]
         public async Task<IActionResult> GetGoalsByTypeForUser(string type, int userId)
         {
@@ -329,7 +400,8 @@ namespace Server
             var types = await _goalRepository.GetAllGoalTypes();
             return Ok(types);
         }
-
+        
+        //Hvad bruges den her til?
         [HttpGet("all-for-user/{userId}")]
         public async Task<IActionResult> GetAllGoalsForUser(int userId)
         {

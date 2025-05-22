@@ -19,18 +19,18 @@
     
     <div class="card">
         <h2 class="title">Velkommen til din profil, @_minBruger.FirstName</h2>
-        <EditForm Model="_minBruger" OnValidSubmit="@UpdateDetails">
+        <EditForm Model="_minBruger">
             <DataAnnotationsValidator/>
             <ValidationSummary class="validation-summary"/>
             <div class="form-control">
                 <div class="input-group">
                     <label for="navn">Fulde navn</label>
-                    <InputText id="navn" @bind-Value="_minBruger.FirstName"/>
+                    <InputText id="navn" @bind-Value="_minBruger.FirstName" disabled/>
                 </div>
 
                 <div class="input-group">
                     <label for="telefon">Telefonnummer</label>
-                    <InputNumber id="telefon" @bind-Value="_minBruger.Mobile"/>
+                    <InputNumber id="telefon" @bind-Value="_minBruger.Mobile" disabled/>
                 </div>
 
                 <div class="input-group">
@@ -43,10 +43,7 @@
                     <InputText id="rolle" @bind-Value="@_minBruger.Rolle" disabled />
                 </div>
             </div>
-
-            <div class="mt-6 flex gap-3">
-                <button class="btn btn-primary" type="submit">Gem ændringer</button>
-            </div>
+            
         </EditForm>
     </div>
 </div>
@@ -54,17 +51,12 @@
 
 
 @code {
-    
-    [Parameter]
-    public int id { get; set; }
 
-    [CascadingParameter] 
-    private BrugerLoginDTO _currentUser { get; set; }
+    [Parameter] public int id { get; set; }
+
+    [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
 
     private User _minBruger { get; set; }
-    
-    private byte[] _pictureByes;
-
     
     protected override async Task OnInitializedAsync()
     {
@@ -73,18 +65,13 @@
             navMan.NavigateTo($"login/minside{id}");
             return;
         }
+
         _minBruger = await IBrugerService.GetBrugerById(id);
     }
-    
+
     private void NavigateToResetPassword()
     {
         navMan.NavigateTo("opdaterpassword");
     }
     
-    private async Task UpdateDetails()
-    {
-        await IBrugerService.OpdaterBruger(id, _minBruger);
-    }
-    
-
 }

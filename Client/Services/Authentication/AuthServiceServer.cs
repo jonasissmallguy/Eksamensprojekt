@@ -45,7 +45,7 @@ namespace Client
         //Hjælpefunktion til at validere om 
         public async Task<BrugerLoginDTO?> Validate(string username, string password)
         {
-            var _allUsers = await _bruger.GetAllUsers();
+            var _allUsers = await _bruger.GetAllActiveUsers();
             
             foreach (BrugerLoginDTO bruger in _allUsers)
             {
@@ -129,8 +129,6 @@ namespace Client
                 var email = await GetLocalStorageResetEmail();
                 var result = await _client.PutAsJsonAsync($"{serverUrl}/users/updatepassword/{email}", updatedPassword);
                 
-                //var user = await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{email}");
-
                 if (result.IsSuccessStatusCode)
                 {
                     return true;

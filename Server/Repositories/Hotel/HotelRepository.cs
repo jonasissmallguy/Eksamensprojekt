@@ -70,6 +70,16 @@ namespace Server
 
             return await _hotelCollection.UpdateOneAsync(filter, update);
         }
+
+        public async Task RemoveManagerFromHotel(int køkkenChefId)
+        {
+            var filter = Builders<Hotel>.Filter.Eq("KøkkenChefId", køkkenChefId);
+            var update = Builders<Hotel>.Update
+                .Set("KøkkenChefId", BsonNull.Value)
+                .Set("KøkkenChefNavn", "");
+            
+            await _hotelCollection.UpdateOneAsync(filter, update);
+        }
     }
 
 }

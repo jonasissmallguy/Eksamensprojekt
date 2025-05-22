@@ -19,17 +19,21 @@ namespace Server
         Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor);
         Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment mentor);
 
+        Task<List<Goal>> GetFutureSchools(int elevId);
+        
         Task<List<User>> GetActionGoals(int elevId);
         Task<List<User>> GetAwaitingApproval(int hotelId);
         Task<List<User>> GetMissingCourses(int hotelId);
         Task<List<User>> GetOutOfHouse(int hotelId);
         
-        
         Task<bool> ConfirmGoalFromHomePage(int planId, int forløbId, int goalId);
-        Task<List<Goal>> GetGoalsByTypeForUser(string type, int userId);
         
-        Task<List<string>> GetAllGoalTypes();
-        Task<List<Goal>> GetAllGoalsForUser(int userId);
+        Task<List<User>> GetStartedGoals(int hotelId);
+        
+        Task<List<Goal>> GetGoalsByTypeForUser(string type, int userId); //Slet?
+        
+        Task<List<string>> GetAllGoalTypes(); //Slet?
+        Task<List<Goal>> GetAllGoalsForUser(int userId); //Slet?
     }
 
 

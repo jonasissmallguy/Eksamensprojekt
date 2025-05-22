@@ -13,10 +13,10 @@ namespace Server
     [Route("users")]
     public class UserController : ControllerBase
     {
-
+        
         private IUserRepository _userRepository;
         private IHotelRepository _hotelRepository;
-
+        
         private static Dictionary<string, (string Kode, DateTime Expiry)> verificeringsKoder = new();
 
 
@@ -148,37 +148,37 @@ namespace Server
                 int x = ran.Next(bogstaver.Length);
                 verificeringsKode = verificeringsKode + bogstaver[x];
             }
-
+                
             verificeringsKoder[email] = (verificeringsKode, DateTime.Now.AddMinutes(10));
-
+            
             return verificeringsKode;
         }
-
+        
         [HttpGet]
         [Route("{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             var user = await _userRepository.GetUserByEmail(email);
-
+            
 
             if (user == null)
             {
                 return NotFound();
             }
-
+            
             //Send reset kode
             await SendResetCodeEmail("jonasdupontheidemann@gmail.com", GenerateResetCode(email));
-
+            
             return Ok(user);
         }
 
-
+        
         [HttpGet]
         [Route("{id:int}")]
         public async Task<IActionResult> GetUserById(int id)
         {
             var user = await _userRepository.GetUserById(id);
-
+            
             return Ok(user);
         }
 
@@ -198,7 +198,7 @@ namespace Server
 
             return password;
         }
-
+        
 
         /// <summary>
         /// Metode til at opret en bruger
@@ -270,13 +270,7 @@ namespace Server
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
                 HotelId = user.HotelId,
-                HotelNavn = hotel?.HotelNavn,
-                //mangler hotel
-                Year = user.Year,
-                StartDate = user.StartDate,
-                EndDate = user.EndDate,
-                Skole = user.Skole,
-                Uddannelse = user.Uddannelse
+                HotelNavn = hotel?.HotelNavn
             };
 
             if (user.Rolle == "Elev")
@@ -290,31 +284,40 @@ namespace Server
 
             if (user.Rolle == "Køkkenchef")
             {
-
+        
                 if (hotel != null && (hotel.KøkkenChefId != null || !string.IsNullOrEmpty(hotel.KøkkenChefNavn)))
                 {
                     return Conflict("Dette hotel har allerede en køkkenchef");
                 }
             }
-
+    
             var newUser = await _userRepository.SaveBruger(nyBruger);
-
+    
             if (user.Rolle == "Køkkenchef" && hotel != null)
             {
                 hotel.KøkkenChefId = newUser.Id;
                 hotel.KøkkenChefNavn = newUser.FirstName + " " + newUser.LastName;
                 await _hotelRepository.UpdateHotelChef(hotel);
             }
-
+    
             return Ok(newUser);
         }
 
+        /// <summary>
+        /// Sletter en bruger
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="rolle"></param>
+        /// <returns></returns>
         [HttpDelete]
-        [Route("{id:int}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [Route("{userId}/{rolle}")]
+        public async Task<IActionResult> DeleteUser(int userId, string rolle)
         {
-            await _userRepository.DeleteUser(id);
-
+            if (rolle == "Køkkenchef")
+            {
+                await _hotelRepository.RemoveManagerFromHotel(userId);
+            }
+            await _userRepository.DeleteUser(userId);
             return Ok();
         }
 
@@ -324,9 +327,14 @@ namespace Server
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("deactivate/{userId}")]
-        public async Task<IActionResult> DeactivateUser(int userId)
+        [Route("deactivate/{userId}/{rolle}")]
+        public async Task<IActionResult> DeactivateUser(int userId, string rolle)
         {
+            if (rolle == "Køkkenchef")
+            {
+                await _hotelRepository.RemoveManagerFromHotel(userId);
+            }
+            
             await _userRepository.DeactivateUser(userId);
 
             return Ok();
@@ -481,9 +489,14 @@ namespace Server
                 int row = 2;
                 foreach (var user in users)
                 {
+                    //Alle mål og gennemførte
+                    var TotalGoals = user.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0;
+                    var CompletedGoals =
+                        user.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0;
+                    
                     worksheet.Cell(row, 1 ).Value = user.FirstName + " " + user.LastName;
                     worksheet.Cell(row, 2 ).Value = user.HotelNavn;
-                    worksheet.Cell(row, 3 ).Value = user.Status;
+                    worksheet.Cell(row, 3 ).Value = $"{CompletedGoals} / {TotalGoals}";
                     worksheet.Cell(row, 4 ).Value = user.Year;
                     worksheet.Cell(row, 5 ).Value = user.Skole;
                     worksheet.Cell(row, 6 ).Value = user.Uddannelse;
@@ -526,8 +539,7 @@ namespace Server
 
             return true;
         }
-
-        //Skal gøres specifik - afventer Rasmus elevoversigt ændringer
+        
         [HttpPost]
         [Route("sendemail")]
         public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds)
@@ -542,6 +554,49 @@ namespace Server
             return Ok(emailStatus);
 
         }
+
+        [HttpPut]
+        [Route("updatehotel/{userId}/{hotelId}")]
+        public async Task<IActionResult> UpdateUser(int userId, int hotelId, [FromBody] string hotelNavn)
+        {
+            var result = await _userRepository.UpdateHotel(userId, hotelId, hotelNavn);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("active")]
+        public async Task<IActionResult> GetAllActiveUsers()
+        {
+            var activeUsers = await _userRepository.GetAllActiveUsers();
+
+            if (activeUsers == null)
+            {
+                return NotFound();
+            }
+
+            List<BrugerLoginDTO> users = new();
+
+            foreach (var user in activeUsers)
+            {
+                users.Add(new BrugerLoginDTO
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    Email = user.Email,
+                    Password = user.Password,
+                    HotelId = user.HotelId,
+                    Rolle = user.Rolle
+                });
+                
+            }
+            return Ok(users);
+        }
+        
         
     }
 

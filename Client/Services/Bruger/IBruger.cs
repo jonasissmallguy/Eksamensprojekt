@@ -10,12 +10,13 @@ namespace Client
         Task<User> OpretBruger(BrugerCreateDTO nyBruger);
         Task<List<ElevOversigtDTO>> GetElevOversigt();
         Task<List<BrugerLoginDTO>> GetAllUsers();
+        Task<List<BrugerLoginDTO>> GetAllActiveUsers();
         Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId);
-        Task DeleteUser(int userId);
+        Task<bool> DeleteUser(int userId, string rolle);
         Task ChangeRolle(string newRolle, int userId);
-        Task DeActivateUser(int userId);
+        Task DeActivateUser(int userId, string rolle);
         Task ActivateUser(int userId);
-        Task UpdateHotel(Hotel hotel, int userId);
+        Task<bool> UpdateHotel(int hotelId, string hotelName, int userId);
         Task SaveStudentPlan(int studentId, Plan plan);
         Task<User> GetUserById(int currentUserId);
         

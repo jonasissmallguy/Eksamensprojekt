@@ -1,6 +1,6 @@
 ﻿namespace Core
 {
-    public class AwaitingApprovalDTO
+    public class StartedGoalsDTO
     {
         public string FullName { get; set; }
         public int PlanId { get; set; }
