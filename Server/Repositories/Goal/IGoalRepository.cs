@@ -18,6 +18,8 @@ namespace Server
         Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor);
         Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment mentor);
 
+        Task<List<Goal>> GetFutureSchools(int elevId);
+        
         Task<List<User>> GetActionGoals(int elevId);
         Task<List<User>> GetAwaitingApproval(int hotelId);
         Task<List<User>> GetMissingCourses(int hotelId);

@@ -271,6 +271,36 @@ namespace Server
             
             return Ok(result);
         }
+        
+        
+        [HttpGet]
+        [Route("future-schools/{elevId}")]
+        public async Task<IActionResult> GetFutureSchools(int elevId)
+        {
+            if (elevId <= 0 || elevId == null)
+                return BadRequest();
+
+            var goals = await _goalRepository.GetFutureSchools(elevId);
+
+            if (goals == null || !goals.Any())
+                return NotFound();
+
+            List<FutureSchoolDTO> futureSchools = new ();
+            
+            foreach (var goal in goals)
+            {
+                futureSchools.Add(new FutureSchoolDTO
+                {
+                    Title = goal.Title,
+                    SkoleNavn = goal.SkoleNavn,
+                    SkoleStart = goal.StartDate,
+                    SkoleEnd = goal.EndDate
+                });
+                
+            }
+            return Ok(futureSchools);
+        }
+
 
         /// <summary>
         /// Starter goal
@@ -323,7 +353,7 @@ namespace Server
         public async Task<IActionResult> ConfirmGoalFromHomePage([FromBody] StartedGoalsDTO goalDto)
         {
             if (goalDto == null || goalDto.GoalId <= 0)
-                return BadRequest("Ugyldigt mål data.");
+                return BadRequest();
             
             var updated = await _goalRepository.ConfirmGoalFromHomePage(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
             if (updated)

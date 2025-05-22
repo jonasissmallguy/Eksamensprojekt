@@ -112,6 +112,11 @@ namespace Client
             return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"{serverUrl}/goals/need-action-goals/{elevId}");
         }
 
+        public async Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
+        {
+            return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"{serverUrl}/goals/future-schools/{elevId}");
+        }
+
         public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId)
         {
             return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"{serverUrl}/goals/outofhouse/{hotelId}");

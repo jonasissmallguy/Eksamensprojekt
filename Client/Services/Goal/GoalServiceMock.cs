@@ -56,6 +56,11 @@ namespace Client
             throw new NotImplementedException();
         }
 
+        public Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId)
         {
