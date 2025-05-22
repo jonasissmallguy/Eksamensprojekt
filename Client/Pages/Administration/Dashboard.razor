@@ -1,7 +1,6 @@
-﻿@using System.Reflection.Metadata
-@using Core.DTO.Goal
+﻿@using Core.DTO.Goal
 @using Core
-@using Client.Components
+@using Client.Components.Delmål
 
 @inject NavigationManager navMan;
 @inject IBruger IBrugerService;
@@ -202,60 +201,11 @@ else
             }
         }
     </table>
-
-    <ModalDialog @ref="modalRef" Title="Tilføj delmål">
-        <EditForm Model="newGoal" class="row p-3" OnInvalidSubmit="HandleAddGoal">
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
-
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Forløb">Forløb:</label>
-                    <InputSelect class="form-select" @bind-Value="selectedForløbId">
-                        @if (elevPlan?.Forløbs != null)
-                        {
-                            @foreach (var e in elevPlan.Forløbs)
-                            {
-                                <option value="@e.Id" bind-Value="@newGoal.Forløbs">@e.Title</option>
-                            }
-                        }
-                    </InputSelect>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Titel">Titel:</label>
-                        <InputText id="Titel" @bind-Value="tilføjDelmål.Title"
-                                   placeholder="Skolenavn..." class="form-control"/>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Beskrivelse">Beskrivelse:</label>
-                        <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description"
-                                       placeholder="Husk at tilføje adresse!" class="form-control"/>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Semester">Semester:</label>
-                        <InputSelect class="form-select" @bind-Value="tilføjDelmål.Semester">
-                            @foreach (var yy in år)
-                            {
-                                <option value="@yy">@yy</option>
-                            }
-                        </InputSelect>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <button class="btn btn-primary" type="submit" @onclick="() => HandleAddGoal()">Tilføj</button>
-                    </div>
-                </div>
-
-        </EditForm>
-    </ModalDialog>
-
+    
+    <TilføjDelmålComponent @ref="addGoalModalRef"
+                  StudentId="@selectedStudentIds.FirstOrDefault()"
+                  ElevPlan="@elevPlan"
+                  OnGoalAdded="@OnGoalAdded"/>
 }
     
 }
@@ -274,7 +224,6 @@ else
     private string selectedSkole = String.Empty;
     private string selectedUddannelse = String.Empty;
     private int? _currentUserHotelId = null;
-    private Goal tilføjDelmål = new Goal();
 
     private bool isChecked;
 
@@ -296,7 +245,7 @@ else
     private User elev;
     private Plan? elevPlan;
 
-
+    private TilføjDelmålComponent addGoalModalRef;
 
     // Filter til søgetekst og til valg af hotel
     private IEnumerable<ElevOversigtDTO> FiltreredElever
@@ -321,6 +270,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        
         try
         {
             isLoading = true;
@@ -344,7 +294,6 @@ else
             
             elev = await IBrugerService.GetBrugerById(studentId);
             alleForløb = elev.ElevPlan.Forløbs;
-
             selectedForløbId = elevPlan?.Forløbs?.FirstOrDefault()?.Id;
 
         }
@@ -463,31 +412,7 @@ else
         selectedSkoleendBefore = null;
         selectedSkoleendAfter = null;
     }
-
-
-    // Herunder kode til Modaldialog
-
-    private ModalDialog? modalRef;
-    /*
-    private void OpenModal()
-    {
-        modalRef?.Open();
-    }
-    */
-    private async Task OpenModal()
-    {
-        var elevId = selectedStudentIds.FirstOrDefault();
-        if (elevId == 0) return;
-        
-        elev = await IBrugerService.GetBrugerById(elevId);
-        elevPlan = elev.ElevPlan;
-        
-        selectedForløbId = elevPlan?.Forløbs?.FirstOrDefault()?.Id;
-
-        modalRef.Open();
-        StateHasChanged();
-    }
-
+    
 
     // Lille sag der checker hvilke elever der er tjekket af
     private void LogSelectedStudents()
@@ -506,38 +431,24 @@ else
     
     private async Task SendExcelFile(HashSet<int> hashSet)
     {
-       await IBrugerService.SendEmail(hashSet);
+       await IBrugerService.SendEmail(hashSet, _currentUser.Email);
+    }
+    
+
+    private async Task OpenModal()
+    {
+        var elevId = selectedStudentIds.FirstOrDefault();
+        if (elevId == 0) return;
+
+        elev = await IBrugerService.GetBrugerById(elevId);
+        elevPlan = elev.ElevPlan;
+
+        addGoalModalRef?.Open();
     }
 
-    private async Task<bool> HandleAddGoal()
+    private async Task OnGoalAdded()
     {
-        // Find valgt elev
-        int studentId = selectedStudentIds.First();
-
-        // Sæt PlanId og ForløbId på delmål-objektet
-        tilføjDelmål.PlanId = elevPlan.Id;
-        tilføjDelmål.ForløbId = selectedForløbId ?? 0;
-
-        // Kald service
-        var success = await IGoalService.AddGoal(tilføjDelmål, studentId);
-        if (success)
-        {
-            // Opdater UI-model
-            var forløb = elevPlan.Forløbs.FirstOrDefault(f => f.Id == tilføjDelmål.ForløbId);
-            if (forløb != null)
-            {
-                forløb.Goals.Add(tilføjDelmål);
-                StateHasChanged();
-            }
-            // Ryd modal og luk
-            tilføjDelmål = new Goal();
-            return true;
-        }
-        else
-        {
-            Console.WriteLine("Kunne ikke tilføje delmål");
-            return false;
-        }
+        StateHasChanged();
     }
     
 

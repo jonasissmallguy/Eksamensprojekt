@@ -99,9 +99,9 @@ namespace Client
         }
         
         //Skal også tage brugerens email som parameter, altså hvem er logget ind og hvem skal vi sendetil!
-        public async Task<bool> SendEmail(HashSet<int> studentIds)
+        public async Task<bool> SendEmail(HashSet<int> studentIds, string email)
         {
-            var response = await _client.PostAsJsonAsync($"{serverUrl}/users/sendemail", studentIds);
+            var response = await _client.PostAsJsonAsync($"{serverUrl}/users/sendemail/{email}", studentIds);
 
             if (!response.IsSuccessStatusCode)
             {

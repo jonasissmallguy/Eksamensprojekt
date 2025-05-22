@@ -136,6 +136,13 @@ else
             navMan.NavigateTo("login/brugeradministration");
             return;
         }
+        
+        if (_currentUser.Rolle != "HR")
+        {
+            navMan.NavigateTo("");
+        }
+
+        
         _allUsers = await IBrugerService.GetAllUsersWithOutCurrent(_currentUser.Id);
     }
 

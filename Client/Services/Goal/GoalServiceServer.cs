@@ -61,11 +61,10 @@ namespace Client
             
         }
 
-        public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        public async Task<Goal> ConfirmGoal(int planId, int forløbId, int goalId)
         {
-            Console.WriteLine(leder.MentorName);
             
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirmgoal", leder);
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirmgoal/{planId}/{forløbId}/{goalId}", new{});
 
             if (response.IsSuccessStatusCode)
             {
@@ -73,6 +72,18 @@ namespace Client
                 return goal;
             }
 
+            return null;
+        }
+
+        public async Task<Goal> ConfirmSchool(int planId, int forløbId, int goalId)
+        {
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirmschool/{planId}/{forløbId}/{goalId}", new{});
+
+            if (response.IsSuccessStatusCode)
+            {
+                var goal = await response.Content.ReadFromJsonAsync<Goal>();
+                return goal;
+            }
             return null;
         }
 
@@ -116,19 +127,7 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"{serverUrl}/goals/outofhouse/{hotelId}");
         }
-
-        public async Task<bool> ConfirmGoalFromHomePage(StartedGoalsDTO goalDto)
-        {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm", goalDto);
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Fejl ved opdatering af mål: {error}");
-            }
-
-            return true;
-        }
-
+        
         public async Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId)
         {
             return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/started-goals/{hotelId}");

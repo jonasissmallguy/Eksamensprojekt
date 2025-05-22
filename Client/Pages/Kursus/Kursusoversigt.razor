@@ -82,19 +82,36 @@
 </ModalDialog>
 
 @code {
+    
+    [CascadingParameter] 
+    private BrugerLoginDTO _currentUser { get; set; }
+
+    
     private List<Kursus> alleKurser;
     private ModalDialog _modalKursus { get; set; }
     private KursusCreationDTO newCourse = new();
     private List<Kursus> Courses;
     private List<KursusTemplate> CoursesTemplates;
-
-    private string? selectedCourse;
-    private DateOnly? startDate;
-    private DateOnly? endDate;
-    private string? location;
+    
+    //Hvad bruges det her til? 
+    //private string? selectedCourse;
+    //private DateOnly? startDate;
+    //private DateOnly? endDate;
+    //private string? location;
 
     protected override async Task OnInitializedAsync()
     {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/kursusoversigt");
+            return;
+        }
+
+        if (_currentUser.Rolle != "HR")
+        {
+            navMan.NavigateTo("dashboard");
+        }
+        
         alleKurser = await IKursusService.GetAllCourses();
     }
 

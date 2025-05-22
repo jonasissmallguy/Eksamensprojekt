@@ -19,7 +19,10 @@
                                     <TitleTemplate>
                                         <div class="d-flex justify-content-between align-items-center w-100">
                                             <span>@forløb.Title</span>
-                                            <!--Her skal progress bar være, når vi får -->
+                                            @if (forløb.Status == "Completed")
+                                            {
+                                                <img src="icons/check.svg" alt="Delete" style="width: 32px; height: 32px;"/>
+                                            }
                                         </div>
                                     </TitleTemplate>
                                     <Content>
@@ -58,25 +61,29 @@
                                                     <Content>
                                                         <div class="d-flex justify-content-between align-items-center w-100">
                                                             <div>
-                                                            <p>@goal.Description</p>
-                                                            @if (goal.Status != "Active")
-                                                            {
-                                                                <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
-                                                            }
+                                                                <p>@goal.Description</p>
+                                                                @if (goal.Status != "Active")
+                                                                {
+                                                                    <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
+                                                                }
                                                             </div>
+                                                            @if (goal.Status != "Completed" && goal.Type == "Skoleforløb" && _currentUser.Rolle == "Køkkenchef")
+                                                            {
+                                                                <button class="btn btn-success" @onclick="() => ConfirmSchoolOphold(goal)">Godkend Skoleophold</button>
+                                                            }
                                                             @if (goal.Status != "Completed" && goal.Type == "Delmål")
                                                             {
                                                                 @if (StartGoal && goal.Status == "Active")
                                                                 {
                                                                     <button class="btn btn-sm btn-primary" @onclick="() => StartGoalNow(goal)">Påbegynd</button>
                                                                 }
-                                                                else if (StartGoal && goal.Status == "InProgress" && goal.Type == "Delmål" && _currentUser.Rolle !="Elev")
+                                                                else if (StartGoal && goal.Status == "InProgress" && _currentUser.Rolle !="Elev")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
                                                                         <button class="btn btn-success" @onclick="() => ProcessGoal(goal)">Godkend delmål</button>
                                                                     </div>
                                                                 }
-                                                                else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef" && goal.Type == "Delmål")
+                                                                else if (StartGoal && goal.Status == "AwaitingApproval" && _currentUser.Rolle == "Køkkenchef")
                                                                 {
                                                                     <div class="mentor-display d-flex align-items-center">
                                                                         <button class="btn btn-success" @onclick="() => ProcessGoal(goal)">Godkend delmål</button>
@@ -162,10 +169,10 @@
                         <p>Bekræfter: @_currentGoal.ConfirmerName</p>
                         <br/>
                     }
-                    @if (_currentGoal.CompletedAt != null)
-                    {
-                        <p>Godkendt af leder den: @_currentGoal.CompletedAt</p>
-                    }
+                }
+                @if (_currentGoal.CompletedAt != null)
+                {
+                    <p>Godkendt af leder den: @_currentGoal.CompletedAt</p>
                 }
             }
             else
@@ -183,7 +190,6 @@
 {
     //Parameters
     
-        
     [Parameter] public Plan Plan { get; set; }
     
     [Parameter] public PlanTemplate PlanTemplate { get; set; }
@@ -258,6 +264,21 @@
     private async Task HandleDeleteGoal(Goal goal)
     {
         await OnDelteClicked.InvokeAsync(goal);
+    }
+    
+    [Parameter]
+    public EventCallback<MentorAssignment> OnConfirmSchool { get; set; }
+
+    private async Task ConfirmSchoolOphold(Goal goal)
+    {
+        var schoolConfirmation = new MentorAssignment
+        {
+            PlanId = goal.PlanId,
+            ForløbId = goal.ForløbId,
+            GoalId = goal.Id
+        };
+
+        await OnConfirmSchool.InvokeAsync(schoolConfirmation);
     }
     
 

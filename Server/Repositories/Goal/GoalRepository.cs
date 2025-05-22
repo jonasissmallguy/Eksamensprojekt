@@ -65,6 +65,9 @@ namespace Server
                 Builders<User>.Filter.Eq(u => u.Id, studentId),
                 Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f => f.Id == forløbId)
             );
+            
+            //Generer id til nyt goal
+            newGoal.Id = await GetNextSequenceValue("goalId");
 
             var update = Builders<User>.Update.AddToSet("ElevPlan.Forløbs.$.Goals", newGoal);
 
@@ -160,9 +163,9 @@ namespace Server
             return goal;
         }
 
-        public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> ConfirmGoalHelper(int planId, int forløbId, int goalId)
         {
-            var filter = Builders<User>.Filter.Eq("ElevPlan._id", mentor.PlanId);
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
 
             var update = Builders<User>.Update
                 .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "Completed")
@@ -170,8 +173,8 @@ namespace Server
 
             var arrayFilters = new List<ArrayFilterDefinition>
             {
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", mentor.ForløbId)),
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", mentor.GoalId))
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", forløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
             };
 
             var options = new UpdateOptions { ArrayFilters = arrayFilters };
@@ -182,12 +185,109 @@ namespace Server
 
             var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
             
-            //Skal dette laves om - herunder?
             var goal = user?.ElevPlan?.Forløbs?
-                .FirstOrDefault(f => f.Id == mentor.ForløbId)?
-                .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);
+                .FirstOrDefault(f => f.Id == forløbId)?
+                .Goals?.FirstOrDefault(g => g.Id == goalId);
 
             return goal;
+        }
+
+        public async Task<Goal> ConfirmGoalAndHandleProgress(int planId, int forløbId, int goalId)
+        {
+            var confirmedGoal = await ConfirmGoalHelper(planId, forløbId, goalId);
+
+            if (confirmedGoal == null)
+            {
+                return null;
+                
+            }
+            await UpdateForløbStatus(planId, forløbId);
+            return confirmedGoal;
+        }
+
+        //Skriv om 
+        public async Task UpdateForløbStatus(int planId, int forløbId)
+        {
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
+            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
+    
+            var forløb = user?.ElevPlan?.Forløbs?.FirstOrDefault(f => f.Id == forløbId);
+    
+            if (forløb?.Goals != null && forløb.Goals.All(g => g.Status == "Completed"))
+            {
+                var updateForløb = Builders<User>.Update
+                    .Set("ElevPlan.Forløbs.$[f].Status", "Completed");
+
+                var arrayFilters = new List<ArrayFilterDefinition>
+                {
+                    new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", forløbId))
+                };
+
+                var options = new UpdateOptions { ArrayFilters = arrayFilters };
+        
+                await _goalCollection.UpdateOneAsync(filter, updateForløb, options);
+            }
+        }
+        
+        
+
+        public async Task<Goal> UpdateSchoolStatus(int planId, int forløbId, int goalId)
+        {
+            var completedAt = DateTime.Now;
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
+            var update = Builders<User>.Update
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "Completed")
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].CompletedAt", completedAt);
+
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", forløbId)),
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
+            };
+
+            var options = new FindOneAndUpdateOptions<User> 
+            { 
+                ArrayFilters = arrayFilters,
+                ReturnDocument = ReturnDocument.After
+            };
+
+            var updatedUser = await _goalCollection.FindOneAndUpdateAsync(filter, update, options);
+    
+            if (updatedUser == null)
+            {
+                return null;
+            }
+            
+       
+            await UpdateForløbStatus(planId, forløbId);
+            await UpdateYearStauts(planId);
+    
+            var goal = updatedUser?.ElevPlan?.Forløbs?
+                .FirstOrDefault(f => f.Id == forløbId)?
+                .Goals?.FirstOrDefault(g => g.Id == goalId);
+
+            return goal;
+        }
+
+        public async Task UpdateYearStauts(int planId)
+        {
+            var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
+            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
+
+            if (user.Year != "År 3")
+            {
+                if (user.Year == "År 1")
+                {
+                    var update = Builders<User>.Update.Set("Year", "År 2");
+                    await _goalCollection.UpdateOneAsync(filter, update);
+                }
+
+                if (user.Year == "År 2")
+                {
+                    var update = Builders<User>.Update.Set("Year", "År 3");
+                    await _goalCollection.UpdateOneAsync(filter, update);
+                }
+            }
         }
 
         public async Task<List<Goal>> GetFutureSchools(int elevId)
@@ -282,31 +382,7 @@ namespace Server
 
             return await _goalCollection.Find(filter).ToListAsync();
         }
-
-        public async Task<bool> ConfirmGoalFromHomePage(int planId, int forløbId, int goalId)
-        {
-            var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
-
-            var update = Builders<User>.Update
-                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].Status", "Completed")
-                .Set("ElevPlan.Forløbs.$[f].Goals.$[g].CompletedAt", DateTime.Now);
-
-            var arrayFilters = new List<ArrayFilterDefinition>
-            {
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", forløbId)),
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
-            };
-
-            var options = new UpdateOptions { ArrayFilters = arrayFilters };
-
-            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
-            
-            if (result.ModifiedCount == 0)
-                return false;
-
-            return true;
-        }
-
+        
         public async Task<List<User>> GetStartedGoals(int hotelId)
         {
             var filter = Builders<User>.Filter.And(
@@ -325,61 +401,6 @@ namespace Server
             return await _goalCollection.Find(filter).ToListAsync();
         }
         
-        public async Task<List<Goal>> GetGoalsByTypeForUser(string type, int userId)
-        {
-            var bruger = await _brugerCollection.Find(b => b.Id == userId).FirstOrDefaultAsync();
-            if (bruger == null || bruger.ElevPlan == null || bruger.ElevPlan.Forløbs == null)
-                return new List<Goal>();
-
-            var result = new List<Goal>();
-
-            foreach (var forløb in bruger.ElevPlan.Forløbs)
-            {
-                result.AddRange(forløb.Goals.Where(g => g.Type == type && g.Status == "Active"));
-            }
-
-            return result;
-        }
-
-        //Denne skal slettes
-        public async Task<List<string>> GetAllGoalTypes()
-        {
-            // Antag at alle måltyper kan findes ved at aggregere over alle goals og hente unikke typer
-            var pipeline = new BsonDocument[]
-            {
-                new BsonDocument("$unwind", "$ElevPlan.Forløbs"),
-                new BsonDocument("$unwind", "$ElevPlan.Forløbs.Goals"),
-                new BsonDocument("$group", new BsonDocument
-                {
-                    { "_id", "$ElevPlan.Forløbs.Goals.Type" }
-                }),
-                new BsonDocument("$project", new BsonDocument
-                {
-                    { "Type", "$_id" },
-                    { "_id", 0 }
-                })
-            };
-
-            var result = await _goalCollection.Aggregate<BsonDocument>(pipeline).ToListAsync();
-
-            return result.Select(d => d["Type"].AsString).ToList();
-        }
-
-        //Slet??
-        public async Task<List<Goal>> GetAllGoalsForUser(int userId)
-        {
-            var user = await _goalCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
-            if (user?.ElevPlan?.Forløbs == null)
-                return new List<Goal>();
-
-            var allGoals = new List<Goal>();
-            foreach (var forløb in user.ElevPlan.Forløbs)
-            {
-                allGoals.AddRange(forløb.Goals);
-            }
-
-            return allGoals;
-        }
 
     }
     }

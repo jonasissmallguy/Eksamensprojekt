@@ -116,6 +116,10 @@
 </div>
 
 @code {
+    
+    [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
+    
+
     private BrugerCreateDTO newUser = new();
     private List<Hotel> hoteller = new();
     private string[] roller = {"Elev", "Køkkenchef", "Kok", "HR" };
@@ -128,6 +132,17 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/opretbruger");
+            return;
+        }
+        
+        if (_currentUser.Rolle != "HR")
+        {
+            navMan.NavigateTo("");
+        }
+        
         newUser.Rolle = roller[0];
         newUser.Køn = køn[2]; //prefixed til "Ikke angivet"
         

@@ -66,6 +66,18 @@
             return;
         }
 
+        if (_currentUser.Id != id)
+        {
+            if (_currentUser.Rolle == "HR")
+            {
+                navMan.NavigateTo("dashboard");
+                return;
+            }
+            
+            navMan.NavigateTo("");
+        }
+        
+
         _minBruger = await IBrugerService.GetBrugerById(id);
     }
 

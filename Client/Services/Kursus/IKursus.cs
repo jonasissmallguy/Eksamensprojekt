@@ -18,6 +18,7 @@ namespace Client
         Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId);
         
         Task<List<KursusKommendeDTO>> GetFutureCourses();
+        Task<List<KursusKommendeDTO>> GetFutureCoursesByStudentId(int studentId);
 
     }
 }

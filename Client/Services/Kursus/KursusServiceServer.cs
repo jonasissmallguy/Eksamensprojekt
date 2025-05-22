@@ -55,5 +55,10 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"{serverUrl}/kursus/nextup");
         }
+
+        public async Task<List<KursusKommendeDTO>> GetFutureCoursesByStudentId(int studentId)
+        {
+            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"{serverUrl}/kursus/nextup/{studentId}");
+        }
     }
 }

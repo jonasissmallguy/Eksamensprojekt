@@ -11,7 +11,8 @@ namespace Client
         private List<Goal> _goals;
         
         private IBruger _bruger;
-        
+        private IGoal _goalImplementation;
+
         public GoalServiceMock(IBruger bruger)
         {
             _goals = new List<Goal>();
@@ -166,7 +167,17 @@ namespace Client
 
             return goal;
         }
-        
+
+        public Task<Goal> ConfirmGoal(int planId, int forløbId, int goalId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Goal> ConfirmSchool(int planId, int forløbId, int goalId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment leder)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == leder.GoalId);

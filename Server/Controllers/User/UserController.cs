@@ -1,11 +1,9 @@
-﻿using System.Xml.Linq;
-using Core;
+﻿using Core;
 using Microsoft.AspNetCore.Mvc;
 using DotNetEnv;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using ClosedXML.Excel;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Server
 {
@@ -98,7 +96,7 @@ namespace Server
             var client = new SendGridClient(apiKey);
 
             //Fra & Til
-            var from = new EmailAddress(email, "HR");
+            var from = new EmailAddress("jonasdupontheidemann@gmail.com", "HR");
             var to = new EmailAddress(email);
 
             //Indhold
@@ -167,7 +165,7 @@ namespace Server
             }
             
             //Send reset kode
-            await SendResetCodeEmail("jonasdupontheidemann@gmail.com", GenerateResetCode(email));
+            await SendResetCodeEmail(email, GenerateResetCode(email));
             
             return Ok(user);
         }
@@ -299,9 +297,53 @@ namespace Server
                 hotel.KøkkenChefNavn = newUser.FirstName + " " + newUser.LastName;
                 await _hotelRepository.UpdateHotelChef(hotel);
             }
+
+            /*var mailSent = await SendLoginDetails(nyBruger);
+
+            if (!mailSent)
+            {
+                return BadRequest();
+            }
+            */
     
             return Ok(newUser);
         }
+
+        [NonAction]
+        public async Task<bool> SendLoginDetails(User newUser)
+        {
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+
+            //Anvender SendGrid
+            var client = new SendGridClient(apiKey);
+
+            //Fra & Til
+            var from = new EmailAddress("jonasdupontheidemann@gmail.com", "HR");
+            var to = new EmailAddress(newUser.Email);
+
+            //Indhold
+            var subject = "Velkommen til Elevportalen";
+            var plainTextContent =
+                $"Opret din nye adgangskode\t\n\t\t\n\t" +
+                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
+                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
+                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
+
+            var htmlContent = $"Hejsa, du er hermed  oprettet i vores system\t UserName: {newUser.Email}\n\n {newUser.Password}";
+
+            //Generer email og sender
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+        
 
         /// <summary>
         /// Sletter en bruger
@@ -467,7 +509,7 @@ namespace Server
 
     //Generer excel fil
         [NonAction]
-        public async Task<bool> GenerateExcelFile(List<User> users)
+        public async Task<bool> GenerateExcelFileAndSendMail(List<User> users, string email)
         {
             byte[] fileBytes;
             
@@ -478,7 +520,7 @@ namespace Server
                 //Overskrifter
                 worksheet.Cell("A1").Value = "Navn";
                 worksheet.Cell("B1").Value = "Hotel";
-                worksheet.Cell("C1").Value = "Status"; //Afvent vi får lavet hjælpefunktion, den Rasmus bruger til elevoversigt
+                worksheet.Cell("C1").Value = "Status"; 
                 worksheet.Cell("D1").Value = "År";
                 worksheet.Cell("E1").Value = "Skole";
                 worksheet.Cell("F1").Value = "Uddannelse";
@@ -519,7 +561,6 @@ namespace Server
             
             string base64 = Convert.ToBase64String(fileBytes);
             
-            //Send mail - skal laves pænere, evt. lav en fælles hjælpe funktion Jonas
             Env.Load();
             
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
@@ -528,7 +569,7 @@ namespace Server
             //fra og til skal ændres dynamisk... brugt til test.
             var from = new EmailAddress("jonasdupontheidemann@gmail.com", "Jonas Heidemann");
             var subject = "Alle produkter";
-            var to = new EmailAddress("tjoernevej53@gmail.com", "Example User");
+            var to = new EmailAddress(email, "Example User");
             var plainTextContent = "and easy to do anywhere, even with C#";
             var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
@@ -541,15 +582,15 @@ namespace Server
         }
         
         [HttpPost]
-        [Route("sendemail")]
-        public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds)
+        [Route("sendemail/{email}")]
+        public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds, string email)
         {
             //Skal laves specifik til hvem der ser??
             var students = await _userRepository.GetAllStudents();
             
             var filter = students.Where(x => studentIds.Contains(x.Id)).ToList();
 
-            var emailStatus = await GenerateExcelFile(filter);
+            var emailStatus = await GenerateExcelFileAndSendMail(filter, email);
             
             return Ok(emailStatus);
 
