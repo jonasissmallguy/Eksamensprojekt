@@ -5,6 +5,7 @@ namespace Client
 
     public interface IAuth
     {
+        
         Task<BrugerLoginDTO?> GetBruger();
         Task<BrugerLoginDTO> Login(string username, string password);
         Task Logout();
@@ -14,7 +15,6 @@ namespace Client
         Task DeleteLocalStorageResetEmail();
         Task<bool> UpdatePassword(string updatedPassword, string confirmedPassword);
         
-
     }
 
 }

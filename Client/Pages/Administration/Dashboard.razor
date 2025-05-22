@@ -329,8 +329,6 @@ else
 
             alleHoteller = await IHotelService.GetHotels();
 
-            alleTyper = await IGoalService.GetAllGoalTypes();
-
             _currentUser = await AuthService.GetBruger();
 
             var _allUsers = await IBrugerService.GetAllActiveUsers();
@@ -439,20 +437,14 @@ else
 
     //Herunder koden til tilføj delmål
     private GoalCreationDTO newGoal = new();
-
-    private List<GoalNameDTO> alleTyper = new();
-
+    
     private int? selectedGoalId = null;
 
     private string[] år = { "År 1", "År 2", "År 3" };
     private string[] skole = { "Kold Kollege", "EUX Kronjylland", "Hansted Kokkeskole" };
     private string[] uddannelse = { "EUX", "Voksenelev" };
 
-    private string GetGoalName(int? goalId)
-    {
-        var goal = alleTyper.FirstOrDefault(t => t.GoalId == goalId);
-        return goal?.GoalName ?? "Ukendt";
-    }
+   
     
 
     private void SelectType(int? goalId)

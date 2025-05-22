@@ -33,13 +33,7 @@ namespace Client
             return response.IsSuccessStatusCode;
 
         }
-
-
-
-        public Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
@@ -97,21 +91,6 @@ namespace Client
                 return null;
             }
         }
-        public Task DeleteComment(int goalId, int commentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<GoalNameDTO>> GetAllGoalTypes()
-        {
-            var goalTypes = new List<GoalNameDTO>
-            {
-                new GoalNameDTO() { GoalId = 0, GoalName = "Ingen" },
-                new GoalNameDTO() { GoalId = 1, GoalName = "Skole" },
-                new GoalNameDTO() { GoalId = 2, GoalName = "Delmål" }
-            };
-            return goalTypes;
-        }
 
         public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
         {
@@ -154,22 +133,8 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/started-goals/{hotelId}");
         }
-
-        public async Task<List<Goal>> GetAllGoalsForBruger(User bruger)
-        {
-            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/all-for-user/{bruger.Id}");
-        }
-
-        public async Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string type)
-        {
-            var response = await _client.GetFromJsonAsync<List<Goal>>(
-                $"{serverUrl}/goals/type/{type}/user/{bruger.Id}"
-            );
-
-            return response;
-        }
-
-
+        
+        
     }
 }
         
