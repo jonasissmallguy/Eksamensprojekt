@@ -10,6 +10,7 @@ namespace Client
         
         //Goals
         Task DeleteGoal(Goal goal, int studentId);
+        Task<bool> AddGoal(Goal goal, int studentId);
         Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates); //denne skal ikke bruges
         
         //Goal progress

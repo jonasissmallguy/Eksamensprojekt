@@ -70,22 +70,6 @@ namespace Client
             return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"{serverUrl}/users/withoutmyself/{userId}");
         }
 
-        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
-        {
-            var users = new List<User>();
-
-            foreach (var id in studentIds)
-            {
-                var user = _allUsers.FirstOrDefault(x => x.Id == id);
-
-                if (user != null)
-                {
-                    users.Add(user);
-                }
-            }
-            return users;
-        }
-
         public async Task DeleteUser(int userId)
         {
             await _client.DeleteAsync($"{serverUrl}/users/{userId}");
