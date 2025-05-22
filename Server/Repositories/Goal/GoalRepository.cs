@@ -190,6 +190,23 @@ namespace Server
             return goal;
         }
 
+        public async Task<List<Goal>> GetFutureSchools(int elevId)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, elevId);
+
+            var projection = Builders<User>.Projection
+                .Expression(u => u.ElevPlan.Forløbs
+                    .SelectMany(f => f.Goals)
+                    .Where(g => g.Type == "Skoleforløb")
+                    .ToList()
+                );
+
+            return await _goalCollection
+                .Find(filter)
+                .Project(projection)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<User>> GetActionGoals(int elevId)
         {
             var filter = Builders<User>.Filter.And(
@@ -231,14 +248,20 @@ namespace Server
                 Builders<User>.Filter.Eq(u => u.Rolle, "Elev"),
                 Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
                     Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
-                        Builders<Goal>.Filter.And(
-                            Builders<Goal>.Filter.Eq(g => g.Type, "Kursus"),
-                            Builders<Goal>.Filter.Eq(g => g.Status, "Active") 
-                        )
+                        Builders<Goal>.Filter.Eq(g => g.Type, "Kursus")
                     )
                 )
             );
-            return await _goalCollection.Find(filter).ToListAsync();
+
+            var projection = Builders<User>.Projection
+                .Include(u => u.FirstName)
+                .Include(u => u.LastName)
+                .Include(u => u.ElevPlan.Forløbs); 
+
+            return await _goalCollection
+                .Find(filter)
+                .Project<User>(projection)
+                .ToListAsync();
         }
         
         
@@ -284,8 +307,23 @@ namespace Server
             return true;
         }
 
-
-
+        public async Task<List<User>> GetStartedGoals(int hotelId)
+        {
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.HotelId, hotelId),
+                Builders<User>.Filter.Eq(u => u.Rolle, "Elev"),
+                Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
+                    Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
+                        Builders<Goal>.Filter.And(
+                            Builders<Goal>.Filter.Eq(g => g.Type, "Delmål"),
+                            Builders<Goal>.Filter.Eq(g => g.Status, "InProgress") 
+                        )
+                    )
+                )
+            );
+            
+            return await _goalCollection.Find(filter).ToListAsync();
+        }
         
         public async Task<List<Goal>> GetGoalsByTypeForUser(string type, int userId)
         {
@@ -327,6 +365,7 @@ namespace Server
             return result.Select(d => d["Type"].AsString).ToList();
         }
 
+        //Slet??
         public async Task<List<Goal>> GetAllGoalsForUser(int userId)
         {
             var user = await _goalCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();

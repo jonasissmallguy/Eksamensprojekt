@@ -113,9 +113,9 @@ namespace Client
             return goalTypes;
         }
 
-        public async Task<List<AwaitingApprovalDTO>> GetAwaitingApproval(int hotelId)
+        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
         {
-            return await _client.GetFromJsonAsync<List<AwaitingApprovalDTO>>($"{serverUrl}/goals/awaiting-approval/{hotelId}");
+            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/awaiting-approval/{hotelId}");
         }
 
         public async Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId)
@@ -128,14 +128,19 @@ namespace Client
             return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"{serverUrl}/goals/need-action-goals/{elevId}");
         }
 
+        public async Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
+        {
+            return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"{serverUrl}/goals/future-schools/{elevId}");
+        }
+
         public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId)
         {
             return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"{serverUrl}/goals/outofhouse/{hotelId}");
         }
 
-        public async Task<bool> ConfirmGoalFromHomePage(AwaitingApprovalDTO goal)
+        public async Task<bool> ConfirmGoalFromHomePage(StartedGoalsDTO goalDto)
         {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm", goal);
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm", goalDto);
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
@@ -143,6 +148,11 @@ namespace Client
             }
 
             return true;
+        }
+
+        public async Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId)
+        {
+            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/started-goals/{hotelId}");
         }
 
         public async Task<List<Goal>> GetAllGoalsForBruger(User bruger)
@@ -162,4 +172,4 @@ namespace Client
 
     }
 }
-    
+        

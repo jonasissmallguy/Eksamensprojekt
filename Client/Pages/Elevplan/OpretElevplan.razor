@@ -1,6 +1,5 @@
 ﻿@using Core
 @using Client.Components.Elevoversigt
-@using MongoDB.Bson
 
 
 @inject NavigationManager navMan;
@@ -11,21 +10,27 @@
 
 @page "/opretelevplan/{studentId:int}"
 
-@if (nyElevPlan != null)
+@if (_loading)
 {
-    <h2>Du er ved at oprette en elevplan for @elev.FirstName</h2>
-    
-    <ElevplanComponent Plan="@nyElevPlan"ShowSubmitButton="true"ShowComments="false" 
-                       OnDelteClicked="HandleDeleteGoal" OnSubmitClicked="HandleElevplanSubmit" />
-
-    <button class="btn btn-primary">Opret delmål</button>
+    <p>Opretter elevplan.... vent venligst </p>
 }
 else
 {
-    <p>Loading</p>
+    @if (nyElevPlan != null)
+    {
+        <h4>Elevplan for @elev.FirstName @elev.LastName</h4>
+        
+        <ElevplanComponent Plan="@nyElevPlan"ShowSubmitButton="true"ShowComments="false" 
+                           OnDelteClicked="HandleDeleteGoal" OnSubmitClicked="HandleElevplanSubmit" />
+
+        <button class="btn btn-primary">Opret delmål</button>
+    }
 }
 
 @code {
+
+    private bool _loading = true;
+    
     [Parameter] public int studentId { get; set; }
 
     private Plan? nyElevPlan = new();
@@ -43,6 +48,8 @@ else
         {
             nyElevPlan = await IElevPlanService.CreateElevPlan(studentId);
         }
+
+        _loading = false;
     }
     
     private async Task HandleDeleteGoal(Goal goal)

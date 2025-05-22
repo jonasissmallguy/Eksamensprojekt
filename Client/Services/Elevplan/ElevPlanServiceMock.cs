@@ -52,7 +52,7 @@ namespace Client
                 };
         
                 //Opretter goals
-                await _goal.CreateGoalsForTemplate(nyPlan.Id, forløb, forløbTemplate.Goals);
+                //await _goal.CreateGoalsForTemplate(nyPlan.Id, forløb, forløbTemplate.Goals);
                 nyPlan.Forløbs.Add(forløb);
             }
             

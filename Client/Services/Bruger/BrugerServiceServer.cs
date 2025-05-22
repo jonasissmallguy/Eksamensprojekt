@@ -64,15 +64,43 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<BrugerLoginDTO>>($"{serverUrl}/users");
         }
-        
+
+        public async Task<List<BrugerLoginDTO>> GetAllActiveUsers()
+        {
+            return await _client.GetFromJsonAsync<List<BrugerLoginDTO>>($"{serverUrl}/users/active");
+        }
+
         public async Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId)
         {
             return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"{serverUrl}/users/withoutmyself/{userId}");
         }
 
-        public async Task DeleteUser(int userId)
+        //public async Task DeleteUser(int userId)
+        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
         {
-            await _client.DeleteAsync($"{serverUrl}/users/{userId}");
+            var users = new List<User>();
+
+            foreach (var id in studentIds)
+            {
+                var user = _allUsers.FirstOrDefault(x => x.Id == id);
+
+                if (user != null)
+                {
+                    users.Add(user);
+                }
+            }
+            return users;
+        }
+
+        public async Task<bool> DeleteUser(int userId, string rolle)
+        {
+            var result = await _client.DeleteAsync($"{serverUrl}/users/{userId}/{rolle}");
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            return true;
         }
 
         public async Task ChangeRolle(string newRolle, int userId)
@@ -80,9 +108,9 @@ namespace Client
             await _client.PutAsJsonAsync($"{serverUrl}/users/updaterolle/{userId}/{newRolle}", new{});
         }
 
-        public async Task DeActivateUser(int userId)
+        public async Task DeActivateUser(int userId, string rolle)
         { 
-            await _client.PutAsJsonAsync($"{serverUrl}/users/deactivate/{userId}", userId);
+            await _client.PutAsJsonAsync($"{serverUrl}/users/deactivate/{userId}/{rolle}", userId);
         }
 
         public async Task ActivateUser(int userId)
@@ -90,9 +118,16 @@ namespace Client
             await _client.PutAsJsonAsync($"{serverUrl}/users/activate/{userId}", userId);
         }
 
-        public Task UpdateHotel(Hotel hotel, int userId)
+        public async Task<bool> UpdateHotel(int hotelId, string hotelName, int userId)
         {
-            throw new NotImplementedException();
+            var result = await _client.PutAsJsonAsync($"{serverUrl}/users/updatehotel/{userId}/{hotelId}", hotelName);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            
+            return true;
         }
 
         public Task SaveStudentPlan(int studentId, Plan plan)
