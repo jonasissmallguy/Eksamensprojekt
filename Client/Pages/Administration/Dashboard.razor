@@ -148,7 +148,7 @@ else
             </Dropdown>
         </div>
 
-        @if (selectedStudentIds.Count == 1)
+        @if (selectedStudentIds.Count == 1 && _currentUser.Rolle == "Køkkenchef")
         {
             <!-- Knap til at tilføje et delmål-->
             <div class="addgoal-button">
@@ -156,7 +156,7 @@ else
             </div>
         }
 
-        @if (selectedStudentIds.Any())
+        @if (selectedStudentIds.Any() && _currentUser.Rolle == "HR")
         {
             <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
             <div class="export-button">
@@ -555,6 +555,7 @@ else
                 StateHasChanged();
             }
             // Ryd modal og luk
+            modalRef.Close();
             tilføjDelmål = new Goal();
             return true;
         }
