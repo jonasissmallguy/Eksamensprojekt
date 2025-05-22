@@ -75,7 +75,7 @@ namespace Client
             return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"{serverUrl}/users/withoutmyself/{userId}");
         }
 
-        public async Task DeleteUser(int userId)
+        //public async Task DeleteUser(int userId)
         public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
         {
             var users = new List<User>();
