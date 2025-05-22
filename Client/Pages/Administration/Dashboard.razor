@@ -219,14 +219,25 @@ else
         <EditForm Model="newGoal" class="row p-3" OnInvalidSubmit="HandleAddGoal">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
-
+            
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Semester">Semester:</label>
+                    <InputSelect class="form-select" @bind-Value="selectedSemester">
+                        @foreach (var yy in år)
+                        {
+                            <option value="@yy">@yy</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
             <div class="row justify-content-center">
                 <div class="col-md-6 mb-3">
                     <label for="Forløb">Forløb:</label>
                     <InputSelect class="form-select" @bind-Value="selectedForløbId">
                         @if (elevPlan?.Forløbs != null)
                         {
-                            @foreach (var e in elevPlan.Forløbs)
+                            @foreach (var e in elevPlan.Forløbs.Where(f => f.Semester == selectedSemester))
                             {
                                 <option value="@e.Id" bind-Value="@newGoal.Forløbs">@e.Title</option>
                             }
@@ -246,17 +257,6 @@ else
                         <label for="Beskrivelse">Beskrivelse:</label>
                         <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description"
                                        placeholder="Husk at tilføje adresse!" class="form-control"/>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Semester">Semester:</label>
-                        <InputSelect class="form-select" @bind-Value="tilføjDelmål.Semester">
-                            @foreach (var yy in år)
-                            {
-                                <option value="@yy">@yy</option>
-                            }
-                        </InputSelect>
                     </div>
                 </div>
                 <div class="row justify-content-center">
@@ -288,6 +288,7 @@ else
     private string selectedUddannelse = String.Empty;
     private int? _currentUserHotelId = null;
     private Goal tilføjDelmål = new Goal();
+    private string selectedSemester = String.Empty;
 
     private bool isChecked;
 

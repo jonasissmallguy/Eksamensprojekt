@@ -34,6 +34,7 @@ namespace Server
         
         Task<List<string>> GetAllGoalTypes(); //Slet?
         Task<List<Goal>> GetAllGoalsForUser(int userId); //Slet?
+
     }
 
 
