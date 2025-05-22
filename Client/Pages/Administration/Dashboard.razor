@@ -1,18 +1,29 @@
 ﻿@using System.Reflection.Metadata
-@using Core
 @using Core.DTO.Goal
+@using Core
 @using Client.Components
 
 @inject NavigationManager navMan;
 @inject IBruger IBrugerService;
 @inject IHotel IHotelService;
 @inject IGoal IGoalService;
+@inject IAuth AuthService;
 
 
 @page "/dashboard"
-<h3>Dashboard</h3>
 
-@if (alleElever != null)
+@if (isLoading)
+{
+    <p>Indlæser elever...</p>
+}
+else if (alleElever == null)
+{
+    <p>Kunne ikke indlæse elever.</p>
+}
+else
+{
+    <h3>Dashboard</h3>
+    @if (alleElever != null)
 {
 
     <div class="dashboard-topline">
@@ -22,19 +33,30 @@
             <TextInput @bind-value="@searchText" Placeholder="Søg ved navn..."></TextInput>
         </div>
 
-        <!-- Dropdown til hotelvalg -->
-        <div class="dropdownmenu">
-            <Dropdown Color="DropdownColor.Secondary">
-                <DropdownToggleButton>@(selectedHotelId == null ? "Hotel" : GetHotelName(selectedHotelId))</DropdownToggleButton>
-                <DropdownMenu>
-                    <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
-                    @foreach (var y in alleHoteller)
-                    {
-                        <DropdownItem @onclick="() => SelectHotel(y.Id)">@y.HotelNavn</DropdownItem>
-                    }
-                </DropdownMenu>
-            </Dropdown>
-        </div>
+        @if (_currentUser.Rolle == "HR")
+        {
+            <!-- Dropdown til hotelvalg -->
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(selectedHotelId == null ? "Hotel" : GetHotelName(selectedHotelId))</DropdownToggleButton>
+                    <DropdownMenu>
+                        <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
+                        @foreach (var y in alleHoteller)
+                        {
+                            <DropdownItem @onclick="() => SelectHotel(y.Id)">@y.HotelNavn</DropdownItem>
+                        }
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+        }
+        else
+        {
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(GetCurrentUserHotelName())</DropdownToggleButton>
+                </Dropdown>
+            </div>
+        }
 
         <!-- Dropdown til rolle -->
         <div class="dropdownmenu">
@@ -114,21 +136,24 @@
             </Dropdown>
         </div>
 
-
-        @if (selectedStudentIds.Any())
+        @if (selectedStudentIds.Count == 1)
         {
             <!-- Knap til at tilføje et delmål-->
             <div class="addgoal-button">
                 <Button class="btn btn-primary" @onclick="OpenModal">Tilføj delmål</Button>
             </div>
+        }
+
+        @if (selectedStudentIds.Any())
+        {
             <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
             <div class="export-button">
-                <Button class="btn btn-primary">Eksporter fil</Button>
+                <Button @onclick="() => SendExcelFile(selectedStudentIds)" class="btn btn-primary">Eksporter fil</Button>
             </div>
         }
 
     </div>
-
+    
     <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
     <table>
         <tr>
@@ -178,35 +203,26 @@
         }
     </table>
 
-    <ModalTilføjDelmål @ref="modalRef" Title="Tilføj delmål">
-        <div class="addGoal-topline">
-            <h3>Tilføj delmål</h3>
-
-            <Dropdown Color="DropdownColor.Secondary">
-                <DropdownToggleButton>Måltype:</DropdownToggleButton>
-                <DropdownMenu>
-                    @foreach (var y in alleTyper)
-                    {
-                        <DropdownItem @onclick="() => SelectType(y.GoalId)">@y.GoalName</DropdownItem>
-                    }
-                </DropdownMenu>
-            </Dropdown>
-        </div>
-
+    <ModalDialog @ref="modalRef" Title="Tilføj delmål">
         <EditForm Model="newGoal" class="row p-3">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
+
             <div class="row justify-content-center">
                 <div class="col-md-6 mb-3">
-                    <label for="Type">Type: @(GetGoalName(selectedGoalId))</label>
+                    <label for="Forløb">Forløb:</label>
+                    <InputSelect class="form-select" @bind-Value="selectedForløbId">
+                        @if (elevPlan?.Forløbs != null)
+                        {
+                            @foreach (var e in elevPlan.Forløbs)
+                            {
+                                <option value="@e.Id">@e.Title</option>
+                            }
+                        }
+                    </InputSelect>
                 </div>
             </div>
-            <!-- Herunder har vi et if statement der forbinder den valgte måltype med en bestemt editfor. -->
-            <!-- 1 er skole, 2 er delmål -->
-
-            @if (selectedGoalId == 1)
-            {
-                <div class="row justify-content-center">
+            <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
                         <label for="Titel">Titel:</label>
                         <InputText id="Titel" @bind-Value="newGoal.Title"
@@ -240,80 +256,23 @@
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
-                        <label for="SkoleStart">Skolestart</label>
-                        <InputDate class="form-select" @bind-Value="newGoal.SkoleStart">
-                        </InputDate>
+                        <button class="btn btn-primary" type="submit">Tilføj</button>
                     </div>
                 </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="SkoleStart">Skoleafslutning</label>
-                        <InputDate class="form-select" @bind-Value="newGoal.SkoleEnd">
-                        </InputDate>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <button class="btn btn-primary">Tilføj</button>
-                    </div>
-                </div>
-            }
-            else if (selectedGoalId == 2)
-            {
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Titel">Titel:</label>
-                        <InputText id="Titel" @bind-Value="newGoal.Title"
-                                   placeholder="Titel på delmål..." class="form-control"/>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Beskrivelse">Beskrivelse:</label>
-                        <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
-                                       placeholder="Beskrivelse" class="form-control"/>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Status">Status:</label>
-                        <InputText id="Status" @bind-Value="newGoal.Status"
-                                   placeholder="Status" class="form-control"/>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <label for="Semester">Semester:</label>
-                        <InputSelect class="form-select" @bind-Value="newGoal.Semester">
-                            @foreach (var yy in år)
-                            {
-                                <option value="@yy">@yy</option>
-                            }
-                        </InputSelect>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <button class="btn btn-primary">Tilføj</button>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <p>Vælg en måltype for at få den passende skabelon.</p>
-            }
 
         </EditForm>
-
-    </ModalTilføjDelmål>
+    </ModalDialog>
 
 }
+    
+}
+
 
 @code {
 
     // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
-
+    private int? selectedForløbId = null;
     private string selectedYear = String.Empty;
     private int? selectedHotelId = null;
     private bool isSelected(int id) => selectedStudentId == id;
@@ -321,13 +280,16 @@
     private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
     private string selectedSkole = String.Empty;
     private string selectedUddannelse = String.Empty;
+    private int? _currentUserHotelId = null;
 
     private bool isChecked;
-    
+
     private List<Forløb> selectedForløb = new();
     private List<ElevOversigtDTO> alleElever = new();
     private List<Hotel> alleHoteller = new();
     private HashSet<int> selectedStudentIds = new();
+    private BrugerLoginDTO _currentUser;
+    private List<Forløb> alleForløb = new();
 
     private DateOnly? selectedSkolestartBefore = null;
     private DateOnly? selectedSkolestartAfter = null;
@@ -335,6 +297,10 @@
     private DateOnly? selectedSkoleendAfter = null;
 
     private bool isLoading = false;
+    
+    [Parameter] public int studentId { get; set; }
+    private User elev;
+    private Plan? elevPlan;
 
 
 
@@ -370,6 +336,25 @@
             alleHoteller = await IHotelService.GetHotels();
 
             alleTyper = await IGoalService.GetAllGoalTypes();
+
+            _currentUser = await AuthService.GetBruger();
+
+            var _allUsers = await IBrugerService.GetAllActiveUsers();
+
+            var matchingUser = _allUsers.FirstOrDefault(u => u.Id == _currentUser.Id);
+
+            if ((matchingUser != null) && (_currentUser.Rolle != "HR"))
+            {
+                _currentUserHotelId = matchingUser.HotelId;
+                selectedHotelId = matchingUser.HotelId;
+            }
+            
+            
+            elev = await IBrugerService.GetBrugerById(studentId);
+            alleForløb = elev.ElevPlan.Forløbs;
+
+            selectedForløbId = elevPlan?.Forløbs?.FirstOrDefault()?.Id;
+
         }
         catch (Exception ex)
         {
@@ -382,6 +367,11 @@
         }
     }
 
+    private string GetCurrentUserHotelName()
+    {
+        var hotel = alleHoteller.FirstOrDefault(h => h.Id == _currentUserHotelId);
+        return hotel?.HotelNavn ?? "Ukendt Hotel";
+    }
 
     private async Task NavigateToElevPlan(int studentId)
     {
@@ -469,6 +459,7 @@
         var goal = alleTyper.FirstOrDefault(t => t.GoalId == goalId);
         return goal?.GoalName ?? "Ukendt";
     }
+    
 
     private void SelectType(int? goalId)
     {
@@ -490,12 +481,28 @@
 
     // Herunder kode til Modaldialog
 
-    private ModalTilføjDelmål? modalRef;
-
+    private ModalDialog? modalRef;
+    /*
     private void OpenModal()
     {
         modalRef?.Open();
     }
+    */
+    private async Task OpenModal()
+    {
+        var elevId = selectedStudentIds.FirstOrDefault();
+        if (elevId == 0) return;
+        
+        elev = await IBrugerService.GetBrugerById(elevId);
+        elevPlan = elev.ElevPlan;
+        
+        selectedForløbId = elevPlan?.Forløbs?.FirstOrDefault()?.Id;
+
+        modalRef.Open();
+        StateHasChanged();
+    }
+
+
     // Lille sag der checker hvilke elever der er tjekket af
     private void LogSelectedStudents()
     {
@@ -510,4 +517,14 @@
             Console.WriteLine(elev);
         }
     }
+    
+    private async Task SendExcelFile(HashSet<int> hashSet)
+    {
+       await IBrugerService.SendEmail(hashSet);
+    }
+
+    
+    
+
+
 }

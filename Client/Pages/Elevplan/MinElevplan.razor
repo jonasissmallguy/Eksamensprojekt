@@ -21,7 +21,7 @@
                 <p class="telefon">Telefon: @elev.Mobile </p>
                 <p class="mail">Mail: @elev.Email</p>
                 <p class="restaurant">Restaurant: @elev.HotelNavn</p>
-                <p class="total-goals">Udførte mål: @elevPlan.CompletedGoals / @elevPlan.TotalGoals</p>
+                <p class="total-goals">Udførte mål: xxxx</p>
             </div>
         </div>
     }
@@ -41,7 +41,7 @@
         }
         else if (elev != null && _currentUser.Rolle == "Elev")
         {
-            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="false" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart"/>
         }
         else
         {
@@ -63,8 +63,8 @@
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
         
-        elevPlan.TotalGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count);
-        elevPlan.CompletedGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count(g => g.Status == "Completed"));
+        //elevPlan.TotalGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count);
+        //elevPlan.CompletedGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count(g => g.Status == "Completed"));
 
     }
 

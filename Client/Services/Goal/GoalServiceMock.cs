@@ -41,46 +41,47 @@ namespace Client
             return goalTypes;
         }
 
-        public async Task<List<Goal>> GetAwaitingApproval()
+        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
         {
-            return _goals.Where(g => g.Status == "AwaitingApproval").ToList();
+            return new List<StartedGoalsDTO>();
         }
 
-        public async Task<List<Goal>> GetMissingCourses(User bruger)
+        public async Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId)
         {
-            if (bruger == null || bruger.ElevPlan == null || bruger.ElevPlan.Forløbs == null)
-                return new List<Goal>();
+           return new List<KursusManglendeDTO>();
+        }
 
-            var missingGoals = new List<Goal>();
+        public Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId)
+        {
+            throw new NotImplementedException();
+        }
 
-            foreach (var forløb in bruger.ElevPlan.Forløbs)
-            {
-                if (forløb.Goals != null)
-                {
-                    missingGoals.AddRange(
-                        forløb.Goals.Where(g => g.Status == "MissingCourses")
-                    );
-                }
-            }
-
-            return missingGoals;
+        public Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
+        {
+            throw new NotImplementedException();
         }
 
 
-        public async Task<List<Goal>> GetOutOfHouse()
+        public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId)
         {
-            var outOfHouse = _goals.Where(g => g.Status == "OutOfHouse").ToList();
-            return outOfHouse;
+            throw new NotImplementedException();
         }
 
-        public async Task ConfirmGoalFromHomePage(Goal goal)
+        public async Task<bool> ConfirmGoalFromHomePage(StartedGoalsDTO goalDto)
         {
-            var existingGoal = _goals.FirstOrDefault(g => g.Id == goal.Id);
+            var existingGoal = _goals.FirstOrDefault(g => g.Id == goalDto.GoalId);
             if (existingGoal != null)
             {
                 existingGoal.Status = "Completed";
                 existingGoal.CompletedAt = DateTime.Now;
             }
+
+            return true;
+        }
+
+        public Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<List<Goal>> GetAllGoalsForBruger(User bruger)

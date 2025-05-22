@@ -9,8 +9,8 @@ namespace Core
         public int Id { get; set; }
         public string Title { get; set; }
         public string Location { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public string Status { get; set; } = "Active"; //Active, InProgress...
         public string Description { get; set; }
         public List<User> Students { get; set; } = new List<User>();

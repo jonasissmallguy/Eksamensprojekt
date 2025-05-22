@@ -97,34 +97,51 @@ namespace Client
             return goalTypes;
         }
 
-        public async Task<List<Goal>> GetAwaitingApproval()
+        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
         {
-            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/awaiting-approval");
+            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/awaiting-approval/{hotelId}");
         }
 
-        public async Task<List<Goal>> GetMissingCourses(User bruger)
+        public async Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId)
         {
-            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/missing-courses/{bruger.Id}");
+            return await _client.GetFromJsonAsync<List<KursusManglendeDTO>>($"{serverUrl}/goals/missing-courses/{hotelId}");
         }
 
-        public async Task<List<Goal>> GetOutOfHouse()
+        public async Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId)
         {
-            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/out-of-house");
+            return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"{serverUrl}/goals/need-action-goals/{elevId}");
         }
 
-        public async Task ConfirmGoalFromHomePage(Goal goal)
+        public async Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
         {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm", goal);
+            return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"{serverUrl}/goals/future-schools/{elevId}");
+        }
+
+        public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId)
+        {
+            return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"{serverUrl}/goals/outofhouse/{hotelId}");
+        }
+
+        public async Task<bool> ConfirmGoalFromHomePage(StartedGoalsDTO goalDto)
+        {
+            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirm", goalDto);
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Fejl ved opdatering af mål: {error}");
             }
+
+            return true;
         }
 
-        public Task<List<Goal>> GetAllGoalsForBruger(User bruger)
+        public async Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId)
         {
-            throw new NotImplementedException();
+            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/started-goals/{hotelId}");
+        }
+
+        public async Task<List<Goal>> GetAllGoalsForBruger(User bruger)
+        {
+            return await _client.GetFromJsonAsync<List<Goal>>($"{serverUrl}/goals/all-for-user/{bruger.Id}");
         }
 
         public async Task<List<Goal>> GetGoalsByTypeForUser(User bruger, string type)
@@ -139,4 +156,4 @@ namespace Client
 
     }
 }
-    
+        

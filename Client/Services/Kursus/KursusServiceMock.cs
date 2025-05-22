@@ -15,8 +15,8 @@ public class KursusServiceMock : IKursus
             Id = 1,
             Title = "Bæredygtighed",
             Location = "Comwell Hovedkontor",
-            StartDate = new DateTime(2025, 7, 24, 10, 0, 0),
-            EndDate = new  DateTime(2025, 7, 24, 15, 0, 0),
+            StartDate = new DateOnly(2025, 7, 24),
+            EndDate = new  DateOnly(2025, 7, 24),
             Students = new List<User>
             {
             }
@@ -113,7 +113,12 @@ public class KursusServiceMock : IKursus
     {
         throw new NotImplementedException();
     }
-    
+
+    public Task<List<KursusKommendeDTO>> GetFutureCourses()
+    {
+        throw new NotImplementedException();
+    }
+
     public Task AddStudentToCourse(User user, int kursusId)
     {
         throw new NotImplementedException();

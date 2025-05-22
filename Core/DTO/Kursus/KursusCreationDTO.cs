@@ -12,10 +12,10 @@ public class KursusCreationDTO
     public string Location { get; set; }
     
     [Required (ErrorMessage = "Venligst vælg en startdato")]
-    public DateTime? StartDate { get; set; }
+    public DateOnly? StartDate { get; set; }
     
     [Required (ErrorMessage = "Venligst vælg en slutdato")]
-    public DateTime? EndDate { get; set; }
+    public DateOnly? EndDate { get; set; }
     
     [Required (ErrorMessage = "Venligst udfyld en beskrivelse")]
     public string Description { get; set; }

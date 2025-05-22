@@ -1,161 +1,247 @@
 ﻿@using Core
+@using Client.Components
 
 @inject IAuth AuthService;
-@inject IBruger IBrugerService;
 @inject NavigationManager navMan;
 @inject IGoal IGoalService;
+@inject IKursus IKursusService;
 
 @page "/"
 
-<h3 class="page-title">Oversigt</h3>
+@if (_loading)
+{
+    
+}
+else
+{
+    <h3 class="page-title">Oversigt</h3>
+    <div class="dashboard-grid">
+        @if (_currentUser?.Rolle == "Elev")
+        {
+            <div class="dashboard-card">
+                <h5 class="card-title">Velkomst Boks</h5>
+                <p>Velkommen til din side @_currentUser?.FirstName</p>
+            </div>
 
-<div class="dashboard-grid">
-    @if (_currentUser?.Rolle == "Elev")
-    {
-        <div class="dashboard-card">
-            <h5 class="card-title">Velkomst Boks</h5>
-            <p>Velkommen til din side @_currentUser?.FirstName</p>
-        </div>
-        <div class="dashboard-card">
-            <h5 class="card-title">Kommende Skoleophold</h5>
-            <p>Du har følgende skoleophold</p>
-        </div>
-        <div class="dashboard-card">
-            <h5 class="card-title">Aktive Delmål</h5>
-            <p>Igangværende delmål</p>
-        </div>
-        <div class="dashboard-card">
-            <h5 class="card-title">Kommende Kurser</h5>
-            <p>Følgende kurser kommer i den næste periode</p>
-        </div>
-    }
-    else if (_currentUser?.Rolle == "Køkkenchef")
-    {
-        <div class="dashboard-card">
-            <h5 class="card-title">Kommende Kurser (År @(_bruger?.ForløbId))</h5>
-            <p>Oversigt over aktive kurser for det aktuelle år</p>
-            @if (_upcomingCourses != null && _upcomingCourses.Any())
-            {
-                <ul class="list-reset">
-                    @foreach (var course in _upcomingCourses)
-                    {
-                        <li>Kursus: @course.Title – Deadline: @course.DeadLineAt.ToShortDateString()</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>Ingen kurser fundet for dette år</p>
-            }
-        </div>
+            <div class="dashboard-card">
+                <h5 class="card-title">Kommende Skoleophold</h5>
 
+            </div>
 
-        <div class="dashboard-card">
-            <h5 class="card-title">Kommende Skoleophold</h5>
-            <p>Kommende skoleophold for dine elever</p>
-            @if (_outOfHouse != null && _outOfHouse.Count > 0)
-            {
-                <ul class="list-reset">
-                    @foreach (var g in _outOfHouse)
-                    {
-                        <li>
-                            Skoleophold: @g.Title – Start: @g.SkoleStart?.ToShortDateString() - Slut: @g.SkoleEnd?.ToShortDateString()
-                        </li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>Ingen planlagte skoleophold</p>
-            }
-        </div>
+            <div class="dashboard-card">
+                <h5 class="card-title">Aktive Delmål</h5>
+                <p>Her kan du se dine delmål der er begyndt men ikke afsluttet</p>
+                @if (_needAction != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _needAction)
+                        {
+                            <li style="cursor: pointer">
+                                Delmål: @g.GoalTitle - Status: @g.Status
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
 
-        <div class="dashboard-card">
-            <h5 class="card-title">Manglende kurser</h5>
-            <p>Dine elevers manglende kurser</p>
-            @if (_missingCourses != null)
-            {
-                <ul class="list-reset">
-                    @foreach (var g in _missingCourses)
-                    {
-                        <li>Kursus: @g.Title Elev: @_bruger.FirstName @_bruger.LastName</li>
-                    }
-                </ul>
-            }
-        </div>
-        <div class="dashboard-card">
-            <h5 class="card-title">Elevers mål der afventer dine godkendelser</h5>
-            <p>Du har følgende notifikationer</p>
-            @if (_awaitingApproval != null)
-            {
-                <ul class="list-reset">
-                    @foreach (var g in _awaitingApproval)
-                    {
-                        <li>
-                            Delmål: @g.Title
-                            <button class="btn-approve" @onclick="() => ApproveGoal(g)">Godkend mål</button>
-                        </li>
-                    }
-                </ul>
-            }
-        </div>
-    }
-</div>
+            <div class="dashboard-card">
+                <h5 class="card-title">Kommende Kurser</h5>
 
+            </div>
+        }
+        
+        @if (_currentUser?.Rolle == "Kok")
+        {
+            <div class="dashboard-card">
+                <h5 class="card-title">Velkomst Boks</h5>
+                <p>Velkommen til din side @_currentUser?.FirstName</p>
+                <p>Tak, fordi du engagerer dig i dine elev-kolleager</p>
+            </div>
+            
+            <div class="dashboard-card">
+                <h5 class="card-title">Aktive Delmål</h5>
+                <p>Her kan du se delmål, som du kan hjælpe en kollega med at få færdiggjort</p>
+                @if (_inProgress != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _inProgress)
+                        {
+                            <li style="cursor: pointer">
+                                Delmål: @g.FullName - @g.GoalTitle
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+        
+        else if (_currentUser?.Rolle == "Køkkenchef")
+        {
+            <div class="dashboard-card">
+                <h5 class="card-title">Kommende Kurser</h5>
+                <p>Oversigt over kurser det næste kvartal</p>
+                @if (_currentCourses != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _currentCourses)
+                        {
+                            <li style="cursor: pointer">
+                                Kursusnavn: @g.Title - Lokation: @g.Location - Start: @g.StartDate
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+
+            <div class="dashboard-card">
+                <h5 class="card-title">Elever ude af huset</h5>
+                <p>Her kan du se, hvornår dine elever er på skole eller på kursus</p>
+                @if (_outOfHouse != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _outOfHouse)
+                        {
+                            <li style="cursor: pointer">
+                                Navn: @g.FullName - Startdato: @g.StartDate - Slutdato: @g.EndDate
+                            </li>
+                        }
+                    </ul>
+                }
+
+            </div>
+
+            <div class="dashboard-card">
+                <h5 class="card-title">Manglende kurser</h5>
+                @if (_missingCourses != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _missingCourses)
+                        {
+                            <li>
+                                Navn: @g.FullName - Kursus: @g.GoalTitle
+                                <button @onclick="() => OpenModal(g, g.GoalTitle)" class="btn-approve">Tilmeld kursus</button>
+                            </li>
+                        }
+                    </ul>
+                }
+
+            </div>
+            <div class="dashboard-card">
+                <h5 class="card-title">Afventende godkendelser</h5>
+                @if (_missingApproval != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _missingApproval)
+                        {
+                            <li @key="g.GoalId">
+                                Navn: @g.FullName - Delmål: @g.GoalTitle
+                                <button @onclick="() => ConfirmGoal(g)" class="btn-approve">Godkend mål</button>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>Du har klaret alle dine opgaver... </p>
+                }
+            </div>
+        }
+    </div>
+}
+
+<ModalDialog @ref=_kursusModal Title="Ledige kurser">
+    <div class="kursus-list">
+        @foreach (var kursus in _matchingCourses)
+        {
+            <p>@kursus.Title @kursus.Location @kursus.StartDate <button @onclick="() => TilmeldKursus(kursus)">Tilmeld kursus</button></p>
+        }
+    </div>
+</ModalDialog>
 
 
 @code {
+
+    private bool _loading = true;
+
+    
     private BrugerLoginDTO _currentUser;
-    private User _bruger;
-    private List<Goal> _awaitingApproval;
-    private List<Goal> _missingCourses;
-    private List<Goal> _outOfHouse;
-    private List<Goal> _upcomingCourses;
+
+    //Elev instant variablER
+    private List<GoalNeedActionDTO> _needAction; //Indeholder liste med delmål, hvor eleven mangler godkendelse
+    private List<FutureSchoolDTO> _futureSchool; //Indeholder liste med kommende skoleophold
+
+    //Kok instans variabelER
+    private List<StartedGoalsDTO> _inProgress; //Indeholder liste med delmål der er startet men ikke godkendt
+
+    //Køkkenchef instans variabler
+    private List<StartedGoalsDTO> _missingApproval; //Indeholder liste med delmål der mangler godkendelse
+    private List<KursusKommendeDTO> _currentCourses; //Indeholder liste med kommende kurser
+    private List<KursusManglendeDTO> _missingCourses; //Indeholder liste med manglende kurser
+    private List<OutOfHouseDTO> _outOfHouse; //Indeholder liste med elever der er ude af huset hvilke dage
+
+    //Modal dialog
+    private ModalDialog _kursusModal { get; set; }
+    private string _selectedCourse;
+    private List<KursusKommendeDTO> _matchingCourses = new();
+
 
     protected override async Task OnInitializedAsync()
     {
-            _currentUser = await AuthService.GetBruger();
-            if (_currentUser == null)
-            {
-                navMan.NavigateTo("login/");
-                return;
-            }
+        _currentUser = await AuthService.GetBruger();
 
-            _bruger = await IBrugerService.GetUserById(_currentUser.Id);
-
-            // Redirect HR og kok til Dashboard
-            if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Kok")
-            {
-                navMan.NavigateTo("/Dashboard");
-                return;
-            }
-
-            // Hvis det er køkkenchef, indlæser vi de relevante data
-            if (_currentUser.Rolle == "Køkkenchef")
-            {
-                _awaitingApproval = await IGoalService.GetAwaitingApproval();
-                _missingCourses = await IGoalService.GetMissingCourses(_bruger);
-                _outOfHouse = await IGoalService.GetOutOfHouse();
-                _upcomingCourses = await IGoalService.GetGoalsByTypeForUser(_bruger, "Kursus");
-                
-                var allGoals = await IGoalService.GetAllGoalsForBruger(_bruger); 
-                _upcomingCourses = allGoals
-                    .Where(g => g.Type == "Kursus" && g.Status == "Active")
-                    .Where(g => g.Semester == "1" || g.Semester == "2" || g.Semester == "3") 
-                    .Where(g => g.ForløbId == _bruger.ForløbId)
-                    .OrderBy(g => g.Semester)
-                    .ThenBy(g => g.DeadLineAt)
-                    .ToList();
-            }
-        }
-       
-        private async Task ApproveGoal(Goal goal)
+        if (_currentUser == null)
         {
-            await IGoalService.ConfirmGoalFromHomePage(goal);
+            navMan.NavigateTo("login/");
+            return;
+            
+        }
 
-            if (goal.Id != null)
-            {
-                _awaitingApproval = _awaitingApproval.Where(g => g.Id != goal.Id).ToList();
-            }
+        if (_currentUser.Rolle == "Elev")
+        {
+            //Henter delmål der mangler action fra kok eller leder
+            _needAction = await IGoalService.GetNeedActionGoals(_currentUser.Id);
+        }
+
+        if (_currentUser.Rolle == "Kok")
+        {
+            _inProgress = await IGoalService.GetStartedGoals(_currentUser.HotelId);
+        }
+
+        if (_currentUser.Rolle == "Køkkenchef")
+        {
+            //Henter manglende godkendelser for køkkenchef
+            _missingApproval = await IGoalService.GetAwaitingApproval(_currentUser.HotelId);
+            //Henter aktuelle kurser fra HR
+            _currentCourses = await IKursusService.GetFutureCourses();
+            //Henter manglende kurser
+            _missingCourses = await IGoalService.GetMissingCourses(_currentUser.HotelId);
+            //Elever ude af huset
+            _outOfHouse = await IGoalService.GetOutOfHouse(_currentUser.HotelId);
+        }
+        _loading = false;
+    }
+
+    private async Task ConfirmGoal(StartedGoalsDTO goalDto)
+    {
+        var success = await IGoalService.ConfirmGoalFromHomePage(goalDto);
+
+        if (success && goalDto != null)
+        {
+            _missingApproval = _missingApproval.Where(g => g.GoalId != goalDto.GoalId).ToList();
+            StateHasChanged();
         }
     }
+
+    private async Task TilmeldKursus(KursusKommendeDTO kursus)
+    {
+        
+    }
+
+    private async Task OpenModal(KursusManglendeDTO kursusManglendeDto, string kursusTitel)
+    {
+        _selectedCourse = kursusTitel;
+        _matchingCourses = _currentCourses.Where(k => k.Title == kursusTitel).ToList();
+        _kursusModal.Open();
+    }
+}
+    

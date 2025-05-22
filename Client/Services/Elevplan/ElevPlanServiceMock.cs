@@ -47,12 +47,12 @@ namespace Client
                     Id = GenerateId(),
                     Title = forløbTemplate.Title,
                     Semester = forløbTemplate.Semester,
-                    StartDate = DateOnly.MaxValue, 
+                    //StartDate = DateOnly.MaxValue, 
                     Goals = new List<Goal>() 
                 };
         
                 //Opretter goals
-                await _goal.CreateGoalsForTemplate(nyPlan.Id, forløb, forløbTemplate.Goals);
+                //await _goal.CreateGoalsForTemplate(nyPlan.Id, forløb, forløbTemplate.Goals);
                 nyPlan.Forløbs.Add(forløb);
             }
             

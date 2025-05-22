@@ -77,7 +77,7 @@ namespace Server
                         Type = goalTemplate.Type,
                         Title = goalTemplate.Title,
                         Description = goalTemplate.Description,
-                        Semester = forløb.Semester,
+                        //Semester = forløb.Semester,
                         Status = "Active",
                         Comments = new List<Comment>()
                     };

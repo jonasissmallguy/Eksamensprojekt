@@ -1,4 +1,4 @@
-﻿@using Client.Components.Kursus
+﻿@using Client.Components
 @using Core;
 @using Core.DTO.Kursus
 
@@ -35,7 +35,7 @@
     </table>
 }
 
-<ModalKursus @ref="_modalKursus">
+<ModalDialog @ref="_modalKursus">
     <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
         <DataAnnotationsValidator />
         <ValidationSummary />
@@ -80,18 +80,18 @@
             <button type="submit" class="submit-btn">Gem kursus</button>
         </div>
     </EditForm>
-</ModalKursus>
+</ModalDialog>
 
 @code {
     private List<Kursus> alleKurser;
-    private ModalKursus _modalKursus { get; set; }
+    private ModalDialog _modalKursus { get; set; }
     private KursusCreationDTO newCourse = new();
     private List<Kursus> Courses;
     private List<KursusTemplate> CoursesTemplates;
 
     private string? selectedCourse;
-    private DateTime? startDate;
-    private DateTime? endDate;
+    private DateOnly? startDate;
+    private DateOnly? endDate;
     private string? location;
 
     protected override async Task OnInitializedAsync()

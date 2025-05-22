@@ -48,6 +48,12 @@ namespace Server
             return await _userCollection.Find(filter).FirstOrDefaultAsync();
         }
 
+        public async Task<List<User>> GetAllActiveUsers()
+        {
+            var filter = Builders<User>.Filter.Eq("Status", "Active");
+            return await _userCollection.Find(filter).ToListAsync();
+        }
+
         public async Task<List<User>> GetAllUsersWithOutMyself(int userId)
         {
             var filter = Builders<User>.Filter.Ne("_id", userId);
@@ -130,10 +136,20 @@ namespace Server
             return await _userCollection.UpdateOneAsync(filter, update);
         }
 
-        public async Task<bool> UpdateUser(User user)
+        public Task<bool> UpdateUser(User user)
         {
+            throw new NotImplementedException();
+        }
+        
+
+        public async Task<UpdateResult> UpdateHotel(int userId, int hotelId, string updatedHotelNavn)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", userId);
+            var update = Builders<User>.Update
+                .Set("HotelId", hotelId)
+                .Set("HotelNavn", updatedHotelNavn);
             
-            return true;
+            return await  _userCollection.UpdateOneAsync(filter, update);
         }
 
         public async Task<List<User>> GetAllStudents()

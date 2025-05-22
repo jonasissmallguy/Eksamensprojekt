@@ -18,6 +18,8 @@ namespace Client
         Task<List<KursusTemplate>> GetAllTemplates();
         
         Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId);
+        
+        Task<List<KursusKommendeDTO>> GetFutureCourses();
 
     }
 }

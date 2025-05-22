@@ -37,27 +37,21 @@ namespace Client
                 Email = loggedInBruger.Email,
                 Password = loggedInBruger.Password,
                 Rolle = loggedInBruger.Rolle,
-                FirstName = loggedInBruger.FirstName
+                FirstName = loggedInBruger.FirstName,
+                HotelId = loggedInBruger.HotelId,
             };
         }
         
         //Hjælpefunktion til at validere om 
         public async Task<BrugerLoginDTO?> Validate(string username, string password)
         {
-            var _allUsers = await _bruger.GetAllUsers();
+            var _allUsers = await _bruger.GetAllActiveUsers();
             
-            foreach (User bruger in _allUsers)
+            foreach (BrugerLoginDTO bruger in _allUsers)
             {
                 if (bruger.Email.Equals(username) && bruger.Password.Equals(password))
                 {
-                    return new BrugerLoginDTO
-                    {
-                        Id = bruger.Id,
-                        Email = username,
-                        Password = password,
-                        Rolle = bruger.Rolle,
-                        FirstName  = bruger.FirstName
-                    };
+                    return bruger;
                 }
             }
             return null;
@@ -135,8 +129,6 @@ namespace Client
                 var email = await GetLocalStorageResetEmail();
                 var result = await _client.PutAsJsonAsync($"{serverUrl}/users/updatepassword/{email}", updatedPassword);
                 
-                //var user = await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{email}");
-
                 if (result.IsSuccessStatusCode)
                 {
                     return true;

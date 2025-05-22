@@ -11,9 +11,10 @@ namespace Server
         
         Task AddStudentToCourse(User user, int kursusId);
         
-        
         Task<List<KursusTemplate>> GetAllTemplates();
-        
         Task SaveCourse(Kursus kursus);
+        Task<List<Kursus>> GetFutureCourses();
+        
+        
     }
 }

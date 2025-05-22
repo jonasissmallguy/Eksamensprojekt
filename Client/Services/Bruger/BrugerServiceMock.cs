@@ -181,9 +181,14 @@ namespace Client
             return await Task.FromResult(elevOversigt);
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<BrugerLoginDTO>> GetAllUsers()
         {
-            return  _allUsers;
+            return  new List<BrugerLoginDTO>();
+        }
+
+        public Task<List<BrugerLoginDTO>> GetAllActiveUsers()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId)
@@ -209,9 +214,11 @@ namespace Client
 
         }
 
-        public async Task DeleteUser(int userId)
+        public async Task<bool> DeleteUser(int userId, string rolle)
         {
             _allUsers.RemoveAll(x => x.Id == userId);
+
+            return true;
         }
 
         public async Task ChangeRolle(string newRolle, int userId)
@@ -225,7 +232,7 @@ namespace Client
 
         }
 
-        public async Task DeActivateUser(int userId)
+        public async Task DeActivateUser(int userId, string rolle)
         {
             var user = _allUsers.FirstOrDefault(x => x.Id == userId);
 
@@ -247,16 +254,23 @@ namespace Client
             
         }
 
-        public async Task UpdateHotel(Hotel hotel, int userId)
+        public Task<bool> UpdateHotel(int hotelId, string hotelName, int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateHotel(int userId, int hotelId, string updatedHotelNavn)
         {
             var user = _allUsers.FirstOrDefault(x => x.Id == userId);
 
             if (user != null)
             {
-                user.HotelId = hotel.Id;
+                user.HotelId = hotelId;
             }
 
-   
+            return true;
+
+
         }
 
         public async Task SaveStudentPlan(int studentId, Plan plan)
@@ -277,6 +291,11 @@ namespace Client
         }
 
         public Task<List<KursusDeltagerListeDTO>> GetAllStudents()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SendEmail(HashSet<int> studentIds)
         {
             throw new NotImplementedException();
         }

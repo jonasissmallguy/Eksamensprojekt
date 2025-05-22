@@ -1,8 +1,11 @@
-﻿using Core;
+﻿using System.Xml.Linq;
+using Core;
 using Microsoft.AspNetCore.Mvc;
 using DotNetEnv;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Server
 {
@@ -27,12 +30,26 @@ namespace Server
         public async Task<IActionResult> GetAllUsers()
         {
             var allUsers =  await _userRepository.GetAllUsers();
+            
+            List<BrugerLoginDTO> brugerLogins = new();
 
+            foreach (User user in allUsers)
+            {
+                brugerLogins.Add(new BrugerLoginDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Password = user.Password,
+                    Rolle = user.Rolle,
+                    FirstName = user.FirstName,
+                    HotelId = user.HotelId
+                });
+            }
             if (allUsers == null)
             {
                 return NotFound();
             }
-            return Ok(allUsers);
+            return Ok(brugerLogins);
         }
 
         /// <summary>
@@ -58,7 +75,7 @@ namespace Server
                 brugers.Add(new BrugerAdministrationDTO
                 {
                     Id = x.Id,
-                    FirstName = x.FirstName,
+                    FirstName = x.FirstName + " " + x.LastName,
                     Hotel = x.HotelNavn,
                     Rolle = x.Rolle,
                     Status = x.Status
@@ -248,13 +265,7 @@ namespace Server
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
                 HotelId = user.HotelId,
-                HotelNavn = hotel?.HotelNavn,
-                //mangler hotel
-                Year = user.Year,
-                StartDate = user.StartDate,
-                EndDate = user.EndDate,
-                Skole = user.Skole,
-                Uddannelse = user.Uddannelse
+                HotelNavn = hotel?.HotelNavn
             };
 
             if (user.Rolle == "Elev")
@@ -287,12 +298,21 @@ namespace Server
             return Ok(newUser);
         }
 
+        /// <summary>
+        /// Sletter en bruger
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="rolle"></param>
+        /// <returns></returns>
         [HttpDelete]
-        [Route("{id:int}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        [Route("{userId}/{rolle}")]
+        public async Task<IActionResult> DeleteUser(int userId, string rolle)
         {
-            await _userRepository.DeleteUser(id);
-
+            if (rolle == "Køkkenchef")
+            {
+                await _hotelRepository.RemoveManagerFromHotel(userId);
+            }
+            await _userRepository.DeleteUser(userId);
             return Ok();
         }
 
@@ -302,11 +322,15 @@ namespace Server
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPut]
-        [Route("deactivate/{userId}")]
-        public async Task<IActionResult> DeactivateUser(int userId)
+        [Route("deactivate/{userId}/{rolle}")]
+        public async Task<IActionResult> DeactivateUser(int userId, string rolle)
         {
-            await _userRepository.DeactivateUser(userId);
+            if (rolle == "Køkkenchef")
+            {
+                await _hotelRepository.RemoveManagerFromHotel(userId);
+            }
             
+            await _userRepository.DeactivateUser(userId);
             return Ok();
         }
         
@@ -401,6 +425,170 @@ namespace Server
             
             return Ok(students);
         }
+        
+        [HttpGet]
+        [Route("oversigt")]
+        public async Task<IActionResult> GetElevOversigt()
+        {
+            var users = await _userRepository.GetAllStudents();
+            var elevOversigt = new List<ElevOversigtDTO>();
+
+            foreach (var elev in users.Where(x => x.Rolle == "Elev"))
+            {
+                elevOversigt.Add(new ElevOversigtDTO
+                {
+                    Id = elev.Id,
+                    Name = elev.FirstName + " " + elev.LastName,
+                    HotelId = elev.HotelId,
+                    HotelNavn = elev.HotelNavn,
+                    Roller = elev.Rolle,
+                    Year = elev.Year,
+                    Skole = elev.Skole,
+                    Uddannelse = elev.Uddannelse,
+                    StartDate = elev.StartDate,
+                    EndDate = elev.EndDate,
+                    TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0,
+                    CompletedGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
+                });
+            }
+
+            return Ok(elevOversigt);
+        }
+
+        
+
+        //Generer excel fil
+        [NonAction]
+        public async Task<bool> GenerateExcelFile(List<User> users)
+        {
+            byte[] fileBytes;
+            
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Dashboard");
+                
+                //Overskrifter
+                worksheet.Cell("A1").Value = "Navn";
+                worksheet.Cell("B1").Value = "Hotel";
+                worksheet.Cell("C1").Value = "Status"; //Afvent vi får lavet hjælpefunktion, den Rasmus bruger til elevoversigt
+                worksheet.Cell("D1").Value = "År";
+                worksheet.Cell("E1").Value = "Skole";
+                worksheet.Cell("F1").Value = "Uddannelse";
+                worksheet.Cell("G1").Value = "Start";
+                worksheet.Cell("H1").Value = "Slut";
+
+                //Data 
+                int row = 2;
+                foreach (var user in users)
+                {
+                    //Alle mål og gennemførte
+                    var TotalGoals = user.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0;
+                    var CompletedGoals =
+                        user.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0;
+                    
+                    worksheet.Cell(row, 1 ).Value = user.FirstName + " " + user.LastName;
+                    worksheet.Cell(row, 2 ).Value = user.HotelNavn;
+                    worksheet.Cell(row, 3 ).Value = $"{CompletedGoals} / {TotalGoals}";
+                    worksheet.Cell(row, 4 ).Value = user.Year;
+                    worksheet.Cell(row, 5 ).Value = user.Skole;
+                    worksheet.Cell(row, 6 ).Value = user.Uddannelse;
+                    worksheet.Cell(row, 7 ).Value = user.StartDate.ToString();
+                    worksheet.Cell(row, 8 ).Value = user.EndDate.ToString();
+                    row++;
+                }
+                
+                //Juster kolonner, så de fitter
+                worksheet.Columns().AdjustToContents();
+
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    fileBytes = stream.ToArray();
+                }
+                
+            }
+            
+            string base64 = Convert.ToBase64String(fileBytes);
+            
+            //Send mail - skal laves pænere, evt. lav en fælles hjælpe funktion Jonas
+            Env.Load();
+            
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+            var client = new SendGridClient(apiKey);
+            
+            //fra og til skal ændres dynamisk... brugt til test.
+            var from = new EmailAddress("jonasdupontheidemann@gmail.com", "Jonas Heidemann");
+            var subject = "Alle produkter";
+            var to = new EmailAddress("tjoernevej53@gmail.com", "Example User");
+            var plainTextContent = "and easy to do anywhere, even with C#";
+            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            
+            msg.AddAttachment("data.xlsx", base64, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            
+            var sendEmail = await client.SendEmailAsync(msg);
+
+            return true;
+        }
+        
+        [HttpPost]
+        [Route("sendemail")]
+        public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds)
+        {
+            //Skal laves specifik til hvem der ser??
+            var students = await _userRepository.GetAllStudents();
+            
+            var filter = students.Where(x => studentIds.Contains(x.Id)).ToList();
+
+            var emailStatus = await GenerateExcelFile(filter);
+            
+            return Ok(emailStatus);
+
+        }
+
+        [HttpPut]
+        [Route("updatehotel/{userId}/{hotelId}")]
+        public async Task<IActionResult> UpdateUser(int userId, int hotelId, [FromBody] string hotelNavn)
+        {
+            var result = await _userRepository.UpdateHotel(userId, hotelId, hotelNavn);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("active")]
+        public async Task<IActionResult> GetAllActiveUsers()
+        {
+            var activeUsers = await _userRepository.GetAllActiveUsers();
+
+            if (activeUsers == null)
+            {
+                return NotFound();
+            }
+
+            List<BrugerLoginDTO> users = new();
+
+            foreach (var user in activeUsers)
+            {
+                users.Add(new BrugerLoginDTO
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    Email = user.Email,
+                    Password = user.Password,
+                    HotelId = user.HotelId,
+                    Rolle = user.Rolle
+                });
+                
+            }
+            return Ok(users);
+        }
+        
         
     }
 
