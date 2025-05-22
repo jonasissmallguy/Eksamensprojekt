@@ -13,10 +13,15 @@
 @if (_kursus != null)
 {
 
-    <h3>Kursus information</h3>
-    <h5>@_kursus.Title</h5>
-    <h5>Start dato:@_kursus.StartDate</h5>
-    <h5>Start dato:@_kursus.EndDate</h5>
+    <h2>Kursus information</h2>
+    
+    <br/>
+    
+    <h4>@_kursus.Title</h4>
+    <h6>Start dato: @_kursus.StartDate</h6>
+    <h6>Slut dato: @_kursus.EndDate</h6>
+    
+    <br/>
     
     <h6>Deltagerliste</h6>
     <div class="full-course-information">
@@ -24,30 +29,32 @@
             <thead>
             <tr>
                 <th>Navn</th>
-                <th>Resteruant</th>
-                <th>Slet fra kursus</th>
+                <th>Restaurant</th>
+                <th>Fjern fra kursus</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
+            
             @if (_kursus.Students != null)
             {
                 @foreach (var x in _kursus.Students)
                 {
-                    <td>@x.FirstName</td>
-                    <td>@x.HotelNavn</td>
-                    <td>
-                        <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
-                    </td>
+                    <tr>
+                        <td>@x.FirstName</td>
+                        <td>@x.HotelNavn</td>
+                        <td>
+                            <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
+                        </td>
+                    </tr>
                 }
             }
-         
-            </tr>
             </tbody>
         </table>
     </div>
 
     <button @onclick="() => FinishCourse() ">Afslut kursus</button>
+    <br/>
+    <br/>
 }
 else
 {
