@@ -48,6 +48,18 @@ else
                     </DropdownMenu>
                 </Dropdown>
             </div>
+            <!-- Dropdown til regionvalg -->
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(string.IsNullOrEmpty(selectedRegion) ? "Region" : selectedRegion)</DropdownToggleButton>
+                    <DropdownMenu>
+                        <DropdownItem @onclick="() => SelectRegion(String.Empty)">Alle regioner</DropdownItem>
+                        <DropdownItem @onclick="@(() => SelectRegion("Jylland"))">Jylland</DropdownItem>
+                        <DropdownItem @onclick="@(() => SelectRegion("Fyn"))">Fyn</DropdownItem>
+                        <DropdownItem @onclick="@(() => SelectRegion("Sjælland"))">Sjælland</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
         }
         else
         {
@@ -272,6 +284,7 @@ else
     private int? selectedStudentId = null;
     private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
     private string selectedSkole = String.Empty;
+    private string selectedRegion = String.Empty;
     private string selectedUddannelse = String.Empty;
     private int? _currentUserHotelId = null;
     private Goal tilføjDelmål = new Goal();
@@ -313,7 +326,8 @@ else
                 (!selectedSkolestartBefore.HasValue || a.StartDate <= selectedSkolestartBefore) &&
                 (!selectedSkolestartAfter.HasValue || a.StartDate >= selectedSkolestartAfter) &&
                 (!selectedSkoleendBefore.HasValue || a.EndDate <= selectedSkoleendBefore) &&
-                (!selectedSkoleendAfter.HasValue || a.EndDate >= selectedSkoleendAfter)));
+                (!selectedSkoleendAfter.HasValue || a.EndDate >= selectedSkoleendAfter) &&
+                (string.IsNullOrEmpty(selectedRegion) || GetHotelRegion(a.HotelId) == selectedRegion)));
 
             return filtered;
         }
@@ -375,6 +389,12 @@ else
         var hotel = alleHoteller.FirstOrDefault(h => h.Id == hotelId);
         return hotel?.HotelNavn ?? "Ukendt Hotel";
     }
+    
+    private string GetHotelRegion(int? hotelId)
+    {
+        var hotel = alleHoteller.FirstOrDefault(h => h.Id == hotelId.Value);
+        return hotel?.Region ?? "Ukendt region";
+    }
 
     private void SelectHotel(int? hotelId)
     {
@@ -389,6 +409,11 @@ else
     private void SelectUddannelse(string uddannelse)
     {
         selectedUddannelse = uddannelse;
+    }
+
+    private void SelectRegion(string region)
+    {
+        selectedRegion = region;
     }
 
     private void NavigateToAddGoal()
