@@ -14,10 +14,6 @@ namespace Client
             _client = client;
         }
         
-        public async Task<List<HotelNameDTO>> GetAllHotelNames()
-        {
-            return await _client.GetFromJsonAsync<List<HotelNameDTO>>($"{serverUrl}/api/hotel");
-        }
 
         public async Task<List<Hotel>> GetHotels()
         {

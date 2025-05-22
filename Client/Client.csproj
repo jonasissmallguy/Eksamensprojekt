@@ -36,6 +36,8 @@
       <_ContentIncludedByDefault Remove="Components\Modaldialog\AddGoalComponent.razor" />
       <_ContentIncludedByDefault Remove="Components\Administration\ModalHotel.razor" />
       <_ContentIncludedByDefault Remove="Components\Administration\ModalRolle.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Skabelon\RetSkabelon.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Skabelon\TemplateSide.razor" />
     </ItemGroup>
 
 </Project>

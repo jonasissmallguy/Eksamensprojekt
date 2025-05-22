@@ -12,8 +12,6 @@ namespace Client
         private string serverUrl = "http://localhost:5075";
         private HttpClient _client = new();
         
-        private List<User> _allUsers = new();
-
         public BrugerServiceServer(HttpClient client)
         {
             _client = client;
@@ -23,22 +21,6 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<User>($"{serverUrl}/users/{userId}");
         }
-
-        public async Task<bool> OpdaterBruger(int userId, User updateBruger)
-        {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/users/update", updateBruger);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Update failed: {response.StatusCode} - {errorContent}");
-                return false;
-            }
-
-            return true;
-        }
-
-
         
         public async Task<User> OpretBruger(BrugerCreateDTO nyBruger)
         { 
@@ -59,12 +41,7 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"{serverUrl}/users/oversigt");
         }
-
-        public async Task<List<BrugerLoginDTO>> GetAllUsers()
-        {
-            return await _client.GetFromJsonAsync<List<BrugerLoginDTO>>($"{serverUrl}/users");
-        }
-
+        
         public async Task<List<BrugerLoginDTO>> GetAllActiveUsers()
         {
             return await _client.GetFromJsonAsync<List<BrugerLoginDTO>>($"{serverUrl}/users/active");
@@ -74,23 +51,7 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"{serverUrl}/users/withoutmyself/{userId}");
         }
-
-        //public async Task DeleteUser(int userId)
-        public async Task<List<User>> GetAllUsersByStudentId(List<int> studentIds)
-        {
-            var users = new List<User>();
-
-            foreach (var id in studentIds)
-            {
-                var user = _allUsers.FirstOrDefault(x => x.Id == id);
-
-                if (user != null)
-                {
-                    users.Add(user);
-                }
-            }
-            return users;
-        }
+        
 
         public async Task<bool> DeleteUser(int userId, string rolle)
         {
@@ -130,15 +91,7 @@ namespace Client
             return true;
         }
 
-        public Task SaveStudentPlan(int studentId, Plan plan)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> GetUserById(int currentUserId)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public async Task<List<KursusDeltagerListeDTO>> GetAllStudents()
         {
@@ -146,7 +99,6 @@ namespace Client
         }
         
         //Skal også tage brugerens email som parameter, altså hvem er logget ind og hvem skal vi sendetil!
-
         public async Task<bool> SendEmail(HashSet<int> studentIds)
         {
             var response = await _client.PostAsJsonAsync($"{serverUrl}/users/sendemail", studentIds);
@@ -157,11 +109,6 @@ namespace Client
             }
 
             return true;
-        }
-
-        public Task<List<User>> GetStudentsForløb(int leaderId)
-        {
-            throw new NotImplementedException();
         }
     }
 

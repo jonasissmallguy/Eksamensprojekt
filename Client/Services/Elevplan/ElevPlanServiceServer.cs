@@ -27,16 +27,7 @@ namespace Client
             
             throw new Exception($"Error creating elev plan: {response.StatusCode}");
         }
-
-        public Task SavePlan(Plan plan)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Plan> GetPlanByStudentId(int studentId)
-        {
-            return await _client.GetFromJsonAsync<Plan>($"{serverUrl}/elevplan/{studentId}");
-        }
+        
     }
    
 

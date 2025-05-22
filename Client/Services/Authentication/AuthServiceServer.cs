@@ -30,7 +30,8 @@ namespace Client
             {
                 return null;
             }
-
+            
+            //skal slettes...
             return new BrugerLoginDTO
             {
                 Id = loggedInBruger.Id,

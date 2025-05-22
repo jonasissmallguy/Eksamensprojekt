@@ -28,20 +28,7 @@ namespace Client
         {
              await _client.PostAsJsonAsync($"{serverUrl}/kursus", kursus);
         }
-        public async Task UpdateCourse(Kursus kursus)
-        {
-            await _client.PutAsJsonAsync("kursus", kursus);
-        }
-
-        public async Task DeleteCourse(Kursus kursus, int kursusId)
-        {
-            await _client.DeleteAsync($"kursus/{kursusId}");
-        }
-
-        public async Task StartCourse(Kursus kursus)
-        {
-            await _client.PutAsJsonAsync("kursus/start", kursus);
-        }
+        
 
         public async Task RemoveStudentFromCourse(int studentId, Kursus kursus)
         {
