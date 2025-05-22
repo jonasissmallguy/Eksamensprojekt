@@ -59,6 +59,20 @@ namespace Server
             return result.ModifiedCount > 0;
         }
 
+        public async Task<bool> AddGoal(int studentId, int planId, int forløbId, Goal newGoal)
+        {
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.Id, studentId),
+                Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f => f.Id == forløbId)
+            );
+
+            var update = Builders<User>.Update.AddToSet("ElevPlan.Forløbs.$.Goals", newGoal);
+
+            var result = await _goalCollection.UpdateOneAsync(filter, update);
+
+            return result.ModifiedCount > 0;
+        }
+
         //Tilføjer en kommentar til vores mål
         public async Task<Comment> AddComment(Comment comment)
         {

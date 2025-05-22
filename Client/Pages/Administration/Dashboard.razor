@@ -204,7 +204,7 @@ else
     </table>
 
     <ModalDialog @ref="modalRef" Title="Tilføj delmål">
-        <EditForm Model="newGoal" class="row p-3">
+        <EditForm Model="newGoal" class="row p-3" OnInvalidSubmit="HandleAddGoal">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
 
@@ -216,7 +216,7 @@ else
                         {
                             @foreach (var e in elevPlan.Forløbs)
                             {
-                                <option value="@e.Id">@e.Title</option>
+                                <option value="@e.Id" bind-Value="@newGoal.Forløbs">@e.Title</option>
                             }
                         }
                     </InputSelect>
@@ -225,28 +225,21 @@ else
             <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
                         <label for="Titel">Titel:</label>
-                        <InputText id="Titel" @bind-Value="newGoal.Title"
+                        <InputText id="Titel" @bind-Value="tilføjDelmål.Title"
                                    placeholder="Skolenavn..." class="form-control"/>
                     </div>
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
                         <label for="Beskrivelse">Beskrivelse:</label>
-                        <InputTextArea id="Beskrivelse" @bind-Value="newGoal.Description"
+                        <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description"
                                        placeholder="Husk at tilføje adresse!" class="form-control"/>
                     </div>
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
-                        <label for="Status">Status:</label>
-                        <InputText id="Status" @bind-Value="newGoal.Status"
-                                   placeholder="Status" class="form-control"/>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
                         <label for="Semester">Semester:</label>
-                        <InputSelect class="form-select" @bind-Value="newGoal.Semester">
+                        <InputSelect class="form-select" @bind-Value="tilføjDelmål.Semester">
                             @foreach (var yy in år)
                             {
                                 <option value="@yy">@yy</option>
@@ -256,7 +249,7 @@ else
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
-                        <button class="btn btn-primary" type="submit">Tilføj</button>
+                        <button class="btn btn-primary" type="submit" @onclick="() => HandleAddGoal()">Tilføj</button>
                     </div>
                 </div>
 
@@ -281,6 +274,7 @@ else
     private string selectedSkole = String.Empty;
     private string selectedUddannelse = String.Empty;
     private int? _currentUserHotelId = null;
+    private Goal tilføjDelmål = new Goal();
 
     private bool isChecked;
 
@@ -522,6 +516,41 @@ else
     {
        await IBrugerService.SendEmail(hashSet);
     }
+
+    private async Task<bool> HandleAddGoal()
+    {
+        // Find valgt elev
+        int studentId = selectedStudentIds.First();
+
+        // Sæt PlanId og ForløbId på delmål-objektet
+        tilføjDelmål.PlanId = elevPlan.Id;
+        tilføjDelmål.ForløbId = selectedForløbId ?? 0;
+
+        // Kald service
+        var success = await IGoalService.AddGoal(tilføjDelmål, studentId);
+        if (success)
+        {
+            // Opdater UI-model
+            var forløb = elevPlan.Forløbs.FirstOrDefault(f => f.Id == tilføjDelmål.ForløbId);
+            if (forløb != null)
+            {
+                forløb.Goals.Add(tilføjDelmål);
+                StateHasChanged();
+            }
+            // Ryd modal og luk
+            tilføjDelmål = new Goal();
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Kunne ikke tilføje delmål");
+            return false;
+        }
+    }
+    
+
+
+
 
     
     

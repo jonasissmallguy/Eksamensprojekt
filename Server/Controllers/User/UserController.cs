@@ -29,8 +29,8 @@ namespace Server
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var allUsers =  await _userRepository.GetAllUsers();
-            
+            var allUsers = await _userRepository.GetAllUsers();
+
             List<BrugerLoginDTO> brugerLogins = new();
 
             foreach (User user in allUsers)
@@ -45,10 +45,12 @@ namespace Server
                     HotelId = user.HotelId
                 });
             }
+
             if (allUsers == null)
             {
                 return NotFound();
             }
+
             return Ok(brugerLogins);
         }
 
@@ -62,9 +64,9 @@ namespace Server
         public async Task<IActionResult> GetAllUsersWithOutMyself(int id)
         {
             List<BrugerAdministrationDTO> brugers = new();
-            
+
             var allUsers = await _userRepository.GetAllUsersWithOutMyself(id);
-            
+
             if (allUsers == null)
             {
                 return NotFound();
@@ -81,23 +83,24 @@ namespace Server
                     Status = x.Status
                 });
             }
+
             return Ok(brugers);
         }
-  
+
         [NonAction]
         //Hjælpefunktion til at reset email
         public async Task SendResetCodeEmail(string email, string verificeringsKode)
         {
 
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-            
+
             //Anvender SendGrid
             var client = new SendGridClient(apiKey);
 
             //Fra & Til
             var from = new EmailAddress(email, "HR");
             var to = new EmailAddress(email);
-            
+
             //Indhold
             var subject = "Nulstilling af Comwell adgangskode";
             var plainTextContent =
@@ -106,14 +109,14 @@ namespace Server
                 $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
                 $"{verificeringsKode}" +
                 $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
-            
+
             var htmlContent = $"{verificeringsKode}";
-            
+
             //Generer email og sender
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
         }
-        
+
         [NonAction]
         //Checker vores verificeringskode... i server memory
         public async Task<bool> CheckVerficiationCode(string email, string kode)
@@ -125,16 +128,17 @@ namespace Server
                     return true;
                 }
             }
+
             return false;
         }
-        
+
         [NonAction]
         //Generer verificeringskode
         public string GenerateResetCode(string email)
         {
             Random ran = new Random();
             string verificeringsKode = String.Empty;
-                
+
             string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
             int size = 8;
 
@@ -248,6 +252,7 @@ namespace Server
                 if (string.IsNullOrWhiteSpace(user.Uddannelse))
                     return Conflict("Venligst angiv en uddannelse");
             }
+
             Hotel hotel = null;
             hotel = await _hotelRepository.GetHotelById(user.HotelId);
 
@@ -331,9 +336,10 @@ namespace Server
             }
             
             await _userRepository.DeactivateUser(userId);
+
             return Ok();
         }
-        
+
         /// <summary>
         /// Aktiver en bruger der er deaktiveret
         /// </summary>
@@ -344,9 +350,9 @@ namespace Server
         public async Task<IActionResult> ActivateUser(int userId)
         {
             await _userRepository.ActivateUser(userId);
-            
+
             return Ok();
-            
+
         }
 
         /// <summary>
@@ -358,7 +364,7 @@ namespace Server
         public async Task<IActionResult> UpdateRole(string newRolle, int userId)
         {
             await _userRepository.UpdateRolle(newRolle, userId);
-            
+
             return Ok();
         }
 
@@ -367,10 +373,10 @@ namespace Server
         public async Task<IActionResult> UpdateUser([FromBody] User updateBruger)
         {
             var user = await _userRepository.UpdateUser(updateBruger);
-            
+
             return Ok(user);
         }
-        
+
 
         [HttpPut]
         [Route("updatepassword/{email}")]
@@ -382,9 +388,9 @@ namespace Server
             {
                 return BadRequest();
             }
-            
+
             return Ok(result);
-            
+
         }
 
         /// <summary>
@@ -402,9 +408,10 @@ namespace Server
                     return true;
                 }
             }
+
             return false;
         }
-        
+
         //BRUGES KUN TIL TEST MENS VI VENTER!!
         [HttpGet]
         [Route("allstudents")]
@@ -422,10 +429,10 @@ namespace Server
                     Navn = user.FirstName + "  " + user.LastName
                 });
             }
-            
+
             return Ok(students);
         }
-        
+
         [HttpGet]
         [Route("oversigt")]
         public async Task<IActionResult> GetElevOversigt()
@@ -448,16 +455,17 @@ namespace Server
                     StartDate = elev.StartDate,
                     EndDate = elev.EndDate,
                     TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0,
-                    CompletedGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
+                    CompletedGoals =
+                        elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
                 });
             }
 
             return Ok(elevOversigt);
         }
 
-        
 
-        //Generer excel fil
+
+    //Generer excel fil
         [NonAction]
         public async Task<bool> GenerateExcelFile(List<User> users)
         {

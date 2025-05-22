@@ -13,6 +13,7 @@ namespace Server
         /// Sletter et mål for en given elev og plan.
         /// </summary>
         Task<bool> DeleteGoal(int studentId, int planId, int forløbId, int goalId);
+        Task<bool> AddGoal(int studentId, int planId, int forløbId, Goal newGoal);
         Task<Comment> AddComment(Comment comment);
         Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor);
         Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor);

@@ -13,12 +13,12 @@ namespace Core
         
         public int PlanId { get; set; }
         
-        public string Type { get; set; }  // Kursus, Skole, Kompetence
+        public string? Type { get; set; }  // Kursus, Skole, Kompetence
         
         public string Title { get; set; }
         public string Description { get; set; }
-        public string Status { get; set; } = "Active";
-        public string Semester { get; set; }
+        public string? Status { get; set; } = "Active";
+        public string? Semester { get; set; }
         
         //Kompetence
         public int? StarterId { get; set; } 
@@ -30,9 +30,9 @@ namespace Core
         public DateTime? CompletedAt { get; set; } //Leder sætter
         
         //Skole
-        public string SkoleNavn { get; set; }
+        public string? SkoleNavn { get; set; }
         
-        public List<Comment> Comments { get; set; }
+        public List<Comment> Comments { get; set; } = new List<Comment>();
         
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

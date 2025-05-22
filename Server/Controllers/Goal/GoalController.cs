@@ -37,6 +37,25 @@ namespace Server
             }
             return NotFound();
         }
+        
+        [HttpPost]
+        [Route("{studentId}/{planId}/{forløbId}/")]
+        public async Task<IActionResult> AddGoal(int studentId, int planId, int forløbId, [FromBody] Goal newGoal)
+        {
+            if (newGoal == null || string.IsNullOrWhiteSpace(newGoal.Title) || newGoal.PlanId <= 0 || newGoal.ForløbId <= 0)
+            {
+                return BadRequest("Goal-objektet mangler påkrævede felter.");
+            }
+
+            var add = await _goalRepository.AddGoal(studentId, planId, forløbId, newGoal);
+
+            if (add)
+            {
+                return Ok();
+            }
+            return NotFound();
+        }
+
 
         /// <summary>
         /// Tilføjer en kommentar til vores goal

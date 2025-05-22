@@ -12,7 +12,6 @@ namespace Client
         Task<List<BrugerLoginDTO>> GetAllUsers();
         Task<List<BrugerLoginDTO>> GetAllActiveUsers();
         Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId);
-        Task<List<User>> GetAllUsersByStudentId(List<int> studentIds);
         Task<bool> DeleteUser(int userId, string rolle);
         Task ChangeRolle(string newRolle, int userId);
         Task DeActivateUser(int userId, string rolle);

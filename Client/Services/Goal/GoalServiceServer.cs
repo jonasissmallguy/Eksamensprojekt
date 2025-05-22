@@ -20,6 +20,22 @@ namespace Client
             await _client.DeleteAsync($"{serverUrl}/goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
         }
 
+        public async Task<bool> AddGoal(Goal goal, int studentId)
+        {
+            var url = $"{serverUrl}/goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/";
+            
+            var response = await _client.PostAsJsonAsync(url, goal);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Fejl fra server: {errorContent}");
+            }
+            return response.IsSuccessStatusCode;
+
+        }
+
+
+
         public Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløbs, List<GoalTemplate> goalTemplates)
         {
             throw new NotImplementedException();
