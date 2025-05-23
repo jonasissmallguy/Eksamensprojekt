@@ -14,3 +14,107 @@ th{
     background-color: #152238;
     color: white;
 }
+
+.course_information {
+    display: flex;
+    gap: 2rem; /* Space between course info and description */
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    margin-bottom: 2rem; /* Space below the course information */
+    padding: 1rem;
+    background-color: #f8f9fa; /* Optional: light background */
+    border-radius: 0.5rem; /* Optional: rounded corners */
+}
+
+.course_info {
+    flex: 0 0 auto; /* Don't grow, don't shrink, auto width */
+    min-width: 250px; /* Minimum width for course info */
+}
+
+.course_description {
+    flex: 1; /* Take remaining space */
+    min-width: 300px; /* Minimum width before wrapping */
+}
+
+.course_info h4 {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.course_info h6 {
+    margin-bottom: 0.25rem;
+    color: #6c757d;
+}
+
+.course_info button {
+    margin-top: 1rem;
+}
+
+.beskrivelse {
+    background-color: #ffffff;
+    color: black;
+    height: 150px;
+    width: 250px;
+    border: thin solid #152238;
+    padding: 5px;
+    border-radius: 15px;
+}
+
+.full_div{
+    margin-top: 30px;
+    display: flex;
+    gap: 2rem;
+    flex-wrap:  wrap;
+}
+
+.students_list,
+.assign_students {
+    flex: 1; /* Each section takes equal width */
+    min-width: 300px; /* Minimum width before wrapping */
+}
+
+.students_list {
+    margin-right: 1rem; /* Additional right margin for the left section */
+}
+
+.assign_students {
+    margin-left: 1rem; /* Additional left margin for the right section */
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.full-course-information {
+    margin-top: 1rem;
+    max-height: 400px; /* Set maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #dee2e6; /* Optional: add border to define scroll area */
+    border-radius: 0.25rem; /* Optional: rounded corners */
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+/* Keep table header visible when scrolling */
+.table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 2px solid #dee2e6;
+}
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .full_div {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .students_list,
+    .assign_students {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

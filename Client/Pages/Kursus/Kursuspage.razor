@@ -9,91 +9,93 @@
 
 @page "/kursuspage/{kursusId:int}"
 
+<h1>Kursus information</h1>
 
-@if (_kursus != null)
-{
-
-    <h2>Kursus information</h2>
-    
-    <br/>
-    
-    <h4>@_kursus.Title</h4>
-    <h6>Start dato: @_kursus.StartDate</h6>
-    <h6>Slut dato: @_kursus.EndDate</h6>
-    
-    <br/>
-    
-    <h6>Deltagerliste</h6>
-    <div class="full-course-information">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Navn</th>
-                <th>Restaurant</th>
-                <th>Fjern fra kursus</th>
-            </tr>
-            </thead>
-            <tbody>
-            
-            @if (_kursus.Students != null)
-            {
-                @foreach (var x in _kursus.Students)
-                {
-                    <tr>
-                        <td>@x.FirstName</td>
-                        <td>@x.HotelNavn</td>
-                        <td>
-                            <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
-                        </td>
-                    </tr>
-                }
-            }
-            </tbody>
-        </table>
+<div class="course_information">
+    <div class="course_info">
+        <h4>@_kursus.Title</h4>
+        <h6>Start dato: @_kursus.StartDate</h6>
+        <h6>Slut dato: @_kursus.EndDate</h6>
+        <button @onclick="() => FinishCourse() ">Afslut kursus</button> 
     </div>
-
-    <button @onclick="() => FinishCourse() ">Afslut kursus</button>
-    <br/>
-    <br/>
-}
-else
-{
-    <p>Loading...</p>
-}
-
-<!--Skal slettes og på forsiden -->
-@if (allStudents != null)
-{
-    
-    <h6>Tildel elever</h6>
-    <div class="full-course-information">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>Navn</th>
-                <th>Tildel kursus</th>
-            </tr>
-            </thead>
-            <tbody>
-                @foreach (var x in allStudents)
-                {
-                    <tr>
-                    <td>@x.Navn</td>
-                    <td>
-                        <button class="btn btn-primary" @onclick="() => AddToCourse(x)">Tildel kursus </button>
-                    </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="course_description">
+        <p class="beskrivelse"> Beskrivelse: <br/> @_kursus.Description</p>
     </div>
+</div>
 
-}
-else
-{
-    <p>Loading...</p>
-}
 
+
+<div class="full_div">
+    <div class="students_list">
+        @if (_kursus != null)
+        {
+            <h6>Deltagerliste</h6>
+            <div class="full-course-information">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Restaurant</th>
+                        <th>Fjern fra kursus</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    @if (_kursus.Students != null)
+                    { 
+                        @foreach (var x in _kursus.Students)
+                        {
+                            <tr>
+                                <td>@x.FirstName</td>
+                                <td>@x.HotelNavn</td>
+                                <td>
+                                    <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>Loading...</p> 
+        }
+    </div>
+    <div class="assign_students">
+        @if (allStudents != null)
+        {
+
+        <h6>Tildel elever</h6>
+            <div class="full-course-information">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Tildel kursus</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var x in allStudents)
+                    {
+                    <tr>
+                            <td>@x.Navn</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="() => AddToCourse(x)">Tildel kursus </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>Loading...</p>
+        } 
+    </div>
+</div>
 @code {
 
     [Parameter] public int kursusId { get; set; }
