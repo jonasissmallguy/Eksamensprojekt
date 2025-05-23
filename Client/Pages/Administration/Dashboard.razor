@@ -259,11 +259,11 @@ else
                                        placeholder="Husk at tilføje adresse!" class="form-control"/>
                     </div>
                 </div>
-                <div class="row justify-content-center">
-                    <div class="col-md-6 mb-3">
-                        <button class="btn btn-primary" type="submit" @onclick="() => HandleAddGoal()">Tilføj</button>
-                    </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <button class="btn btn-primary" type="submit" @onclick="() => HandleAddGoal()">Tilføj</button>
                 </div>
+            </div>
 
         </EditForm>
     </ModalDialog>
@@ -289,6 +289,7 @@ else
     private int? _currentUserHotelId = null;
     private Goal tilføjDelmål = new Goal();
     private string selectedSemester = String.Empty;
+    private string selectedGoalType = String.Empty;
 
     private bool isChecked;
 
