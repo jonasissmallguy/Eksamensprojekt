@@ -5,14 +5,25 @@
     <EditForm Model="tilføjDelmål" class="row p-3" OnValidSubmit="OnSubmit">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
-
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Semester">Semester:</label>
+                <InputSelect class="form-select" @bind-Value="selectedSemester">
+                    @foreach (var yy in År)
+                    {
+                        <option value="@yy">@yy</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
                 <label for="Forløb">Forløb:</label>
                 <InputSelect class="form-select" @bind-Value="tilføjDelmål.ForløbId">
+                    <option value="0" disabled selected hidden>Vælg forløb</option>
                     @if (ElevPlan?.Forløbs != null)
                     {
-                        @foreach (var e in ElevPlan.Forløbs)
+                        @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester)))
                         {
                             <option value="@e.Id">@e.Title</option>
                         }
@@ -30,17 +41,6 @@
             <div class="col-md-6 mb-3">
                 <label for="Beskrivelse">Beskrivelse:</label>
                 <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description" class="form-control"/>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-3">
-                <label for="Semester">Semester:</label>
-                <InputSelect class="form-select" @bind-Value="tilføjDelmål.Semester">
-                    @foreach (var yy in År)
-                    {
-                        <option value="@yy">@yy</option>
-                    }
-                </InputSelect>
             </div>
         </div>
         <div class="row justify-content-center">
@@ -68,12 +68,22 @@
 
     [Parameter] public string[] År { get; set; } = new[] { "År 1", "År 2", "År 3" };
 
+    private string selectedSemester;
+
     public void Open()
     {
         tilføjDelmål = new Goal();
+        if (År != null && År.Length > 0)
+        {
+            selectedSemester = År[0];
+        }
+
+        tilføjDelmål.ForløbId = 0;
         ModalRef?.Open();
         StateHasChanged();
     }
+    
+    
 
     private async Task OnSubmit()
     {
