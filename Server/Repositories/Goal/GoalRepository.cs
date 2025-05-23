@@ -1,9 +1,11 @@
 ﻿using Client;
 using Client.Components.Elevoversigt;
 using Core;
+using Core.DTO.Goal;
 using MongoDB.Driver;
 using DotNetEnv;
 using MongoDB.Bson;
+using Sprache;
 
 namespace Server
 {
@@ -65,6 +67,7 @@ namespace Server
                 Builders<User>.Filter.Eq(u => u.Id, studentId),
                 Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f => f.Id == forløbId)
             );
+            newGoal.Id = await GetNextSequenceValue("goalId");
 
             var update = Builders<User>.Update.AddToSet("ElevPlan.Forløbs.$.Goals", newGoal);
 

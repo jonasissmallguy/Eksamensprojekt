@@ -13,8 +13,8 @@
         public int? StarterId { get; set; }
         public string StarterName { get; set; } = string.Empty;
         public DateTime DeadLineAt { get; set; }
-        public DateOnly? SkoleStart { get; set; }
-        public DateOnly? SkoleEnd { get; set; }
+        public DateTime? SkoleStart { get; set; }
+        public DateTime? SkoleEnd { get; set; }
 
     }
 
