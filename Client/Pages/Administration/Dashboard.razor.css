@@ -23,7 +23,7 @@ table {
 
 /* Styling for tabeloverskrifter (th) */
 th {
-    background-color: #4CAF50; /* Grøn baggrundsfarve */
+    background-color: #152238;
     color: white; /* Hvid tekstfarve */
     padding: 12px; /* Tilføjer padding for bedre læselighed */
 }
@@ -50,4 +50,16 @@ tr:nth-child(even) {
 
 .export-button {
     margin-right: 0.5%;
+}
+
+button{
+    background-color: #152238;
+    color: white;
+    border-radius: 15px;
+    height: 30px;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    line-height: normal;
+    display: inline-block;
 }
