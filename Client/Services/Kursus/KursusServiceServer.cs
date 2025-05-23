@@ -6,7 +6,7 @@ namespace Client
 {
     public class KursusServiceServer : IKursus
     {
-        private string serverUrl = "http://localhost:5075";
+        private string serverUrl = "https://elevportalapi.azurewebsites.net";
         private readonly HttpClient _client;
         
 

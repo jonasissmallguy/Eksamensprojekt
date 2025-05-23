@@ -9,7 +9,7 @@ namespace Client
 
     public class BrugerServiceServer : IBruger
     {
-        private string serverUrl = "http://localhost:5075";
+        private string serverUrl = "https://elevportalapi.azurewebsites.net";
         private HttpClient _client = new();
         
         public BrugerServiceServer(HttpClient client)

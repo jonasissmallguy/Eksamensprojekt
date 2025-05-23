@@ -9,7 +9,7 @@ namespace Client
     public class AuthServiceServer : IAuth
     {
         
-        private string serverUrl = "http://localhost:5075";
+        private string serverUrl = "https://elevportalapi.azurewebsites.net";
         private HttpClient _client;
         private ILocalStorageService _localStorage;
         private IBruger _bruger;

@@ -6,7 +6,7 @@ namespace Client
 
     public class HotelServiceServer : IHotel
     {
-        private string serverUrl = "http://localhost:5075";
+        private string serverUrl = "https://elevportalapi.azurewebsites.net";
         private HttpClient _client;
 
         public HotelServiceServer(HttpClient client)

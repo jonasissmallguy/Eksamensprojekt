@@ -7,7 +7,7 @@ namespace Client
     public class GoalServiceServer : IGoal
     {
 
-        private string serverUrl = "http://localhost:5075";
+        private string serverUrl = "https://elevportalapi.azurewebsites.net";
         private HttpClient _client;
 
         public GoalServiceServer(HttpClient client)

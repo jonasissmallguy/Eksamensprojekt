@@ -8,7 +8,7 @@ namespace Client
     public class ElevPlanServiceServer : IElevPlan
     {
         
-        private string serverUrl = "http://localhost:5075";
+        private string serverUrl = "https://elevportalapi.azurewebsites.net";
         private HttpClient _client = new();
 
         public ElevPlanServiceServer(HttpClient client)
