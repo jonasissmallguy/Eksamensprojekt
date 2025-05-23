@@ -1,4 +1,5 @@
-﻿@using Core
+﻿@using Client.Components.Delmål
+@using Core
 @using Client.Components.Elevoversigt
 
 
@@ -23,21 +24,39 @@ else
         <ElevplanComponent Plan="@nyElevPlan"ShowSubmitButton="true"ShowComments="false" 
                            OnDelteClicked="HandleDeleteGoal" OnSubmitClicked="HandleElevplanSubmit" />
 
-        <button class="btn btn-primary">Opret delmål</button>
+        <button @onclick="OpenModal" class="btn btn-primary">Opret delmål</button>
+        
+        <TilføjDelmålComponent @ref="addGoalModalRef"
+                               StudentId="studentId"
+                               ElevPlan="@nyElevPlan"
+                               OnGoalAdded="@OnGoalAdded"/>
     }
 }
 
 @code {
 
+    [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
     private bool _loading = true;
-    
     [Parameter] public int studentId { get; set; }
-
     private Plan? nyElevPlan = new();
     private User elev = new();
+    private TilføjDelmålComponent addGoalModalRef;
+
 
     protected override async Task OnInitializedAsync()
     {
+        
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/");
+            return;
+        }
+
+        if (_currentUser.Rolle != "HR")
+        {
+            navMan.NavigateTo("dashboard");
+        }
+        
         elev = await IBrugerService.GetBrugerById(studentId);
 
         if (elev.ElevPlan != null)
@@ -67,14 +86,19 @@ else
     
     private async Task HandleElevplanSubmit()
     {
-        
-        //await IElevPlanService.SavePlan(nyElevPlan);
         navMan.NavigateTo("/dashboard");
     }
-    
-    private void NavigateToCreateGoal()
+
+
+    private async Task OpenModal()
     {
-        navMan.NavigateTo("tilføj delmål");
+
+        addGoalModalRef?.Open();
     }
-    
+
+    private async Task OnGoalAdded()
+    {
+        StateHasChanged();
+    }
+
 }

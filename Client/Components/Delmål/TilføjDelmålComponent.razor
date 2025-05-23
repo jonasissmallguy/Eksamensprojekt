@@ -1,0 +1,99 @@
+﻿@inject IGoal IGoalService;
+@using Core
+
+<ModalDialog @ref="ModalRef" Title="Tilføj delmål">
+    <EditForm Model="tilføjDelmål" class="row p-3" OnValidSubmit="OnSubmit">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Forløb">Forløb:</label>
+                <InputSelect class="form-select" @bind-Value="tilføjDelmål.ForløbId">
+                    @if (ElevPlan?.Forløbs != null)
+                    {
+                        @foreach (var e in ElevPlan.Forløbs)
+                        {
+                            <option value="@e.Id">@e.Title</option>
+                        }
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Titel">Titel:</label>
+                <InputText id="Titel" @bind-Value="tilføjDelmål.Title" placeholder="Titel..." class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Beskrivelse">Beskrivelse:</label>
+                <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description" class="form-control"/>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <label for="Semester">Semester:</label>
+                <InputSelect class="form-select" @bind-Value="tilføjDelmål.Semester">
+                    @foreach (var yy in År)
+                    {
+                        <option value="@yy">@yy</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-primary" type="submit">Tilføj</button>
+            </div>
+        </div>
+    </EditForm>
+</ModalDialog>
+
+@code {
+    private Goal tilføjDelmål = new();
+
+    private ModalDialog? ModalRef;
+
+    [Parameter] public EventCallback OnGoalAdded { get; set; }
+
+    [Parameter] public int StudentId { get; set; }
+
+    [Parameter] public Plan? ElevPlan { get; set; }
+
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private string[] skole = { "Kold Kollege", "EUX Kronjylland", "Hansted Kokkeskole" };
+
+    [Parameter] public string[] År { get; set; } = new[] { "År 1", "År 2", "År 3" };
+
+    public void Open()
+    {
+        tilføjDelmål = new Goal();
+        ModalRef?.Open();
+        StateHasChanged();
+    }
+
+    private async Task OnSubmit()
+    {
+        if (ElevPlan == null) return;
+
+        tilføjDelmål.PlanId = ElevPlan.Id;
+
+        var success = await IGoalService.AddGoal(tilføjDelmål, StudentId);
+        if (success)
+        {
+            var forløb = ElevPlan.Forløbs.FirstOrDefault(f => f.Id == tilføjDelmål.ForløbId);
+            forløb?.Goals.Add(tilføjDelmål);
+            await OnGoalAdded.InvokeAsync();
+        }
+        else
+        {
+            Console.WriteLine("Fejl: Kunne ikke tilføje delmål");
+        }
+        
+        ModalRef?.Close();
+        
+    }
+}

@@ -1,6 +1,5 @@
 ﻿@page "/hotels"
 
-@inject IBruger IBrugerService;
 @inject IHotel IHotelService;
 @inject NavigationManager navMan;
 
@@ -58,15 +57,28 @@
 
 @code {
 
+    [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
+
     private HotelCreationDTO newHotel = new();
     private string[] regioner = { "Jylland", "Sjælland", "Fyn" };
     private List<ManagerDTO> alleManagers = new();
     
     
-    protected override async void OnInitialized()
+    
+    protected override async Task OnInitializedAsync()
     {
-        newHotel.Region = regioner[0];
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/hotels");
+            return;
+        }
         
+        if (_currentUser.Rolle != "HR")
+        {
+            navMan.NavigateTo("");
+        }
+        
+        newHotel.Region = regioner[0];
     }
 
     private void HandleNewHotel()

@@ -30,17 +30,8 @@ namespace Client
             {
                 return null;
             }
-            
-            //skal slettes...
-            return new BrugerLoginDTO
-            {
-                Id = loggedInBruger.Id,
-                Email = loggedInBruger.Email,
-                Password = loggedInBruger.Password,
-                Rolle = loggedInBruger.Rolle,
-                FirstName = loggedInBruger.FirstName,
-                HotelId = loggedInBruger.HotelId,
-            };
+
+            return loggedInBruger;
         }
         
         //Hjælpefunktion til at validere om 

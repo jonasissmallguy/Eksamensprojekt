@@ -119,8 +119,29 @@ namespace Server
             return Ok(kursusListe);
 
         }
-        
-        
+
+        [HttpGet]
+        [Route("nextup/{studentId}")]
+        public async Task<IActionResult> GetNextCoursesByStudentId(int studentId)
+        {
+            var commingCourses = await _kursusRepository.GetFutureCourseByStudentId(studentId);
+            
+            if (commingCourses == null) return NotFound();
+            
+            List<KursusKommendeDTO> kursusListe = new();
+
+            foreach (var kursus in commingCourses)
+            {
+                kursusListe.Add(new KursusKommendeDTO
+                {
+                    Title = kursus.Title,
+                    Location = kursus.Location,
+                    StartDate = kursus.StartDate
+                });
+            }
+            
+            return Ok(kursusListe);
+        }
         
     }
 }

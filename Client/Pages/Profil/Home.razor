@@ -25,8 +25,23 @@ else
 
             <div class="dashboard-card">
                 <h5 class="card-title">Kommende Skoleophold</h5>
+                @if (_futureSchool != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _futureSchool)
+                        {
+                            <li style="cursor: pointer">
+                            <li style="cursor: pointer">
+                                Delmål: @g.Title - @g.SkoleNavn  - Periode:
+                                @(g.SkoleStart == null || g.SkoleEnd == null
+                                    ? "Afventer din leder" : $"{g.SkoleStart} til {g.SkoleEnd}")
+                            </li>                                                                           
+                            </li>
+                        }
+                    </ul>
+                }
 
-            </div>
+            </div>  
 
             <div class="dashboard-card">
                 <h5 class="card-title">Aktive Delmål</h5>
@@ -46,6 +61,17 @@ else
 
             <div class="dashboard-card">
                 <h5 class="card-title">Kommende Kurser</h5>
+                @if (_futureCourses != null)
+                {
+                    <ul class="list-reset">
+                        @foreach (var g in _futureCourses)
+                        {
+                            <li style="cursor: pointer">
+                                Titel: @g.Title - Lokation: @g.Location - Start: @g.StartDate
+                            </li>
+                        }
+                    </ul>
+                }
 
             </div>
         }
@@ -169,6 +195,7 @@ else
     //Elev instant variablER
     private List<GoalNeedActionDTO> _needAction; //Indeholder liste med delmål, hvor eleven mangler godkendelse
     private List<FutureSchoolDTO> _futureSchool; //Indeholder liste med kommende skoleophold
+    private List<KursusKommendeDTO> _futureCourses; //Indeholder liste med tilmeldte kurser
 
     //Kok instans variabelER
     private List<StartedGoalsDTO> _inProgress; //Indeholder liste med delmål der er startet men ikke godkendt
@@ -193,13 +220,19 @@ else
         {
             navMan.NavigateTo("login/");
             return;
-            
         }
 
+        if (_currentUser.Rolle == "HR")
+        {
+            navMan.NavigateTo("dashboard");
+        }
+        
         if (_currentUser.Rolle == "Elev")
         {
-            //Henter delmål der mangler action fra kok eller leder
+            //Henter delmål der mangler action fra kok eller leder  
             _needAction = await IGoalService.GetNeedActionGoals(_currentUser.Id);
+            _futureSchool = await IGoalService.GetFutureSchools(_currentUser.Id);
+            _futureCourses = await IKursusService.GetFutureCoursesByStudentId(_currentUser.Id);
         }
 
         if (_currentUser.Rolle == "Kok")
@@ -221,11 +254,12 @@ else
         _loading = false;
     }
 
+    //Mangler fejlmeddelser
     private async Task ConfirmGoal(StartedGoalsDTO goalDto)
     {
-        var success = await IGoalService.ConfirmGoalFromHomePage(goalDto);
+        var success = await IGoalService.ConfirmGoal(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
 
-        if (success && goalDto != null)
+        if (goalDto != null)
         {
             _missingApproval = _missingApproval.Where(g => g.GoalId != goalDto.GoalId).ToList();
             StateHasChanged();

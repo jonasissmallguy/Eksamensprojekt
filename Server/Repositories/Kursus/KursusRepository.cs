@@ -107,5 +107,11 @@ namespace Server
             
             return await _collection.Find(filter).ToListAsync();
         }
+
+        public async Task<List<Kursus>> GetFutureCourseByStudentId(int studentId)
+        {
+            var filter = Builders<Kursus>.Filter.ElemMatch(s => s.Students, s => s.Id == studentId);
+            return await _collection.Find(filter).ToListAsync();
+        }
     }
 }

@@ -349,67 +349,38 @@ namespace Server
             {
                 return BadRequest();
             }
-            
             return Ok(processedGoal);
         }
         
         [HttpPut]
-        [Route("confirmgoal")]
-        public async Task<IActionResult> ConfirmGoal(ElevplanComponent.MentorAssignment bruger)
+        [Route("confirmgoal/{planId}/{forløbId}/{goalId}")]
+        public async Task<IActionResult> ConfirmGoal(int planId, int forløbId, int goalId)
         {
-            var processedGoal = await _goalRepository.ConfirmGoal(bruger);
+            var processedGoal = await _goalRepository.ConfirmGoalAndHandleProgress(planId, forløbId, goalId);
 
             if (processedGoal == null)
             {
-                return BadRequest();
+                return NotFound();
             }
             
             return Ok(processedGoal);
         }
-        
 
-        [HttpPut("confirm")]
-        public async Task<IActionResult> ConfirmGoalFromHomePage([FromBody] StartedGoalsDTO goalDto)
+        [HttpPut]
+        [Route("confirmschool/{planId}/{forløbId}/{goalId}")]
+        public async Task<IActionResult> ConfirmSchoolOphold(int planId, int forløbId, int goalId)
         {
-            if (goalDto == null || goalDto.GoalId <= 0)
-                return BadRequest();
-            
-            var updated = await _goalRepository.ConfirmGoalFromHomePage(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
-            if (updated)
-                return Ok();
-            return NotFound("Mål ikke fundet til opdatering.");
-        }
+             var result = await _goalRepository.UpdateSchoolStatus(planId, forløbId, goalId);
 
-
-        //Hvad bruges den her til?
-        [HttpGet("type/{type}/user/{userId}")]
-        public async Task<IActionResult> GetGoalsByTypeForUser(string type, int userId)
-        {
-            var goals = await _goalRepository.GetGoalsByTypeForUser(type, userId);
-
-            if (goals == null || !goals.Any())
-                return NotFound("Ingen mål fundet for bruger og type.");
-
-            return Ok(goals);
-        }
-
-        //Denne skal slettes
-        [HttpGet("types")]
-        public async Task<IActionResult> GetAllGoalTypes()
-        {
-            var types = await _goalRepository.GetAllGoalTypes();
-            return Ok(types);
+             if (result == null)
+             {
+                 return NotFound();
+             }
+             
+            return Ok(result);
         }
         
-        //Hvad bruges den her til?
-        [HttpGet("all-for-user/{userId}")]
-        public async Task<IActionResult> GetAllGoalsForUser(int userId)
-        {
-            var goals = await _goalRepository.GetAllGoalsForUser(userId);
-            if (goals == null || !goals.Any())
-                return NotFound("Ingen mål fundet for brugeren.");
-            return Ok(goals);
-        }
+        
     }
 
 }

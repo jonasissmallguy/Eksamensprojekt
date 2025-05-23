@@ -3,7 +3,7 @@
 
 
 @inject IBruger IBrugerService;
-@inject IElevPlan IElevPlanService;
+@inject NavigationManager navMan;
 @inject IGoal IGoalService;
 
 @page "/minelevplan/{studentId:int}"
@@ -33,7 +33,7 @@
         }
         else if (elev != null && _currentUser.Rolle == "Køkkenchef")
         {
-            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal" OnConfirmSchool="ConfirmSchool"/>
         }
         else if (elev != null && _currentUser.Rolle == "Kok")
         {
@@ -60,11 +60,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo($"login/minelevplan/{studentId}");
+            return;
+        }
+        
+        //Mangler validering, at andre ikke kan logge ind fra ndet hotel osv....
+        
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
-        
-        //elevPlan.TotalGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count);
-        //elevPlan.CompletedGoals = elevPlan.Forløbs.Sum(f => f.Goals.Count(g => g.Status == "Completed"));
 
     }
 
@@ -114,9 +119,9 @@
 
     private async Task ConfirmGoal(ElevplanComponent.MentorAssignment bruger)
     {
-        if (_currentUser.Rolle == "Kok")
+        if (_currentUser.Rolle == "Kok") //hvorfor det her?
         {
-            var processedGoal = await IGoalService.ProcessGoal(bruger);
+            var processedGoal = await IGoalService.ProcessGoal(bruger); 
 
             if (processedGoal != null)
             {
@@ -136,8 +141,7 @@
         }
         else if (_currentUser.Rolle == "Køkkenchef")
         {
-            Console.WriteLine("dette er en køkkenchef");
-            var confirmedGoal = await IGoalService.ConfirmGoal(bruger);
+            var confirmedGoal = await IGoalService.ConfirmGoal(bruger.PlanId, bruger.ForløbId, bruger.GoalId);
 
             if (confirmedGoal != null)
             {
@@ -154,5 +158,29 @@
             }
         }
     }
+
+    private async Task ConfirmSchool(ElevplanComponent.MentorAssignment schoolConfirmation)
+    {
+        var confirmedGoal = await IGoalService.ConfirmSchool(schoolConfirmation.PlanId, schoolConfirmation.ForløbId, schoolConfirmation.GoalId);
+
+        if (confirmedGoal != null)
+        {
+            var localGoal = elevPlan.Forløbs
+                .FirstOrDefault(f => f.Id == schoolConfirmation.ForløbId)?
+                .Goals.FirstOrDefault(g => g.Id == schoolConfirmation.GoalId);
+        
+            if (localGoal != null)
+            {
+                localGoal.CompletedAt =  confirmedGoal.CompletedAt;
+                localGoal.Status = confirmedGoal.Status;
+                StateHasChanged();
+            }
+        }
+
+
+        
+
+    }
+
 }
 

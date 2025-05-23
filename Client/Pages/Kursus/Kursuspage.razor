@@ -97,7 +97,9 @@
     </div>
 </div>
 @code {
-
+    
+    [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
+    
     [Parameter] public int kursusId { get; set; }
 
     private Kursus _kursus;
@@ -107,6 +109,16 @@
     
     protected override async Task OnInitializedAsync()
     {
+        if (_currentUser == null)
+        {
+            navMan.NavigateTo("login/");
+            return;
+        }
+        if (_currentUser.Rolle != "HR")
+        {
+            navMan.NavigateTo("dashboard");
+        }
+        
         _kursus = await IKursusService.GetCourseById(kursusId);
         allStudents = await IBrugerService.GetAllStudents();
 

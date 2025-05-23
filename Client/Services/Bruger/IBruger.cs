@@ -16,7 +16,7 @@ namespace Client
         Task ActivateUser(int userId);
         Task<bool> UpdateHotel(int hotelId, string hotelName, int userId);
         Task<List<KursusDeltagerListeDTO>> GetAllStudents();
-        Task<bool> SendEmail(HashSet<int> studentIds);
+        Task<bool> SendEmail(HashSet<int> studentIds, string email);
 
     }
 }
