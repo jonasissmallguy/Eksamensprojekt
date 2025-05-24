@@ -20,7 +20,7 @@ namespace Server
         
         
         /// <summary>
-        /// Returns a plan for a student
+        /// Henter en elevs elevplan
         /// </summary>
         /// <param name="studentId"></param>
         [HttpGet]
@@ -37,7 +37,7 @@ namespace Server
         }
 
         /// <summary>
-        /// Returns a Plan for a student with embedded Forløbs -> Goals -> Comments and returns a Plan
+        /// 
         /// </summary>
         /// <param name="studentId"></param>
         [HttpPost("{studentId:int}")]

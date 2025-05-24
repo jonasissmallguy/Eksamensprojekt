@@ -62,6 +62,11 @@
                                                         <div class="d-flex justify-content-between align-items-center w-100">
                                                             <div>
                                                                 <p>@goal.Description</p>
+                                                                @if (goal.Type == "Kursus" && goal.StartDate != null && goal.EndDate != null)
+                                                                {
+                                                                    <p>Start dato: @goal.StartDate.Value.ToString("dd.MM.yyyy")</p>
+                                                                    <p>Slut dato: @goal.EndDate.Value.ToString("dd.MM.yyyy")</p>
+                                                                }
                                                                 @if (goal.Status != "Active")
                                                                 {
                                                                     <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
@@ -174,10 +179,10 @@
                 {
                     <p>Godkendt af leder den: @_currentGoal.CompletedAt</p>
                 }
-            }
-            else
-            {
-                <p>Ingen information tilgængelig</p>
+                else
+                {
+                    <p>Ingen historik tilgængelig på nuværende tidspunkt</p>
+                }
             }
         </div>
     </ModalDialog>
@@ -189,7 +194,6 @@
 @code 
 {
     //Parameters
-    
     [Parameter] public Plan Plan { get; set; }
     
     [Parameter] public PlanTemplate PlanTemplate { get; set; }
@@ -198,14 +202,15 @@
     
     [Parameter] public bool ShowComments { get; set; } = false; //Viser ikke kommentar spor ved oprettelse
 
-    [Parameter] public bool StartGoal { get; set; } = false; //Viser hvem der kan starte et mål for en elev
+    //Viser hvem der kan starte et mål for en elev
+    [Parameter] public bool StartGoal { get; set; } = false; 
 
     [CascadingParameter] 
     private BrugerLoginDTO _currentUser { get; set; }
     
+    //En modaldialog
     private ModalDialog _goalHistoryModal { get; set; }
     
-
     public string[] semestre = { "År 1", "År 2", "År 3" };
 
     private Goal _currentGoal;

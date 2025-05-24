@@ -29,5 +29,8 @@
       <ProjectReference Include="..\Client\Client.csproj" />
       <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
 
 </Project>

@@ -98,6 +98,7 @@ namespace Server
             }
         }
 
+        [HttpGet]
         [Route("need-action-goals/{elevId}")]
         public async Task<IActionResult> NeedActionGoals(int elevId)
         {

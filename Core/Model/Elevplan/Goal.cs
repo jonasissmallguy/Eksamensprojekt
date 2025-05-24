@@ -36,7 +36,7 @@ namespace Core
         [BsonIgnoreIfNull]
         public string? SkoleNavn { get; set; }
         [BsonIgnoreIfNull]
-        public List<Comment> Comments { get; set; } 
+        public List<Comment> Comments { get; set; }
         [BsonIgnoreIfNull]
         public DateTime? StartDate { get; set; }
         [BsonIgnoreIfNull]

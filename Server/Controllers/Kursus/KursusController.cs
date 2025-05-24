@@ -138,6 +138,7 @@ namespace Server
                 {
                     kursusListe.Add(new KursusKommendeDTO
                     {
+                        KursusId = kursus.Id,
                         CourseCode = kursus.CourseCode,
                         Title = kursus.Title,
                         Location = kursus.Location,
