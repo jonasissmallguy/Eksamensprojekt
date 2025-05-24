@@ -295,6 +295,11 @@ namespace Client
             throw new NotImplementedException();
         }
 
+        public Task<List<KursusDeltagerListeDTO>> GetAllStudentsMissingCourse(string courseCode)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> SendEmail(HashSet<int> studentIds, string email)
         {
             throw new NotImplementedException();

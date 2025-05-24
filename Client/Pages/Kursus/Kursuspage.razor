@@ -9,103 +9,126 @@
 
 @page "/kursuspage/{kursusId:int}"
 
-<h1>Kursus information</h1>
+@if (_kursus != null)
+{
+    <h1>Kursus information</h1>
 
-<div class="course_information">
-    <div class="course_info">
-        <h4>@_kursus.Title</h4>
-        <h6>Start dato: @_kursus.StartDate</h6>
-        <h6>Slut dato: @_kursus.EndDate</h6>
-        <button @onclick="() => FinishCourse() ">Afslut kursus</button> 
+    <div class="course_information">
+        <div class="course_info">
+            <h4>@_kursus.Title</h4>
+            <h6>Start dato: @_kursus.StartDate</h6>
+            <h6>Slut dato: @_kursus.EndDate</h6>
+            <h6>Status: @_kursus.Status</h6>
+            <br/>
+            <h6>Deltager: @_kursus.Participants</h6>
+            <h6>Max deltager: @_kursus.MaxParticipants</h6>
+            @if (_kursus.Status == "Active")
+            {
+                <button @onclick="() => FinishCourse() ">Afslut kursus</button> 
+            }
+        </div>
+        <div class="course_description">
+            <p class="beskrivelse"> Beskrivelse: <br/> @_kursus.Description</p>
+        </div>
     </div>
-    <div class="course_description">
-        <p class="beskrivelse"> Beskrivelse: <br/> @_kursus.Description</p>
-    </div>
-</div>
 
 
-
-<div class="full_div">
-    <div class="students_list">
-        @if (_kursus != null)
-        {
-            <h6>Deltagerliste</h6>
-            <div class="full-course-information">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Navn</th>
-                        <th>Restaurant</th>
-                        <th>Fjern fra kursus</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-
-                    @if (_kursus.Students != null)
-                    { 
-                        @foreach (var x in _kursus.Students)
-                        {
-                            <tr>
-                                <td>@x.FirstName</td>
-                                <td>@x.HotelNavn</td>
-                                <td>
-                                    <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <p>Loading...</p> 
-        }
-    </div>
-    <div class="assign_students">
-        @if (allStudents != null)
-        {
-
-        <h6>Tildel elever</h6>
-            <div class="full-course-information">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Navn</th>
-                        <th>Tildel kursus</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var x in allStudents)
-                    {
-                    <tr>
-                            <td>@x.Navn</td>
-                            <td>
-                                <button class="btn btn-primary" @onclick="() => AddToCourse(x)">Tildel kursus </button>
-                            </td>
+    <div class="full_div">
+        <div class="students_list">
+            @if (_kursus != null)
+            {
+                <h6>Deltagerliste</h6>
+                <div class="full-course-information">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Navn</th>
+                            <th>Restaurant</th>
+                            @if (_kursus.Status == "Active")
+                            {
+                                <th>Fjern fra kursus</th>
+                            }
                         </tr>
-                    }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+
+                        @if (_kursus.Students != null)
+                        {
+                            @foreach (var x in _kursus.Students)
+                            {
+                                <tr>
+                                    <td>@x.FirstName</td>
+                                    <td>@x.HotelNavn</td>
+                                    @if (_kursus.Status == "Active")
+                                    {
+                                        <td>
+                                            <button class="btn btn-primary" @onclick="() => RemoveStudent(x)">Slet </button>
+                                        </td>   
+                                    }
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+
+
+        @if (allStudents != null && _kursus.Status == "Active") 
+        {
+
+            <div class="assign_students">
+                <div class="assign_students_header">
+                    <TextInput @bind-value="_searchText" Placeholder="Elever der mangler dette kursus..." class="search-input"></TextInput>
+                </div>
+                @if (allStudents != null)
+                {
+                    <div class="full-course-information">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Navn</th>
+                                <th>Restaurant</th>
+                                <th>Tildel kursus</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var x in _filteredElever)
+                            {
+                                <tr>
+                                    <td>@x.Navn</td>
+                                    <td>@x.Hotel</td>
+                                    <td>
+                                        <button class="btn btn-primary" @onclick="() => AddToCourse(x)">Tildel kursus</button>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+    
             </div>
         }
-        else
-        {
-            <p>Loading...</p>
-        } 
     </div>
-</div>
+}
+
 @code {
-    
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
     
     [Parameter] public int kursusId { get; set; }
 
     private Kursus _kursus;
-
     
-    private List<KursusDeltagerListeDTO> allStudents = new List<KursusDeltagerListeDTO>(); //skal slettes kun brugt i test
+    private List<KursusDeltagerListeDTO> allStudents;
+    private string _searchText;
+
+    //En IEnumerable liste, der er brugt til filtering   
+    private IEnumerable<KursusDeltagerListeDTO> _filteredElever => allStudents.Where(b =>
+        (string.IsNullOrWhiteSpace(_searchText) || b.Navn.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
+
     
     protected override async Task OnInitializedAsync()
     {
@@ -120,33 +143,45 @@
         }
         
         _kursus = await IKursusService.GetCourseById(kursusId);
-        allStudents = await IBrugerService.GetAllStudents();
+        allStudents = await IBrugerService.GetAllStudentsMissingCourse(_kursus.CourseCode);
 
     }
     
-    
-
     private async Task FinishCourse()
     {
         
-        await IKursusService.CompleteCourse(_kursus);
+        await IKursusService.CompleteCourse(_kursus.Id);
         navMan.NavigateTo("kursusoversigt");
     }
 
     private async Task RemoveStudent(User user)
     {
-        await IKursusService.RemoveStudentFromCourse(user.Id, _kursus);
+        var result = await IKursusService.RemoveStudentFromCourse(user.Id, _kursus);
 
-        if (_kursus != null)
+        if (result != null)
         {
-            //Fjerner en studerende hvis slettet
-            _kursus.Students = _kursus.Students.Where(x => x.Id != user.Id).ToList();    
+            _kursus = result;
+            allStudents.Add(new KursusDeltagerListeDTO
+            {
+                Id = user.Id,
+                Navn = user.FirstName,
+                Hotel = user.HotelNavn
+            });
+            StateHasChanged();
         }
         
     }
 
     private async Task AddToCourse(KursusDeltagerListeDTO user)
     {
-        await IKursusService.AddStudentToCourse(user, kursusId);
+        var result = await IKursusService.AddStudentToCourse(user, kursusId);
+
+        if (result != null)
+        {
+            _kursus = result;
+            allStudents = allStudents.Where(s => s.Id != user.Id).ToList();
+            StateHasChanged(); 
+        }
+        
     }
 }

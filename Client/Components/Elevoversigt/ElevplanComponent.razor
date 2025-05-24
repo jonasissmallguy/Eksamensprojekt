@@ -67,7 +67,7 @@
                                                                     <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
                                                                 }
                                                             </div>
-                                                            @if (goal.Status != "Completed" && goal.Type == "Skoleforløb" && _currentUser.Rolle == "Køkkenchef")
+                                                            @if (goal.Status != "Completed" && goal.Type == "Skoleophold" && _currentUser.Rolle == "Køkkenchef")
                                                             {
                                                                 <button class="btn btn-success" @onclick="() => ConfirmSchoolOphold(goal)">Godkend Skoleophold</button>
                                                             }

@@ -231,10 +231,12 @@ namespace Server
             {
                 var name = user.FirstName + " " + user.LastName;
 
-                var missingCourses = user.ElevPlan.Forløbs
+                var missingCourses = user.ElevPlan?.Forløbs?
+                    .Where(f => f.Semester == user.Year)
                     .SelectMany(f => f.Goals)
-                    .Where(g => g.Type == "Kursus")
+                    .Where(g => g.Type == "Kursus" && g.Status == "Active")
                     .ToList();
+                
 
                 if (missingCourses != null)
                 {
@@ -242,9 +244,12 @@ namespace Server
                     {
                         result.Add(new KursusManglendeDTO
                         {
+                            Id = user.Id,
+                            CourseCode = kursus.CourseCode,
                             FullName = name,
                             GoalId = kursus.Id,
-                            GoalTitle = kursus.Title
+                            GoalTitle = kursus.Title,
+                            Hotel = user.HotelNavn
                         });
                     }
                 }
@@ -268,7 +273,13 @@ namespace Server
 
                 var outOfHouseGoals = user.ElevPlan.Forløbs
                     .SelectMany(f => f.Goals)
-                    .Where(g => g.Type == "Kursus" || g.Type == "Skoleforløb")
+                    .Where(g => 
+                        (g.Type == "Kursus" || g.Type == "Skoleforløb") &&
+                        g.Status == "InProgress" &&
+                        g.StartDate != null &&
+                        g.EndDate != null &&
+                        g.StartDate <= DateTime.Now.AddYears(1)
+                    )
                     .ToList();
 
                 if (outOfHouseGoals != null)
@@ -377,6 +388,43 @@ namespace Server
                  return NotFound();
              }
              
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("progress/{studentId}")]
+        public async Task<IActionResult> GetGoalProgress(int studentId)
+        {
+            var forløbs = await _goalRepository.GetGoalsByStudentId(studentId);
+
+            var result = new List<GoalProgessDTO>();
+
+            var semesters = forløbs
+                .Select(f => f.Semester)
+                .Distinct();
+
+            foreach (var semester in semesters)
+            {
+                int totalGoals = 0;
+                int completedGoals = 0;
+
+                foreach (var forløb in forløbs.Where(f => f.Semester == semester))
+                {
+                    var goals = forløb.Goals ?? new List<Goal>();
+                    totalGoals += goals.Count;
+                    completedGoals += goals.Count(g => g.Status == "Completed");
+                }
+
+                result.Add(new GoalProgessDTO
+                {
+                    YearNumber = semester,
+                    TotalGoals = totalGoals,
+                    CompletedGoals = completedGoals
+                });
+            }
+
+            result = result.OrderBy(r => r.YearNumber).ToList();
+
             return Ok(result);
         }
         

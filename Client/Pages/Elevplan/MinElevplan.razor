@@ -21,7 +21,21 @@
                 <p class="telefon">Telefon: @elev.Mobile </p>
                 <p class="mail">Mail: @elev.Email</p>
                 <p class="restaurant">Restaurant: @elev.HotelNavn</p>
-                <p class="total-goals">Udførte mål: xxxx</p>
+                <div class="goal-progress-horizontal">
+                    @if (goalList == null)
+                    {
+                        <p>Loading progress...</p>
+                    }
+                    else
+                    {
+                        @foreach (var progress in goalList)
+                        {
+                            <div class="progress-item">
+                                <strong>@progress.YearNumber:</strong> @progress.CompletedGoals / @progress.TotalGoals
+                            </div>
+                        }
+                    }
+                </div>
             </div>
         </div>
     }
@@ -56,6 +70,7 @@
     [Parameter] public int studentId { get; set; }
     private User elev;
     private Plan? elevPlan;
+    private List<GoalProgessDTO> goalList;
 
 
     protected override async Task OnInitializedAsync()
@@ -65,11 +80,11 @@
             navMan.NavigateTo($"login/minelevplan/{studentId}");
             return;
         }
-        
         //Mangler validering, at andre ikke kan logge ind fra ndet hotel osv....
         
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
+        goalList = await IGoalService.GoalProgess(studentId);
 
     }
 
@@ -153,9 +168,10 @@
                 {
                     localGoal.Status = confirmedGoal.Status;
                     localGoal.CompletedAt = confirmedGoal.CompletedAt;
+                    goalList = await IGoalService.GoalProgess(studentId);
                     StateHasChanged();
                 }
-            }
+            }   
         }
     }
 
@@ -173,6 +189,7 @@
             {
                 localGoal.CompletedAt =  confirmedGoal.CompletedAt;
                 localGoal.Status = confirmedGoal.Status;
+                goalList = await IGoalService.GoalProgess(studentId);
                 StateHasChanged();
             }
         }

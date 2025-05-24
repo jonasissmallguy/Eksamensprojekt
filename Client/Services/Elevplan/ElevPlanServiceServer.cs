@@ -8,7 +8,6 @@ namespace Client
     public class ElevPlanServiceServer : IElevPlan
     {
         
-        private string serverUrl = "http://localhost:5075";
         private HttpClient _client = new();
 
         public ElevPlanServiceServer(HttpClient client)
@@ -18,7 +17,7 @@ namespace Client
         
         public async Task<Plan> CreateElevPlan(int studentId)
         {
-            var response = await _client.PostAsJsonAsync($"{serverUrl}/elevplan/{studentId}", new { studentId });
+            var response = await _client.PostAsJsonAsync($"elevplan/{studentId}", new { studentId });
 
             if (response.IsSuccessStatusCode)
             {
