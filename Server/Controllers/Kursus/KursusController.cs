@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using Client;
+using Core;
 using Core.DTO.Kursus;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,13 @@ namespace Server
     [Route("kursus")]
     public class KursusController : ControllerBase
     {
-        private readonly IKursusRepository _kursusRepository;
+        private IKursusRepository _kursusRepository;
+        private IGoalRepository _goalRepository; 
 
-        public KursusController(IKursusRepository kursusRepository)
+        public KursusController(IKursusRepository kursusRepository, IGoalRepository goalRepository)
         {
             _kursusRepository = kursusRepository;
+            _goalRepository = goalRepository;
         }
 
         [HttpGet]
@@ -31,23 +34,38 @@ namespace Server
         }
 
         [HttpDelete]
-        [Route("removestudent/{studentId}/{kursusId}")]
-        public async Task<IActionResult> RemoveStudent(int studentId, int kursusId)
+        [Route("removestudent/{studentId}/{kursusCode}")]
+        public async Task<IActionResult> RemoveStudent(int studentId, string kursusCode)
         {
-            var success = await _kursusRepository.RemoveStudentFromCourse(studentId, kursusId);
-            return Ok(success);
+            var kursus = await _kursusRepository.RemoveStudentFromCourse(studentId, kursusCode);
+            
+            if (kursus == null) return BadRequest();
+           
+            var result = await _goalRepository.RemoveStudentFromACourse(studentId, kursusCode);
+            
+            if (result == false) return BadRequest();
+            
+            return Ok(kursus);
         }
         
         [HttpPut]
-        [Route("complete")]
-        public async Task<IActionResult> CompleteCourse([FromBody] Kursus kursus)
+        [Route("complete/{kursusId}")]
+        public async Task<IActionResult> CompleteCourse(int kursusId)
         {
             
+            var success = await _kursusRepository.CompleteCourse(kursusId);
             
-            var success = await _kursusRepository.CompleteCourse(kursus);
+            List<int> allStudents = success.Students.Select(s => s.Id).ToList();
+            var kursusCode = success.CourseCode;
             
-            return success ? Ok() : NotFound();
+            var result = await _goalRepository.CompleteAllStudentsOnCourse(allStudents, kursusCode);
+
+            if (result == null)
+            {
+                return BadRequest();
+            }
             
+            return Ok(result);
         }
 
         [HttpGet]
@@ -64,11 +82,13 @@ namespace Server
         {
             var kursusModel = new Kursus
             {
+                CourseCode = kursus.CourseCode,
                 Title = kursus.Title,
                 Location = kursus.Location,
                 StartDate = kursus.StartDate,
                 EndDate = kursus.EndDate,
-                Description = kursus.Description
+                Description = kursus.Description,
+                MaxParticipants = kursus.MaxParticipants,
             };
             
             await _kursusRepository.SaveCourse(kursusModel);
@@ -80,7 +100,6 @@ namespace Server
         [Route("addstudent/{kursusId}")]
         public async Task<IActionResult> AddStudentToCourse([FromBody] KursusDeltagerListeDTO user, int kursusId)
         {
-
             var newParticipant = new User
             {
                 Id = user.Id,
@@ -88,9 +107,18 @@ namespace Server
                 HotelNavn = user.Hotel,
             };
             
-            await _kursusRepository.AddStudentToCourse(newParticipant, kursusId);
+            var updateResult = await _kursusRepository.AddStudentToCourse(newParticipant, kursusId);
 
-            return Ok();
+            if (updateResult == null)
+            {
+                return NotFound();
+            }
+            
+            
+            //Tildeler kursus til eleven
+            await _goalRepository.AddStudentToACourse(newParticipant.Id, updateResult);
+
+            return Ok(updateResult);
 
         }
 
@@ -110,9 +138,12 @@ namespace Server
                 {
                     kursusListe.Add(new KursusKommendeDTO
                     {
+                        CourseCode = kursus.CourseCode,
                         Title = kursus.Title,
                         Location = kursus.Location,
                         StartDate = kursus.StartDate,
+                        Participants = kursus.Participants,
+                        MaxParticipants = kursus.MaxParticipants
                     });
                 }
             }
@@ -134,9 +165,11 @@ namespace Server
             {
                 kursusListe.Add(new KursusKommendeDTO
                 {
+                    CourseCode = kursus.CourseCode,
                     Title = kursus.Title,
                     Location = kursus.Location,
                     StartDate = kursus.StartDate
+                    
                 });
             }
             

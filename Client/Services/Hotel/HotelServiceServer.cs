@@ -6,7 +6,6 @@ namespace Client
 
     public class HotelServiceServer : IHotel
     {
-        private string serverUrl = "http://localhost:5075";
         private HttpClient _client;
 
         public HotelServiceServer(HttpClient client)
@@ -17,12 +16,12 @@ namespace Client
 
         public async Task<List<Hotel>> GetHotels()
         {
-            return await _client.GetFromJsonAsync<List<Hotel>>($"{serverUrl}/hotels");
+            return await _client.GetFromJsonAsync<List<Hotel>>($"hotels");
         }   
 
         public async Task CreateHotel(HotelCreationDTO newHotel)
         { 
-            await _client.PostAsJsonAsync($"{serverUrl}/hotels", newHotel);
+            await _client.PostAsJsonAsync($"hotels", newHotel);
         }
     }
 

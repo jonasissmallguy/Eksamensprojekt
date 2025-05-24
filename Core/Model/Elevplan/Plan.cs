@@ -13,7 +13,7 @@ namespace Core
         public string Title { get; set; }
         public string Description { get; set; }
         public List<Forløb> Forløbs { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; }
     }
 
 }

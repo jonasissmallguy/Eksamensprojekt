@@ -267,9 +267,14 @@ namespace Server
                 Email = user.Email,
                 Password = GeneratePassword(),
                 Rolle = user.Rolle,
-                HotelId = user.HotelId,
-                HotelNavn = hotel?.HotelNavn
+           
             };
+
+            if (user.Rolle != "HR")
+            {
+                nyBruger.HotelId = user.HotelId;
+                nyBruger.HotelNavn = hotel?.HotelNavn;
+            }
 
             if (user.Rolle == "Elev")
             {
@@ -302,7 +307,7 @@ namespace Server
 
             if (!mailSent)
             {
-                return BadRequest();
+                return Confligt(); //skal give fejlbesked med invalid mail
             }
             */
     
@@ -461,6 +466,26 @@ namespace Server
         {
             List<KursusDeltagerListeDTO> students = new();
             var users = await _userRepository.GetAllStudents();
+
+            foreach (var user in users)
+            {
+                students.Add(new KursusDeltagerListeDTO
+                {
+                    Id = user.Id,
+                    Hotel = user.HotelNavn,
+                    Navn = user.FirstName + "  " + user.LastName
+                });
+            }
+
+            return Ok(students);
+        }
+        
+        [HttpGet]
+        [Route("allstudents/{kursusCode}")]
+        public async Task<IActionResult> GetAllStudentsWithCourse(string kursusCode)
+        {
+            List<KursusDeltagerListeDTO> students = new();
+            var users = await _userRepository.GetAllStudentsMissingCourse(kursusCode);
 
             foreach (var user in users)
             {

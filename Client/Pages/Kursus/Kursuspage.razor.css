@@ -17,22 +17,39 @@ th{
 
 .course_information {
     display: flex;
-    gap: 2rem; /* Space between course info and description */
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    margin-bottom: 2rem; /* Space below the course information */
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
     padding: 1rem;
-    background-color: #f8f9fa; /* Optional: light background */
-    border-radius: 0.5rem; /* Optional: rounded corners */
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.section_header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    min-height: 2rem; /* Ensure consistent height */
+}
+
+.section_header h6 {
+    margin: 0;
+}
+
+.search-input {
+    max-width: 300px;
+    width: 300px;
 }
 
 .course_info {
-    flex: 0 0 auto; /* Don't grow, don't shrink, auto width */
-    min-width: 250px; /* Minimum width for course info */
+    flex: 0 0 auto;
+    min-width: 250px;
 }
 
 .course_description {
-    flex: 1; /* Take remaining space */
-    min-width: 300px; /* Minimum width before wrapping */
+    flex: 1;
+    min-width: 300px;
 }
 
 .course_info h4 {
@@ -63,21 +80,16 @@ th{
     margin-top: 30px;
     display: flex;
     gap: 2rem;
-    flex-wrap:  wrap;
+    flex-wrap: wrap;
+    align-items: flex-start;
 }
 
 .students_list,
 .assign_students {
-    flex: 1; /* Each section takes equal width */
-    min-width: 300px; /* Minimum width before wrapping */
-}
-
-.students_list {
-    margin-right: 1rem; /* Additional right margin for the left section */
-}
-
-.assign_students {
-    margin-left: 1rem; /* Additional left margin for the right section */
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
 }
 
 .table {
@@ -86,26 +98,19 @@ th{
 }
 
 .full-course-information {
-    margin-top: 1rem;
-    max-height: 400px; /* Set maximum height */
-    overflow-y: auto; /* Enable vertical scrolling */
-    border: 1px solid #dee2e6; /* Optional: add border to define scroll area */
-    border-radius: 0.25rem; /* Optional: rounded corners */
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
 }
 
-.table {
-    width: 100%;
-    margin-bottom: 0;
-}
-
-/* Keep table header visible when scrolling */
 .table thead th {
     position: sticky;
     top: 0;
     z-index: 10;
     border-bottom: 2px solid #dee2e6;
 }
-/* Responsive design for smaller screens */
+
 @media (max-width: 768px) {
     .full_div {
         flex-direction: column;

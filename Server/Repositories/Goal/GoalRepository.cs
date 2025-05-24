@@ -97,9 +97,72 @@ namespace Server
             var options = new UpdateOptions { ArrayFilters = arrayFilters };
     
             var result = await _goalCollection.UpdateOneAsync(filter, update, options);
-            Console.WriteLine($"Result: ModifiedCount={result.ModifiedCount}, MatchedCount={result.MatchedCount}");
             
             return comment;
+        }
+
+        public async Task<bool> AddStudentToACourse(int studentId, Kursus kursus)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            var update = Builders<User>.Update
+                .Set("ElevPlan.Forløbs.$[].Goals.$[g].Status", "InProgress")
+                .Set("ElevPlan.Forløbs.$[].Goals.$[g].StartDate", kursus.StartDate)
+                .Set("ElevPlan.Forløbs.$[].Goals.$[g].EndDate", kursus.EndDate);
+            
+            var arrayFilter = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(
+                    new BsonDocument("g.CourseCode", kursus.CourseCode))
+            };
+    
+            var options = new UpdateOptions { ArrayFilters = arrayFilter };
+    
+            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
+
+            return result.ModifiedCount > 0;
+
+        }
+
+        public async Task<bool> CompleteAllStudentsOnCourse(List<int> studentIds, string kursusCode)
+        {
+            var filter = Builders<User>.Filter.In("_id", studentIds);
+            var update = Builders<User>.Update.Set("ElevPlan.Forløbs.$[].Goals.$[g].Status", "Completed");
+
+            var arrayFilter = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(
+                    new BsonDocument("g.CourseCode", kursusCode))
+            };
+
+            var options = new UpdateOptions { ArrayFilters = arrayFilter };
+
+            var result = await _goalCollection.UpdateManyAsync(filter, update, options);
+            
+            return result.ModifiedCount > 0;
+
+        }
+
+        public async Task<bool> RemoveStudentFromACourse(int studentId, string kursusCode)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            
+            var update = Builders<User>.Update
+                .Set("ElevPlan.Forløbs.$[].Goals.$[g].Status", "Active")
+                .Unset("ElevPlan.Forløbs.$[].Goals.$[g].StartDate")
+                .Unset("ElevPlan.Forløbs.$[].Goals.$[g].EndDate");
+
+            var arrayFilter = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(
+                    new BsonDocument("g.CourseCode", kursusCode))
+            };
+
+            var options = new UpdateOptions { ArrayFilters = arrayFilter };
+
+            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
+            
+            return result.ModifiedCount > 0;
+            
         }
 
         //Starter en kompetence
@@ -179,6 +242,7 @@ namespace Server
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
             };
 
+            //return after update option
             var options = new UpdateOptions { ArrayFilters = arrayFilters };
 
             var result = await _goalCollection.UpdateOneAsync(filter, update, options);
@@ -205,6 +269,14 @@ namespace Server
             }
             await UpdateForløbStatus(planId, forløbId);
             return confirmedGoal;
+        }
+
+        public async Task<List<Forløb>> GetGoalsByStudentId(int studentId)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, studentId);
+            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
+
+            return user?.ElevPlan?.Forløbs ?? new List<Forløb>();
         }
 
         //Skriv om 
@@ -247,6 +319,7 @@ namespace Server
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
             };
 
+            //bør det være after?
             var options = new FindOneAndUpdateOptions<User> 
             { 
                 ArrayFilters = arrayFilters,
@@ -260,7 +333,6 @@ namespace Server
                 return null;
             }
             
-       
             await UpdateForløbStatus(planId, forløbId);
             await UpdateYearStauts(planId);
     
@@ -299,7 +371,7 @@ namespace Server
             var projection = Builders<User>.Projection
                 .Expression(u => u.ElevPlan.Forløbs
                     .SelectMany(f => f.Goals)
-                    .Where(g => g.Type == "Skoleforløb")
+                    .Where(g => g.Type == "Skoleophold")
                     .ToList()
                 );
 
@@ -350,19 +422,22 @@ namespace Server
                 Builders<User>.Filter.Eq(u => u.Rolle, "Elev"),
                 Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
                     Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
-                        Builders<Goal>.Filter.Eq(g => g.Type, "Kursus")
+                        Builders<Goal>.Filter.And(
+                            Builders<Goal>.Filter.Eq(g => g.Type, "Kursus"),
+                            Builders<Goal>.Filter.Eq(g => g.Status, "Active")
+                            )
                     )
                 )
             );
-
+            
+            /*
             var projection = Builders<User>.Projection
                 .Include(u => u.FirstName)
                 .Include(u => u.LastName)
                 .Include(u => u.ElevPlan.Forløbs); 
-
+            */
             return await _goalCollection
                 .Find(filter)
-                .Project<User>(projection)
                 .ToListAsync();
         }
         
@@ -375,12 +450,16 @@ namespace Server
                 Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
                     Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
                         Builders<Goal>.Filter.And(
-                            Builders<Goal>.Filter.In(g => g.Type, new[] { "Kursus", "Skoleforløb" }),
-                            Builders<Goal>.Filter.Eq(g => g.Status, "Active")
+                            Builders<Goal>.Filter.In(g => g.Type, new[] { "Kursus", "Skoleophold" }),
+                            Builders<Goal>.Filter.Eq(g => g.Status, "InProgress"),
+                            Builders<Goal>.Filter.Ne<DateTime?>(g => g.StartDate, null),
+                            Builders<Goal>.Filter.Ne<DateTime?>(g => g.EndDate, null),
+                            Builders<Goal>.Filter.Lte(g => g.StartDate, DateTime.Now.AddYears(1))
                         )
                     )
                 )
             );
+
 
             return await _goalCollection.Find(filter).ToListAsync();
         }

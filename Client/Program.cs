@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Client;
@@ -7,7 +8,13 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-string apiBaseUrl = builder.Configuration["ApiBaseUrl"];
+string env = builder.HostEnvironment.Environment; 
+string configFile = env == "Development" ? "appsettings.Development.json" : "appsettings.json";
+
+var http = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
+var configData = await http.GetFromJsonAsync<Dictionary<string, string>>(configFile);
+
+string apiBaseUrl = configData["ApiBaseUrl"];
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiBaseUrl) });
 
