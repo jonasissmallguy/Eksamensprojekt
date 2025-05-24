@@ -7,47 +7,114 @@
         <ValidationSummary/>
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
-                <label for="Semester">Semester:</label>
-                <InputSelect class="form-select" @bind-Value="selectedSemester">
-                    @foreach (var yy in År)
+                <label for="Type">Type:</label>
+                <InputSelect class="form-select" @bind-Value="selectedType">
+                    @foreach (var t in måltyper)
                     {
-                        <option value="@yy">@yy</option>
+                        <option value="@t">@t</option>
                     }
                 </InputSelect>
             </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-3">
-                <label for="Forløb">Forløb:</label>
-                <InputSelect class="form-select" @bind-Value="tilføjDelmål.ForløbId">
-                    <option value="0" disabled selected hidden>Vælg forløb</option>
-                    @if (ElevPlan?.Forløbs != null)
-                    {
-                        @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester)))
+
+        @if (selectedType == "Delmål")
+        {
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Semester">Semester:</label>
+                    <InputSelect class="form-select" @bind-Value="selectedSemester">
+                        @foreach (var yy in År)
                         {
-                            <option value="@e.Id">@e.Title</option>
+                            <option value="@yy">@yy</option>
                         }
-                    }
-                </InputSelect>
+                    </InputSelect>
+                </div>
             </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-3">
-                <label for="Titel">Titel:</label>
-                <InputText id="Titel" @bind-Value="tilføjDelmål.Title" placeholder="Titel..." class="form-control"/>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Forløb">Forløb:</label>
+                    <InputSelect class="form-select" @bind-Value="tilføjDelmål.ForløbId">
+                        <option value="0" disabled selected hidden>Vælg forløb</option>
+                        @if (ElevPlan?.Forløbs != null)
+                        {
+                            @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester)))
+                            {
+                                <option value="@e.Id">@e.Title</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
             </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-3">
-                <label for="Beskrivelse">Beskrivelse:</label>
-                <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description" class="form-control"/>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Titel">Titel:</label>
+                    <InputText id="Titel" @bind-Value="tilføjDelmål.Title" placeholder="Titel..." class="form-control"/>
+                </div>
             </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-3">
-                <button class="btn btn-primary" type="submit">Tilføj</button>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Beskrivelse">Beskrivelse:</label>
+                    <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description" class="form-control"/>
+                </div>
             </div>
-        </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <button class="btn btn-primary" type="submit">Tilføj</button>
+                </div>
+            </div>
+        }
+        else if (selectedType == "Skoleforløb")
+        {
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Semester">Semester:</label>
+                    <InputSelect class="form-select" @bind-Value="selectedSemester">
+                        @foreach (var yy in År)
+                        {
+                            <option value="@yy">@yy</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Forløb">Forløb:</label>
+                    <InputSelect class="form-select" @bind-Value="tilføjDelmål.ForløbId">
+                        <option value="0" disabled selected hidden>Vælg forløb</option>
+                        @if (ElevPlan?.Forløbs != null)
+                        {
+                            @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester && g.Title == "Skoleforløb")))
+                            {
+                                <option value="@e.Id">@e.Title</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Titel">Titel:</label>
+                    <InputText id="Titel" @bind-Value="tilføjDelmål.Title" placeholder="Titel..." class="form-control"/>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <label for="Beskrivelse">Beskrivelse:</label>
+                    <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description" class="form-control"/>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-6 mb-3">
+                        <label for="StartDate">Startdato:</label>
+                        <InputDate id="StartDate" class="form-control" @bind-Value="tilføjDelmål.StartDate" />
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <button class="btn btn-primary" type="submit">Tilføj</button>
+                </div>
+            </div>
+        }
     </EditForm>
 </ModalDialog>
 
@@ -66,9 +133,13 @@
 
     private string[] skole = { "Kold Kollege", "EUX Kronjylland", "Hansted Kokkeskole" };
 
+    private string[] måltyper = { "Delmål", "Skoleforløb" };
+
     [Parameter] public string[] År { get; set; } = new[] { "År 1", "År 2", "År 3" };
 
     private string selectedSemester;
+
+    private string selectedType;
 
     public void Open()
     {
@@ -82,8 +153,8 @@
         ModalRef?.Open();
         StateHasChanged();
     }
-    
-    
+
+
 
     private async Task OnSubmit()
     {
@@ -102,8 +173,8 @@
         {
             Console.WriteLine("Fejl: Kunne ikke tilføje delmål");
         }
-        
+
         ModalRef?.Close();
-        
+
     }
 }
