@@ -51,40 +51,56 @@ namespace Server
             return await _collection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> RemoveStudentFromCourse(int studentId, int kursusId)
+        public async Task<Kursus> RemoveStudentFromCourse(int studentId, string kursusCode)
         {
-            var filter = Builders<Kursus>.Filter.Eq("_id", kursusId);
-            var update = Builders<Kursus>.Update.PullFilter(k => k.Students, s => s.Id == studentId);
-            var result = await _collection.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
-        }
+            var filter = Builders<Kursus>.Filter.Eq("CourseCode", kursusCode);
+            var update = Builders<Kursus>.Update.Combine(Builders<Kursus>.Update.PullFilter(k => k.Students, s => s.Id == studentId),
+                Builders<Kursus>.Update.Inc("Participants", -1));
+            
+            var options = new FindOneAndUpdateOptions<Kursus>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
 
+            var result = await _collection.FindOneAndUpdateAsync(filter, update, options);            
+            return result;
+
+        }
         
-        //Denne skal sætte for alle brugere der er på kursuset!
-        public async Task<bool> CompleteCourse(Kursus kursus)
-        {
-            var filter = Builders<Kursus>.Filter.Eq("_id", kursus.Id);
-            var update = Builders<Kursus>.Update.Set("Status", "Completed");
-            var result = await _collection.UpdateOneAsync(filter, update);
-            return result.ModifiedCount > 0;
-        }
-
-        public Task AddStudentToCourse(User user, int kursusId)
+        public async Task<Kursus> CompleteCourse(int kursusId)
         {
             var filter = Builders<Kursus>.Filter.Eq("_id", kursusId);
-            var update = Builders<Kursus>.Update.Push("Students", user);
-            
-            return _collection.UpdateOneAsync(filter, update);
+            var update = Builders<Kursus>.Update.Set("Status", "Completed");
+
+
+            var updatedCourse = await _collection.FindOneAndUpdateAsync(filter, update);
+
+            return updatedCourse;
+
         }
 
-        public async Task AddStudentToCourse(int studentId, Kursus kursus)
+
+        public async Task<Kursus> AddStudentToCourse(User user, int kursusId)
         {
-            var filter = Builders<Kursus>.Filter.Eq("_id", kursus.Id);
-            var update = Builders<Kursus>.Update.Set("Students", studentId);
-            
-        }
+            var filter = Builders<Kursus>.Filter.Eq("_id", kursusId);
 
-        public async Task<List<KursusTemplate>> GetAllTemplates()
+            var update = Builders<Kursus>.Update.Combine(
+                Builders<Kursus>.Update.Push("Students", user),
+                Builders<Kursus>.Update.Inc("Participants", 1)
+            );            
+            var options = new FindOneAndUpdateOptions<Kursus>
+            {
+                ReturnDocument = ReturnDocument.After
+            };
+
+            var result = await _collection.FindOneAndUpdateAsync(filter, update, options);
+            
+            return result;
+        }
+        
+
+        public
+            async Task<List<KursusTemplate>> GetAllTemplates()
         {
             var filter = Builders<KursusTemplate>.Filter.Empty;
             

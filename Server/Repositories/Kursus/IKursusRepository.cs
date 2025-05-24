@@ -1,4 +1,5 @@
 ﻿using Core;
+using MongoDB.Driver;
 
 namespace Server
 {
@@ -6,11 +7,9 @@ namespace Server
     {
         Task<List<Kursus>> GetAllCourses();
         Task<Kursus> GetCourseById(int kursusId);
-        Task<bool> RemoveStudentFromCourse(int studentId, int kursusId);
-        Task<bool> CompleteCourse(Kursus kursus);
-        
-        Task AddStudentToCourse(User user, int kursusId);
-        
+        Task<Kursus> RemoveStudentFromCourse(int studentId, string kursusCode);
+        Task<Kursus> CompleteCourse(int kursusId);
+        Task<Kursus> AddStudentToCourse(User user, int kursusId);
         Task<List<KursusTemplate>> GetAllTemplates();
         Task SaveCourse(Kursus kursus);
         Task<List<Kursus>> GetFutureCourses();

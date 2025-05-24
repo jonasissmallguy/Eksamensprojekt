@@ -32,6 +32,7 @@ namespace Server
         Task<UpdateResult> UpdateHotel(int userId, int hotelId, string updatedHotelNavn);
 
         Task<List<User>> GetAllStudents();
+        Task<List<User>> GetAllStudentsMissingCourse(string kursusCode);
 
     }
 

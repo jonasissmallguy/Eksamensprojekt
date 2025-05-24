@@ -178,6 +178,11 @@ namespace Client
             throw new NotImplementedException();
         }
 
+        public Task<List<GoalProgessDTO>> GoalProgess(int studentId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment leder)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == leder.GoalId);

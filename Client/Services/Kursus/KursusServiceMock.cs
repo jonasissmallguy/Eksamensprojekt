@@ -67,22 +67,25 @@ public class KursusServiceMock : IKursus
         throw new NotImplementedException();
     }
 
-    public async Task RemoveStudentFromCourse(int studentId, Kursus kursus)
+    public async Task<Kursus> RemoveStudentFromCourse(int studentId, Kursus kursus)
     {
         var kursuset = _allCourses.FirstOrDefault(x => x.Id == kursus.Id);
         kursuset.Students.RemoveAll(x => x.Id == studentId);
+
+        return kursuset;
     }
 
-    public async Task CompleteCourse(Kursus kursus)
+    public async Task CompleteCourse(int kursusId)
     {
         List<User> allParticipants = new();
-        string _kursusnavn = kursus.Title;
-        
+        //string _kursusnavn = kursus.Title;
+        /*
         foreach (var x in kursus.Students)
         {
             
             allParticipants.Add(x);
         }
+        */
 
         foreach (var student in allParticipants)
         {
@@ -90,7 +93,7 @@ public class KursusServiceMock : IKursus
             
             foreach (var forløb in forløbs)
             {
-                var goal = forløb.Goals.FirstOrDefault(x => x.Title == _kursusnavn);
+                var goal = forløb.Goals.FirstOrDefault(x => x.Title == x.Title);
                 if (goal != null)
                 {
                     goal.Status = "Completed";
@@ -99,7 +102,7 @@ public class KursusServiceMock : IKursus
         }
     }
 
-    public Task AddStudentToCourse(int studentId, Kursus kursus)
+    public async Task<Kursus> AddStudentToCourse(int userId, string userName, string hotelName, int kursusId)
     {
         throw new NotImplementedException();
     }
@@ -109,7 +112,7 @@ public class KursusServiceMock : IKursus
         throw new NotImplementedException();
     }
 
-    public Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
+    public Task<Kursus> AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
     {
         throw new NotImplementedException();
     }

@@ -63,9 +63,9 @@
       "Semester": "År 1",
       "Title": "Interne Kurser",
       "Goals": [
-        { "_id": 27, "Type": "Kursus", "Title": "Kernen i Comwell", "Description": "Grundlæggende kursus om Comwell" },
-        { "_id": 28, "Type": "Kursus", "Title": "ESG & bæredygtighed", "Description": "Kursus om bæredygtighed i hotelbranchen" },
-        { "_id": 29, "Type": "Kursus", "Title": "Intro for nye elever", "Description": "Introduktionskursus for nye elever" },
+        { "_id": 27, "Type": "Kursus", "Title": "Kernen i Comwell", "Description": "Grundlæggende kursus om Comwell", "CourseCode": "COMWELL_CORE_000" },
+        { "_id": 28, "Type": "Kursus", "Title": "ESG & bæredygtighed", "Description": "Kursus om bæredygtighed i hotelbranchen", "CourseCode": "COMWELL_ESG_001" },
+        { "_id": 29, "Type": "Kursus", "Title": "Intro for nye elever", "Description": "Introduktionskursus for nye elever", "CourseCode": "COMWELL_INTRO_002" },
         { "_id": 30, "Type": "Delmål", "Title": "Crosstraining", "Description": "Tværfaglig træning i køkkenet" }
       ]
     },
@@ -74,15 +74,15 @@
       "Semester": "År 1",
       "Title": "Faglige mål",
       "Goals": [
-        { "_id": 31, "Type": "Kompetence", "Title": "Systemer", "Description": "Gennemgang af køkkenets systemer" },
-        { "_id": 32, "Type": "Kompetence", "Title": "Knivgennemgang", "Description": "Korrekt brug og vedligeholdelse af knive" },
-        { "_id": 33, "Type": "Kompetence", "Title": "Anretninger", "Description": "Kreativ og professionel anretning" },
-        { "_id": 34, "Type": "Kompetence", "Title": "Rengøring af værktøj", "Description": "Korrekt rengøring af køkkenudstyr" },
-        { "_id": 35, "Type": "Kompetence", "Title": "Forplejningsmuligheder", "Description": "Forskellige forplejningsformer" },
-        { "_id": 36, "Type": "Kompetence", "Title": "Konferencemenuer", "Description": "Sammensætning af konferencemenuer" },
-        { "_id": 37, "Type": "Kompetence", "Title": "A la Carte menuer", "Description": "Konstruktion af A la Carte menuer" },
-        { "_id": 38, "Type": "Kompetence", "Title": "Selskabsmenuer", "Description": "Planlægning af selskabsmenuer" },
-        { "_id": 39, "Type": "Kompetence", "Title": "Barkort", "Description": "Sammensætning af barkort" }
+        { "_id": 31, "Type": "Delmål", "Title": "Systemer", "Description": "Gennemgang af køkkenets systemer" },
+        { "_id": 32, "Type": "Delmål", "Title": "Knivgennemgang", "Description": "Korrekt brug og vedligeholdelse af knive" },
+        { "_id": 33, "Type": "Delmål", "Title": "Anretninger", "Description": "Kreativ og professionel anretning" },
+        { "_id": 34, "Type": "Delmål", "Title": "Rengøring af værktøj", "Description": "Korrekt rengøring af køkkenudstyr" },
+        { "_id": 35, "Type": "Delmål", "Title": "Forplejningsmuligheder", "Description": "Forskellige forplejningsformer" },
+        { "_id": 36, "Type": "Delmål", "Title": "Konferencemenuer", "Description": "Sammensætning af konferencemenuer" },
+        { "_id": 37, "Type": "Delmål", "Title": "A la Carte menuer", "Description": "Konstruktion af A la Carte menuer" },
+        { "_id": 38, "Type": "Delmål", "Title": "Selskabsmenuer", "Description": "Planlægning af selskabsmenuer" },
+        { "_id": 39, "Type": "Delmål", "Title": "Barkort", "Description": "Sammensætning af barkort" }
       ]
     },
     {
@@ -90,9 +90,9 @@
       "Semester": "År 1",
       "Title": "Kvalitetskendetegn på råvarer",
       "Goals": [
-        {"_id": 40, "Type": "Kompetence", "Title": "Kød", "Description": "Kvalitetskendetegn på kød"},
-        {"_id": 41, "Type": "Kompetence", "Title": "Fisk", "Description": "Kvalitetskendetegn på fisk"},
-        {"_id": 42, "Type": "Kompetence", "Title": "Grøntsager", "Description": "Kvalitetskendetegn på grønsager"}
+        {"_id": 40, "Type": "Delmål", "Title": "Kød", "Description": "Kvalitetskendetegn på kød"},
+        {"_id": 41, "Type": "Delmål", "Title": "Fisk", "Description": "Kvalitetskendetegn på fisk"},
+        {"_id": 42, "Type": "Delmål", "Title": "Grøntsager", "Description": "Kvalitetskendetegn på grønsager"}
       ]
     },
     {
@@ -100,12 +100,12 @@
       "Semester": "År 1",
       "Title": "Grovudskæringer af diverse kødstykker",
       "Goals": [
-        {"_id": 43, "Type": "Kompetence", "Title": "Okse/kalv", "Description": "Teknikker til udskæring af okse/kalv"},
-        {"_id": 44, "Type": "Kompetence", "Title": "Gris", "Description": "Teknikker til udskæring af gris"},
-        {"_id": 45, "Type": "Kompetence", "Title": "Lam", "Description": "Teknikker til udskæring af lam"},
-        {"_id": 46, "Type": "Kompetence", "Title": "Fjerkræ", "Description": "Teknikker til udskæring af fjerkræ"},
-        {"_id": 47, "Type": "Kompetence", "Title": "Fisk", "Description": "Teknikker til udskæring af fisk"},
-        {"_id": 48, "Type": "Kompetence", "Title": "Skaldyr", "Description": "Teknikker til udskæring af skaldyr"}
+        {"_id": 43, "Type": "Delmål", "Title": "Okse/kalv", "Description": "Teknikker til udskæring af okse/kalv"},
+        {"_id": 44, "Type": "Delmål", "Title": "Gris", "Description": "Teknikker til udskæring af gris"},
+        {"_id": 45, "Type": "Delmål", "Title": "Lam", "Description": "Teknikker til udskæring af lam"},
+        {"_id": 46, "Type": "Delmål", "Title": "Fjerkræ", "Description": "Teknikker til udskæring af fjerkræ"},
+        {"_id": 47, "Type": "Delmål", "Title": "Fisk", "Description": "Teknikker til udskæring af fisk"},
+        {"_id": 48, "Type": "Delmål", "Title": "Skaldyr", "Description": "Teknikker til udskæring af skaldyr"}
       ]
     },
     {
@@ -113,11 +113,11 @@
       "Semester": "År 1",
       "Title": "Fonder",
       "Goals": [
-        {"_id": 49, "Type": "Kompetence", "Title": "Okse/kalv", "Description": "Tilberedning og brug af okse/kalve fond"},
-        {"_id": 50, "Type": "Kompetence", "Title": "Kylling", "Description": "Tilberedning og brug af kyllinge fond"},
-        {"_id": 51, "Type": "Kompetence", "Title": "Lam", "Description": "Tilberedning og brug af lamme fond"},
-        {"_id": 52, "Type": "Kompetence", "Title": "And", "Description": "Tilberedning og brug af ande fond"},
-        {"_id": 53, "Type": "Kompetence", "Title": "Grøntsager", "Description": "Tilberedning og brug af grønsags fond"}
+        {"_id": 49, "Type": "Delmål", "Title": "Okse/kalv", "Description": "Tilberedning og brug af okse/kalve fond"},
+        {"_id": 50, "Type": "Delmål", "Title": "Kylling", "Description": "Tilberedning og brug af kyllinge fond"},
+        {"_id": 51, "Type": "Delmål", "Title": "Lam", "Description": "Tilberedning og brug af lamme fond"},
+        {"_id": 52, "Type": "Delmål", "Title": "And", "Description": "Tilberedning og brug af ande fond"},
+        {"_id": 53, "Type": "Delmål", "Title": "Grøntsager", "Description": "Tilberedning og brug af grønsags fond"}
       ]
     },
     {
@@ -125,11 +125,11 @@
       "Semester": "År 1",
       "Title": "Grundsaucer",
       "Goals": [
-        {"_id": 54, "Type": "Kompetence", "Title": "Sauce tomat", "Description": "Tilberedning af grundlæggende saucer"},
-        {"_id": 55, "Type": "Kompetence", "Title": "Sauce hollandaise", "Description": "Tilberedning af grundlæggende saucer"},
-        {"_id": 56, "Type": "Kompetence", "Title": "Sauce béchamel", "Description": "Tilberedning af grundlæggende saucer"},
-        {"_id": 57, "Type": "Kompetence", "Title": "Sauce velouté", "Description": "Tilberedning af grundlæggende saucer"},
-        {"_id": 58, "Type": "Kompetence", "Title": "Sauce espagnole", "Description": "Tilberedning af grundlæggende saucer"}
+        {"_id": 54, "Type": "Delmål", "Title": "Sauce tomat", "Description": "Tilberedning af grundlæggende saucer"},
+        {"_id": 55, "Type": "Delmål", "Title": "Sauce hollandaise", "Description": "Tilberedning af grundlæggende saucer"},
+        {"_id": 56, "Type": "Delmål", "Title": "Sauce béchamel", "Description": "Tilberedning af grundlæggende saucer"},
+        {"_id": 57, "Type": "Delmål", "Title": "Sauce velouté", "Description": "Tilberedning af grundlæggende saucer"},
+        {"_id": 58, "Type": "Delmål", "Title": "Sauce espagnole", "Description": "Tilberedning af grundlæggende saucer"}
       ]
     },
     {
@@ -137,11 +137,11 @@
       "Semester": "År 1",
       "Title": "Tilbedredningsteknikker",
       "Goals": [
-        {"_id": 59, "Type": "Kompetence", "Title": "Sous-vide", "Description": "Brug af sousvide"},
-        {"_id": 60, "Type": "Kompetence", "Title": "Julienne-udskæring", "Description": "Udskæringsteknik"},
-        {"_id": 61, "Type": "Kompetence", "Title": "Brunoise-udskæring", "Description": "Udskæringsteknik"},
-        {"_id": 62, "Type": "Kompetence", "Title": "Allumette-udskæring", "Description": "Udskæringsteknik"},
-        {"_id": 63, "Type": "Kompetence", "Title": "Friture", "Description": "Brug af friture"}
+        {"_id": 59, "Type": "Delmål", "Title": "Sous-vide", "Description": "Brug af sousvide"},
+        {"_id": 60, "Type": "Delmål", "Title": "Julienne-udskæring", "Description": "Udskæringsteknik"},
+        {"_id": 61, "Type": "Delmål", "Title": "Brunoise-udskæring", "Description": "Udskæringsteknik"},
+        {"_id": 62, "Type": "Delmål", "Title": "Allumette-udskæring", "Description": "Udskæringsteknik"},
+        {"_id": 63, "Type": "Delmål", "Title": "Friture", "Description": "Brug af friture"}
       ]
     },
     {
@@ -159,8 +159,8 @@
       "Semester": "År 1",
       "Title": "Ekstra",
       "Goals": [
-        {"_id": 67, "Type": "Ekstra", "Title": "Konkurrence", "Description": "Kokkekonkurrence Holsterbro"},
-        {"_id": 68, "Type": "Ekstra", "Title": "Holdkonkurrence", "Description": "Kokkekonkurrence København"}
+        {"_id": 67, "Type": "Delmål", "Title": "Konkurrence", "Description": "Kokkekonkurrence Holsterbro"},
+        {"_id": 68, "Type": "Delmål", "Title": "Holdkonkurrence", "Description": "Kokkekonkurrence København"}
       ]
     },
     {
@@ -168,7 +168,7 @@
       "Semester": "År 1",
       "Title": "Skoleforløb",
       "Goals": [
-        {"_id": 69, "Type": "Skoleforløb", "Title": "Skoleforløb 1", "Description": "Elevens første skoleforløb"}
+        {"_id": 69, "Type": "Skoleophold", "Title": "Skoleforløb 1", "Description": "Elevens første skoleforløb"}
       ]
     },
     {
@@ -186,10 +186,10 @@
       "Semester": "År 2",
       "Title": "Interne kurser",
       "Goals": [
-        {"_id": 73, "Type": "Kursus", "Title": "Førstehjælpskursus", "Description": "Obligatorisk førstehjælpskursus"},
-        {"_id": 74, "Type": "Kursus", "Title": "Crosstraining", "Description": "Crosstraining til andet hotel"},
-        {"_id": 75, "Type": "Kursus", "Title": "Elev-ERFA", "Description": "Kun for udvalgte"},
-        {"_id": 76, "Type": "Kursus", "Title": "Green chef", "Description": "Hvordan man er en bæredygtig kok"}
+        { "_id": 73, "Type": "Kursus", "Title": "Førstehjælpskursus", "Description": "Obligatorisk førstehjælpskursus", "CourseCode": "COMWELL_FIRSTAID_004" },
+        { "_id": 74, "Type": "Kursus", "Title": "Crosstraining", "Description": "Crosstraining til andet hotel", "CourseCode": "COMWELL_CROSSTRAINING_003" },
+        { "_id": 75, "Type": "Kursus", "Title": "Elev-ERFA", "Description": "Kun for udvalgte", "CourseCode": "COMWELL_ERFA_005" },
+        { "_id": 76, "Type": "Kursus", "Title": "Green chef", "Description": "Hvordan man er en bæredygtig kok", "CourseCode": "COMWELL_GREENCHEF_006" }
       ]
     },
     {
@@ -197,10 +197,10 @@
       "Semester": "År 2",
       "Title": "Faglige mål",
       "Goals": [
-        {"_id": 77, "Type": "Kompetence", "Title": "Personalemad", "Description": "Selvstændigt kunne lave varieret personalemad"},
-        {"_id": 78, "Type": "Kompetence", "Title": "Banket/selskaber", "Description": "Selvstændigt planlægge og udføre selskaber +30 kuverter"},
-        {"_id": 79, "Type": "Kompetence", "Title": "Sæson råvarer", "Description": "Kan eleven nævne sæson råvarer til menuplanlægning"},
-        {"_id": 80, "Type": "Kompetence", "Title": "Præsentere for gæsten", "Description": "Stå foran gæsten og præsentere mad"}
+        {"_id": 77, "Type": "Delmål", "Title": "Personalemad", "Description": "Selvstændigt kunne lave varieret personalemad"},
+        {"_id": 78, "Type": "Delmål", "Title": "Banket/selskaber", "Description": "Selvstændigt planlægge og udføre selskaber +30 kuverter"},
+        {"_id": 79, "Type": "Delmål", "Title": "Sæson råvarer", "Description": "Kan eleven nævne sæson råvarer til menuplanlægning"},
+        {"_id": 80, "Type": "Delmål", "Title": "Præsentere for gæsten", "Description": "Stå foran gæsten og præsentere mad"}
       ]
     },
     {
@@ -208,8 +208,8 @@
       "Semester": "År 2",
       "Title": "Økologi",
       "Goals": [
-        {"_id": 81, "Type": "Kompetence", "Title": "Hvad er økologi?", "Description": "Lærer om økologi"},
-        {"_id": 82, "Type": "Kompetence", "Title": "Økologimærkning", "Description": "Lærer om bronze, sølv og guld økologimærkning"}
+        {"_id": 81, "Type": "Delmål", "Title": "Hvad er økologi?", "Description": "Lærer om økologi"},
+        {"_id": 82, "Type": "Delmål", "Title": "Økologimærkning", "Description": "Lærer om bronze, sølv og guld økologimærkning"}
       ]
     },
     {
@@ -217,12 +217,12 @@
       "Semester": "År 2",
       "Title": "Specialkost",
       "Goals": [
-        {"_id": 83, "Type": "Kompetence", "Title": "Halal", "Description": "Lærer om halal"},
-        {"_id": 84, "Type": "Kompetence", "Title": "Kosher", "Description": "Lærer om kosher"},
-        {"_id": 85, "Type": "Kompetence", "Title": "Pescatar", "Description": "Lærer om pescatarer"},
-        {"_id": 86, "Type": "Kompetence", "Title": "Vegetar", "Description": "Lærer om vegetarer"},
-        {"_id": 87, "Type": "Kompetence", "Title": "Veganer", "Description": "Lærer om veganerer"},
-        {"_id": 88, "Type": "Kompetence", "Title": "14 lovmæssige allegener", "Description": "Lærer om de 14 lovmæssige allegener som skal angives for gæsten"}
+        {"_id": 83, "Type": "Delmål", "Title": "Halal", "Description": "Lærer om halal"},
+        {"_id": 84, "Type": "Delmål", "Title": "Kosher", "Description": "Lærer om kosher"},
+        {"_id": 85, "Type": "Delmål", "Title": "Pescatar", "Description": "Lærer om pescatarer"},
+        {"_id": 86, "Type": "Delmål", "Title": "Vegetar", "Description": "Lærer om vegetarer"},
+        {"_id": 87, "Type": "Delmål", "Title": "Veganer", "Description": "Lærer om veganerer"},
+        {"_id": 88, "Type": "Delmål", "Title": "14 lovmæssige allegener", "Description": "Lærer om de 14 lovmæssige allegener som skal angives for gæsten"}
       ]
     },
     {
@@ -230,12 +230,12 @@
       "Semester": "År 2",
       "Title": "Introduktion til egenkontrolsystem",
       "Goals": [
-        {"_id": 89, "Type": "Kompetence", "Title": "Håndtering af fødevarer", "Description": "Lærer om halal"},
-        {"_id": 90, "Type": "Kompetence", "Title": "Adskillelse", "Description": "Lærer om kosher"},
-        {"_id": 91, "Type": "Kompetence", "Title": "Opvarmning", "Description": "Lærer om pescatarer"},
-        {"_id": 92, "Type": "Kompetence", "Title": "Nedkøling", "Description": "Lærer om vegetarer"},
-        {"_id": 93, "Type": "Kompetence", "Title": "Varme holdelse", "Description": "Lærer om veganerer"},
-        {"_id": 94, "Type": "Kompetence", "Title": "Korrekt rengøring", "Description": "Lærer om de 14 lovmæssige allegener som skal angives for gæsten"}
+        {"_id": 89, "Type": "Delmål", "Title": "Håndtering af fødevarer", "Description": "Lærer om halal"},
+        {"_id": 90, "Type": "Delmål", "Title": "Adskillelse", "Description": "Lærer om kosher"},
+        {"_id": 91, "Type": "Delmål", "Title": "Opvarmning", "Description": "Lærer om pescatarer"},
+        {"_id": 92, "Type": "Delmål", "Title": "Nedkøling", "Description": "Lærer om vegetarer"},
+        {"_id": 93, "Type": "Delmål", "Title": "Varme holdelse", "Description": "Lærer om veganerer"},
+        {"_id": 94, "Type": "Delmål", "Title": "Korrekt rengøring", "Description": "Lærer om de 14 lovmæssige allegener som skal angives for gæsten"}
       ]
     },
     {
@@ -243,7 +243,7 @@
       "Semester": "År 2",
       "Title": "Ekstra",
       "Goals": [
-        {"_id": 95, "Type": "Ekstra", "Title": "Konkurrence", "Description": "Kokkekonkurrence Holsterbro"} 
+        {"_id": 95, "Type": "Delmål", "Title": "Konkurrence", "Description": "Kokkekonkurrence Holsterbro"} 
       ]
     },
     {
@@ -251,7 +251,7 @@
       "Semester": "År 2",
       "Title": "Skoleforløb",
       "Goals": [
-        {"_id": 96, "Type": "Skoleforløb", "Title": "Skoleforløb 2", "Description": "Elevens andet skoleforløb"}
+        {"_id": 96, "Type": "Skoleophold", "Title": "Skoleforløb 2", "Description": "Elevens andet skoleforløb"}
       ]
     },
     {
@@ -269,8 +269,8 @@
       "Semester": "År 3",
       "Title": "Interne kurser",
       "Goals": [
-        { "_id": 100, "Type": "Kursus", "Title": "F&B elevtur", "Description": "3 dage - HR tilmelder" },
-        { "_id": 101, "Type": "Kursus", "Title": "Elev-ERFA", "Description": "Kun for udvalgte" }
+        { "_id": 100, "Type": "Kursus", "Title": "F&B elevtur", "Description": "3 dage - HR tilmelder", "CourseCode": "COMWELL_FBTUR_007" },
+        { "_id": 101, "Type": "Kursus", "Title": "Elev-ERFA", "Description": "Kun for udvalgte", "CourseCode": "COMWELL_ERFA_005" }
       ]
     },
     {
@@ -278,13 +278,13 @@
       "Semester": "År 3",
       "Title": "Faglige mål",
       "Goals": [
-        { "_id": 102, "Type": "Kompetence", "Title": "Menusammensætning", "Description": "Lære at sammensætte en menu" },
-        { "_id": 103, "Type": "Kompetence", "Title": "Køre konference", "Description": "Selvstændigt kunne køre en konference" },
-        { "_id": 104, "Type": "Kompetence", "Title": "Køre a la carte", "Description": "Selvstændigt kunne køre a la carte" },
-        { "_id": 105, "Type": "Kompetence", "Title": "Varebestilling", "Description": "Samt planlægning heraf" },
-        { "_id": 106, "Type": "Kompetence", "Title": "Grundtilbedredningsteknikker", "Description": "Behersker og kan anvende alle grundtilbedredningsteknikker" },
-        { "_id": 107, "Type": "Kompetence", "Title": "Egenkontrol", "Description": "Kan udføre egenkontrol" },
-        { "_id": 108, "Type": "Kompetence", "Title": "Kalkulation og beregninger", "Description": "Af varer mængder" }
+        { "_id": 102, "Type": "Delmål", "Title": "Menusammensætning", "Description": "Lære at sammensætte en menu" },
+        { "_id": 103, "Type": "Delmål", "Title": "Køre konference", "Description": "Selvstændigt kunne køre en konference" },
+        { "_id": 104, "Type": "Delmål", "Title": "Køre a la carte", "Description": "Selvstændigt kunne køre a la carte" },
+        { "_id": 105, "Type": "Delmål", "Title": "Varebestilling", "Description": "Samt planlægning heraf" },
+        { "_id": 106, "Type": "Delmål", "Title": "Grundtilbedredningsteknikker", "Description": "Behersker og kan anvende alle grundtilbedredningsteknikker" },
+        { "_id": 107, "Type": "Delmål", "Title": "Egenkontrol", "Description": "Kan udføre egenkontrol" },
+        { "_id": 108, "Type": "Delmål", "Title": "Kalkulation og beregninger", "Description": "Af varer mængder" }
       ]
     },
     {
@@ -292,9 +292,9 @@
       "Semester": "År 3",
       "Title": "Nøgletal i afdelingen",
       "Goals": [
-        { "_id": 109, "Type": "Kompetence", "Title": "Køkkenproducenter", "Description": "Lære nøgletal for køkkenproducenter" },
-        { "_id": 110, "Type": "Kompetence", "Title": "Økoproducenter", "Description": "Lære nøgletal for økoproducenter" },
-        { "_id": 111, "Type": "Kompetence", "Title": "Madspildsproducenter", "Description": "Lære nøgletal for madspildsproducenter" }
+        { "_id": 109, "Type": "Delmål", "Title": "Køkkenproducenter", "Description": "Lære nøgletal for køkkenproducenter" },
+        { "_id": 110, "Type": "Delmål", "Title": "Økoproducenter", "Description": "Lære nøgletal for økoproducenter" },
+        { "_id": 111, "Type": "Delmål", "Title": "Madspildsproducenter", "Description": "Lære nøgletal for madspildsproducenter" }
       ]
     },
     {
@@ -312,7 +312,7 @@
       "Semester": "År 3",
       "Title": "Ekstra",
       "Goals": [
-        {"_id": 115, "Type": "Ekstra", "Title": "Holdkonkurrence", "Description": "Kokkekonkurrence København"}
+        {"_id": 115, "Type": "Delmål", "Title": "Holdkonkurrence", "Description": "Kokkekonkurrence København"}
       ]
     },
     {
@@ -320,7 +320,7 @@
       "Semester": "År 3",
       "Title": "Skoleforløb",
       "Goals": [
-        {"_id": 116, "Type": "Skoleforløb", "Title": "Skoleforløb 3", "Description": "Elevens sidste skoleforløb"}
+        {"_id": 116, "Type": "Skoleophold", "Title": "Skoleforløb 3", "Description": "Elevens sidste skoleforløb"}
       ]
     }
   ]
