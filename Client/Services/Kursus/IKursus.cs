@@ -9,13 +9,13 @@ namespace Client
         Task<Kursus> GetCourseById(int kursusId);
         Task SaveCourse(KursusCreationDTO kursus);
         
-        Task RemoveStudentFromCourse(int studentId, Kursus kursus);
+        Task<Kursus> RemoveStudentFromCourse(int studentId, Kursus kursus);
 
-        Task CompleteCourse(Kursus kursus);
+        Task CompleteCourse(int kursusId);
         
         Task<List<KursusTemplate>> GetAllTemplates();
         
-        Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId);
+        Task<Kursus> AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId);
         
         Task<List<KursusKommendeDTO>> GetFutureCourses();
         Task<List<KursusKommendeDTO>> GetFutureCoursesByStudentId(int studentId);

@@ -32,12 +32,15 @@ else
                         {
                             <li style="cursor: pointer">
                             <li style="cursor: pointer">
-                                Delmål: @g.Title - @g.SkoleNavn  - Periode:
+                                Delmål: @g.Title
+                                @(g.SkoleNavn != null ? $" SkoleNavn: {g.SkoleNavn} - Periode: " : "")
                                 @(g.SkoleStart == null || g.SkoleEnd == null
-                                    ? "Afventer din leder" : $"{g.SkoleStart} til {g.SkoleEnd}")
-                            </li>                                                                           
+                                    ? "Afventer din leder"
+                                    : $"{g.SkoleStart} til {g.SkoleEnd}")
+                            </li>                                                                    
                             </li>
                         }
+                        
                     </ul>
                 }
 
@@ -128,7 +131,7 @@ else
                         @foreach (var g in _outOfHouse)
                         {
                             <li style="cursor: pointer">
-                                Navn: @g.FullName - Startdato: @g.StartDate - Slutdato: @g.EndDate
+                                Navn: @g.FullName - Startdato: @g.StartDate - Slutdato: @g.EndDate (@g.GoalTitle)
                             </li>
                         }
                     </ul>
@@ -145,7 +148,7 @@ else
                         {
                             <li>
                                 Navn: @g.FullName - Kursus: @g.GoalTitle
-                                <button @onclick="() => OpenModal(g, g.GoalTitle)" class="btn-approve">Tilmeld kursus</button>
+                                <button @onclick="() => OpenModal(g, g.CourseCode)" class="btn-approve">Tilmeld kursus</button>
                             </li>
                         }
                     </ul>
@@ -177,9 +180,14 @@ else
 
 <ModalDialog @ref=_kursusModal Title="Ledige kurser">
     <div class="kursus-list">
+        @if (_matchingCourses.Any())
         @foreach (var kursus in _matchingCourses)
         {
-            <p>@kursus.Title @kursus.Location @kursus.StartDate <button @onclick="() => TilmeldKursus(kursus)">Tilmeld kursus</button></p>
+            <p>@kursus.Title @kursus.Location @kursus.Participants @kursus.MaxParticipants @kursus.StartDate <button @onclick="() => TilmeldKursus(kursus)">Tilmeld kursus</button></p>
+        }
+        else
+        {
+            <p>Kurser mangler fra HR...</p>
         }
     </div>
 </ModalDialog>
@@ -208,7 +216,6 @@ else
 
     //Modal dialog
     private ModalDialog _kursusModal { get; set; }
-    private string _selectedCourse;
     private List<KursusKommendeDTO> _matchingCourses = new();
 
 
@@ -271,10 +278,9 @@ else
         
     }
 
-    private async Task OpenModal(KursusManglendeDTO kursusManglendeDto, string kursusTitel)
+    private async Task OpenModal(KursusManglendeDTO kursusManglendeDto, string corseCode)
     {
-        _selectedCourse = kursusTitel;
-        _matchingCourses = _currentCourses.Where(k => k.Title == kursusTitel).ToList();
+        _matchingCourses = _currentCourses.Where(k => k.CourseCode == corseCode).ToList();
         _kursusModal.Open();
     }
 }

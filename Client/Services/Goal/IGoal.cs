@@ -17,9 +17,11 @@ namespace Client
         Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment bruger); //goal.status -> AwaitingApproval //Kan de her laves om?
         Task<Goal> ConfirmGoal(int planId, int forløbId, int goalId);
         Task<Goal> ConfirmSchool(int planId, int forløbId, int goalId);
+        Task<List<GoalProgessDTO>> GoalProgess(int studentId);
         
         //Comments
         Task<Comment> AddComment(NewComment comment);
+
         
         Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId); //done
         Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId); //done

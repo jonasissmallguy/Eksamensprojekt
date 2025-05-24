@@ -6,10 +6,8 @@ namespace Client
 {
     public class KursusServiceServer : IKursus
     {
-        private string serverUrl = "https://elevportalapi.azurewebsites.net";
         private readonly HttpClient _client;
         
-
         public KursusServiceServer(HttpClient http)
         {
             _client = http;
@@ -17,48 +15,59 @@ namespace Client
 
         public async Task<List<Kursus>> GetAllCourses()
         {
-            return await _client.GetFromJsonAsync<List<Kursus>>($"{serverUrl}/kursus");
+            return await _client.GetFromJsonAsync<List<Kursus>>($"kursus");
         }
         public async Task<Kursus> GetCourseById(int kursusId)
         {
-            return await _client.GetFromJsonAsync<Kursus>($"{serverUrl}/kursus/{kursusId}");
+            return await _client.GetFromJsonAsync<Kursus>($"kursus/{kursusId}");
         }
         
         public async Task SaveCourse(KursusCreationDTO kursus)
         {
-             await _client.PostAsJsonAsync($"{serverUrl}/kursus", kursus);
+             await _client.PostAsJsonAsync($"kursus", kursus);
         }
         
 
-        public async Task RemoveStudentFromCourse(int studentId, Kursus kursus)
+        public async Task<Kursus> RemoveStudentFromCourse(int studentId, Kursus kursus)
         {
-            int kursusId = kursus.Id;
-            await _client.DeleteAsync($"{serverUrl}/kursus/removestudent/{studentId}/{kursusId}");
+            var result = await _client.DeleteAsync($"kursus/removestudent/{studentId}/{kursus.CourseCode}");
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            return result.Content.ReadFromJsonAsync<Kursus>().Result;
         }
 
-        public async Task CompleteCourse(Kursus kursus)
+        public async Task CompleteCourse(int kursusId)
         {
-            await _client.PutAsJsonAsync($"{serverUrl}/kursus/complete", kursus);
+            await _client.PutAsJsonAsync($"kursus/complete/{kursusId}", new{});
         }
         
         public async Task<List<KursusTemplate>> GetAllTemplates()
         {
-            return await _client.GetFromJsonAsync<List<KursusTemplate>>($"{serverUrl}/kursus/templates");
+            return await _client.GetFromJsonAsync<List<KursusTemplate>>($"kursus/templates");
         }
 
-        public async Task AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
+        public async Task<Kursus> AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
         {
-            await _client.PutAsJsonAsync($"{serverUrl}/kursus/addstudent/{kursusId}", user);
+          var result =  await _client.PutAsJsonAsync($"kursus/addstudent/{kursusId}", user);
+
+          if (!result.IsSuccessStatusCode)
+          {
+              return null;
+          }
+          return result.Content.ReadFromJsonAsync<Kursus>().Result;
         }
 
         public async Task<List<KursusKommendeDTO>> GetFutureCourses()
         {
-            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"{serverUrl}/kursus/nextup");
+            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"kursus/nextup");
         }
 
         public async Task<List<KursusKommendeDTO>> GetFutureCoursesByStudentId(int studentId)
         {
-            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"{serverUrl}/kursus/nextup/{studentId}");
+            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"kursus/nextup/{studentId}");
         }
     }
 }

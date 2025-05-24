@@ -75,11 +75,12 @@ namespace Server
                     var goal = new Goal
                     {
                         Type = goalTemplate.Type,
+                        CourseCode = goalTemplate.CourseCode,
                         Title = goalTemplate.Title,
                         Description = goalTemplate.Description,
                         //Semester = forløb.Semester,
                         Status = "Active",
-                        Comments = new List<Comment>()
+                        //Comments = new List<Comment>()
                     };
 
                     forløb.Goals.Add(goal);

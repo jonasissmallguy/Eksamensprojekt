@@ -6,8 +6,7 @@ namespace Client
 {
     public class GoalServiceServer : IGoal
     {
-
-        private string serverUrl = "https://elevportalapi.azurewebsites.net";
+        
         private HttpClient _client;
 
         public GoalServiceServer(HttpClient client)
@@ -17,12 +16,12 @@ namespace Client
 
         public async Task DeleteGoal(Goal goal, int studentId)
         {
-            await _client.DeleteAsync($"{serverUrl}/goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
+            await _client.DeleteAsync($"goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
         }
 
         public async Task<bool> AddGoal(Goal goal, int studentId)
         {
-            var url = $"{serverUrl}/goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/";
+            var url = $"goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/";
             
             var response = await _client.PostAsJsonAsync(url, goal);
             if (!response.IsSuccessStatusCode)
@@ -37,7 +36,7 @@ namespace Client
 
         public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
         {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/startgoal", mentor);
+            var response = await _client.PutAsJsonAsync($"goals/startgoal", mentor);
 
             if (response.IsSuccessStatusCode)
             {
@@ -50,7 +49,7 @@ namespace Client
 
         public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment bruger)
         {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/processgoal", bruger);
+            var response = await _client.PutAsJsonAsync($"goals/processgoal", bruger);
 
             if (response.IsSuccessStatusCode)
             {
@@ -64,7 +63,7 @@ namespace Client
         public async Task<Goal> ConfirmGoal(int planId, int forløbId, int goalId)
         {
             
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirmgoal/{planId}/{forløbId}/{goalId}", new{});
+            var response = await _client.PutAsJsonAsync($"goals/confirmgoal/{planId}/{forløbId}/{goalId}", new{});
 
             if (response.IsSuccessStatusCode)
             {
@@ -77,7 +76,7 @@ namespace Client
 
         public async Task<Goal> ConfirmSchool(int planId, int forløbId, int goalId)
         {
-            var response = await _client.PutAsJsonAsync($"{serverUrl}/goals/confirmschool/{planId}/{forløbId}/{goalId}", new{});
+            var response = await _client.PutAsJsonAsync($"goals/confirmschool/{planId}/{forløbId}/{goalId}", new{});
 
             if (response.IsSuccessStatusCode)
             {
@@ -87,9 +86,14 @@ namespace Client
             return null;
         }
 
+        public async Task<List<GoalProgessDTO>> GoalProgess(int studentId)
+        {
+            return await _client.GetFromJsonAsync<List<GoalProgessDTO>>($"goals/progress/{studentId}");
+        }
+
         public async Task<Comment> AddComment(NewComment comment)
         {
-            var response = await _client.PostAsJsonAsync($"{serverUrl}/goals/comment", comment);
+            var response = await _client.PostAsJsonAsync($"goals/comment", comment);
             if (response.IsSuccessStatusCode)
             {
                 var addedComment = await response.Content.ReadFromJsonAsync<Comment>();
@@ -105,32 +109,32 @@ namespace Client
 
         public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
         {
-            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/awaiting-approval/{hotelId}");
+            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/awaiting-approval/{hotelId}");
         }
 
         public async Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId)
         {
-            return await _client.GetFromJsonAsync<List<KursusManglendeDTO>>($"{serverUrl}/goals/missing-courses/{hotelId}");
+            return await _client.GetFromJsonAsync<List<KursusManglendeDTO>>($"goals/missing-courses/{hotelId}");
         }
 
         public async Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId)
         {
-            return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"{serverUrl}/goals/need-action-goals/{elevId}");
+            return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"goals/need-action-goals/{elevId}");
         }
 
         public async Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
         {
-            return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"{serverUrl}/goals/future-schools/{elevId}");
+            return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"goals/future-schools/{elevId}");
         }
 
         public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId)
         {
-            return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"{serverUrl}/goals/outofhouse/{hotelId}");
+            return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"goals/outofhouse/{hotelId}");
         }
         
         public async Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId)
         {
-            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"{serverUrl}/goals/started-goals/{hotelId}");
+            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/started-goals/{hotelId}");
         }
         
         
