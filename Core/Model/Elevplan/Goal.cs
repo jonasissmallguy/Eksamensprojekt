@@ -12,7 +12,7 @@ namespace Core
         public int ForløbId { get; set; }
         
         public int PlanId { get; set; }
-        
+  
         public string? Type { get; set; }  // Kursus, Skole, Kompetence
         public string Title { get; set; }
         public string Description { get; set; }
