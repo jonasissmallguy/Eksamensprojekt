@@ -80,7 +80,6 @@
             navMan.NavigateTo($"login/minelevplan/{studentId}");
             return;
         }
-        //Mangler validering, at andre ikke kan logge ind fra ndet hotel osv....
         
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
@@ -110,7 +109,7 @@
     }
     
     //Skal alt det her under laves om? 
-    private async Task HandlingGoalStart(ElevplanComponent.MentorAssignment assignment)
+    private async Task HandlingGoalStart(MentorAssignment assignment)
     {
         var updatedGoal = await IGoalService.StartGoal(assignment);
 
@@ -132,7 +131,7 @@
     }
 
 
-    private async Task ConfirmGoal(ElevplanComponent.MentorAssignment bruger)
+    private async Task ConfirmGoal(MentorAssignment bruger)
     {
         if (_currentUser.Rolle == "Kok") //hvorfor det her?
         {
@@ -175,7 +174,7 @@
         }
     }
 
-    private async Task ConfirmSchool(ElevplanComponent.MentorAssignment schoolConfirmation)
+    private async Task ConfirmSchool(MentorAssignment schoolConfirmation)
     {
         var confirmedGoal = await IGoalService.ConfirmSchool(schoolConfirmation.PlanId, schoolConfirmation.ForløbId, schoolConfirmation.GoalId);
 

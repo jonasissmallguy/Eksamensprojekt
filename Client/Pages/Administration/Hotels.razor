@@ -46,6 +46,7 @@
                     </InputSelect>
                 </div>
                 <button @onclick="() => CreateHotel(newHotel)" type="submit" class="submit-btn">Opret hotel</button>
+                <scan style="color: red">@errorText</scan>
             </EditForm>
         </div>
     </div>
@@ -61,9 +62,8 @@
 
     private HotelCreationDTO newHotel = new();
     private string[] regioner = { "Jylland", "Sjælland", "Fyn" };
-    private List<ManagerDTO> alleManagers = new();
-    
-    
+
+    string errorText = "";
     
     protected override async Task OnInitializedAsync()
     {
@@ -88,7 +88,15 @@
 
     private async Task CreateHotel(HotelCreationDTO hotel)
     {
-        await IHotelService.CreateHotel(hotel);
+        try
+        {
+            await IHotelService.CreateHotel(hotel);
+
+        }
+        catch (Exception e)
+        {
+            errorText = "Kunne ikke oprette et hotel, prøv venligst igen";
+        }
     }
 
 }

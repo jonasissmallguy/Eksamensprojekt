@@ -1,6 +1,5 @@
 ﻿using Core;
 using Microsoft.AspNetCore.Mvc;
-using Server;
 
 namespace Server
 {
@@ -17,10 +16,9 @@ namespace Server
         }
         
         /// <summary>
-        /// Metode til at oprette et nyt hotel
+        /// Opretter et nyt hotel
         /// </summary>
         /// <param name="newHotel"></param>
-        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> PostHotel(HotelCreationDTO newHotel)
         {
@@ -35,15 +33,25 @@ namespace Server
             
             await _hotelRepository.SaveHotel(hotel);
 
-            return Ok(hotel);
+            return Ok();
         }
 
      
+        /// <summary>
+        /// Henter alle hoteller
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetAllHotels()
         {
-            var hotel = await _hotelRepository.GetAllHotels();
-            return Ok(hotel);
+            var hotels = await _hotelRepository.GetAllHotels();
+
+            if (!hotels.Any())
+            {
+                return NotFound("Kunne ikke finde nogen hoteller");
+            }
+            
+            return Ok(hotels);
         }
         
         

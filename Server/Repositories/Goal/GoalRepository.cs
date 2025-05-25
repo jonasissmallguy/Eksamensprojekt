@@ -1,7 +1,6 @@
 ﻿using Client;
 using Client.Components.Elevoversigt;
 using Core;
-using Core.DTO.Goal;
 using MongoDB.Driver;
 using DotNetEnv;
 using MongoDB.Bson;
@@ -88,17 +87,39 @@ namespace Server
             var filter = Builders<User>.Filter.Eq("ElevPlan._id", comment.PlanId);
             var update = Builders<User>.Update.Push("ElevPlan.Forløbs.$[f].Goals.$[g].Comments", comment);
     
-            var arrayFilters = new List<ArrayFilterDefinition>
-            {
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", comment.ForløbId)),
-                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", comment.GoalId))
-            };
+           var arrayFilters = new List<ArrayFilterDefinition>
+                       {
+                           new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", comment.ForløbId)),
+                           new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", comment.GoalId))
+                       }; 
     
             var options = new UpdateOptions { ArrayFilters = arrayFilters };
     
             var result = await _goalCollection.UpdateOneAsync(filter, update, options);
             
             return comment;
+        }
+
+        public async Task<bool> UpdateSchoolWithDate(Goal goal, int studentId)
+        {
+            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            var update = Builders<User>.Update
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[].Status", "InProgress")
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[].SkoleNavn", goal.SkoleNavn)
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[].StartDate", goal.StartDate)
+                .Set("ElevPlan.Forløbs.$[f].Goals.$[].EndDate", goal.EndDate);
+
+            var arrayFilters = new List<ArrayFilterDefinition>
+            {
+                new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", goal.ForløbId)),
+            }; 
+    
+            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+    
+            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
+
+            return result.ModifiedCount > 0;
+
         }
 
         public async Task<bool> AddStudentToACourse(int studentId, Kursus kursus)
@@ -166,7 +187,7 @@ namespace Server
         }
 
         //Starter en kompetence
-        public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> StartGoal(MentorAssignment mentor)
         {
             var filter = Builders<User>.Filter.Eq("ElevPlan._id", mentor.PlanId);
 
@@ -197,7 +218,7 @@ namespace Server
             return goal;
         }
         
-        public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> ProcessGoal(MentorAssignment mentor)
         {
             var filter = Builders<User>.Filter.Eq("ElevPlan._id", mentor.PlanId);
 
@@ -452,8 +473,8 @@ namespace Server
                         Builders<Goal>.Filter.And(
                             Builders<Goal>.Filter.In(g => g.Type, new[] { "Kursus", "Skoleophold" }),
                             Builders<Goal>.Filter.Eq(g => g.Status, "InProgress"),
-                            Builders<Goal>.Filter.Ne<DateTime?>(g => g.StartDate, null),
-                            Builders<Goal>.Filter.Ne<DateTime?>(g => g.EndDate, null),
+                            Builders<Goal>.Filter.Ne(g => g.StartDate, null),
+                            Builders<Goal>.Filter.Ne(g => g.EndDate, null),
                             Builders<Goal>.Filter.Lte(g => g.StartDate, DateTime.Now.AddYears(1))
                         )
                     )

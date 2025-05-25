@@ -1,29 +1,40 @@
 ﻿@inject IGoal IGoalService;
-@using Core
+@using Core;
 
-<ModalDialog @ref="ModalRef" Title="Tilføj delmål">
+    <ModalDialog @ref="ModalRef" Title="Tilføj yderligere mål til elevens plan">
     <EditForm Model="tilføjDelmål" class="row p-3" OnValidSubmit="OnSubmit">
         <DataAnnotationsValidator/>
         <ValidationSummary/>
         <div class="row justify-content-center">
             <div class="col-md-6 mb-3">
                 <label for="Type">Type:</label>
-                <InputSelect class="form-select" @bind-Value="selectedType">
-                    @foreach (var t in måltyper)
+                <InputSelect class="form-select" @bind-Value="tilføjDelmål.Type">
+                    @if (ShowSchoolSection)
                     {
-                        <option value="@t">@t</option>
+                        @foreach (var t in _Måltyper)
+                        {
+                            <option value="@t">@t</option>
+                        }
+                    }
+                    else
+                    {
+                        var firstDelmål = _Måltyper.FirstOrDefault(t => t == "Delmål");
+                        if (firstDelmål != null)
+                        {
+                            <option value="@firstDelmål">@firstDelmål</option>
+                        }
                     }
                 </InputSelect>
             </div>
         </div>
 
-        @if (selectedType == "Delmål")
+        @if (tilføjDelmål.Type == "Delmål")
         {
             <div class="row justify-content-center">
                 <div class="col-md-6 mb-3">
                     <label for="Semester">Semester:</label>
                     <InputSelect class="form-select" @bind-Value="selectedSemester">
-                        @foreach (var yy in År)
+                        @foreach (var yy in _År)
                         {
                             <option value="@yy">@yy</option>
                         }
@@ -37,7 +48,7 @@
                         <option value="0" disabled selected hidden>Vælg forløb</option>
                         @if (ElevPlan?.Forløbs != null)
                         {
-                            @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester)))
+                            @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester && g.Title != "Skoleforløb")))
                             {
                                 <option value="@e.Id">@e.Title</option>
                             }
@@ -63,58 +74,56 @@
                 </div>
             </div>
         }
-        else if (selectedType == "Skoleforløb")
+        @if (ShowSchoolSection == true)
         {
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Semester">Semester:</label>
-                    <InputSelect class="form-select" @bind-Value="selectedSemester">
-                        @foreach (var yy in År)
-                        {
-                            <option value="@yy">@yy</option>
-                        }
-                    </InputSelect>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Forløb">Forløb:</label>
-                    <InputSelect class="form-select" @bind-Value="tilføjDelmål.ForløbId">
-                        <option value="0" disabled selected hidden>Vælg forløb</option>
-                        @if (ElevPlan?.Forløbs != null)
-                        {
-                            @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester && g.Title == "Skoleforløb")))
+            if (tilføjDelmål.Type == "Skoleforløb")
+            {
+                <div class="row justify-content-center">
+                    <div class="col-md-6 mb-3">
+                        <label for="Semester">Semester:</label>
+                        <InputSelect class="form-select" @bind-Value="selectedSemester">
+                            @foreach (var yy in _År)
                             {
-                                <option value="@e.Id">@e.Title</option>
+                                <option value="@yy">@yy</option>
                             }
-                        }
-                    </InputSelect>
+                        </InputSelect>
+                    </div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Titel">Titel:</label>
-                    <InputText id="Titel" @bind-Value="tilføjDelmål.Title" placeholder="Titel..." class="form-control"/>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-6 mb-3">
+                        <label for="Semester">Skolenavn:</label>
+                        <InputSelect class="form-select" @bind-Value="tilføjDelmål.SkoleNavn">
+                            @foreach (var skole in _Skoler)
+                            {
+                                <option value="@skole">@skole</option>
+                            }
+                        </InputSelect>
+                    </div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <label for="Beskrivelse">Beskrivelse:</label>
-                    <InputTextArea id="Beskrivelse" @bind-Value="tilføjDelmål.Description" class="form-control"/>
-                </div>
+            
                 <div class="row justify-content-center">
                     <div class="col-md-6 mb-3">
                         <label for="StartDate">Startdato:</label>
                         <InputDate id="StartDate" class="form-control" @bind-Value="tilføjDelmål.StartDate" />
                     </div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
-                    <button class="btn btn-primary" type="submit">Tilføj</button>
+                <div class="row justify-content-center">
+                    <div class="col-md-6 mb-3">
+                        <label for="EndDate">Slutdato:</label>
+                        <InputDate id="EndDate" class="form-control" @bind-Value="tilføjDelmål.EndDate" />
+                    </div>
                 </div>
-            </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-6 mb-3">
+                        <button class="btn btn-primary" type="submit">Tilføj</button>
+                    </div>
+                </div>
+            }
         }
+       
+
     </EditForm>
 </ModalDialog>
 
@@ -123,30 +132,36 @@
 
     private ModalDialog? ModalRef;
 
-    [Parameter] public EventCallback OnGoalAdded { get; set; }
+    [Parameter] public EventCallback<Goal> OnGoalAdded { get; set; }
 
     [Parameter] public int StudentId { get; set; }
 
     [Parameter] public Plan? ElevPlan { get; set; }
+    
+    [Parameter] public bool ShowSchoolSection { get; set; } = false;
 
-    [Parameter] public EventCallback OnCancel { get; set; }
-
-    private string[] skole = { "Kold Kollege", "EUX Kronjylland", "Hansted Kokkeskole" };
-
-    private string[] måltyper = { "Delmål", "Skoleforløb" };
-
-    [Parameter] public string[] År { get; set; } = new[] { "År 1", "År 2", "År 3" };
-
+    [Parameter] public bool WorkInMemory { get; set; } = false;
+    
+    //Arrays til vores input form
+    private string[] _Skoler = { "Kold Kollege", "EUX Kronjylland", "Hansted Kokkeskole" };
+    private string[] _Måltyper = { "Delmål", "Skoleforløb" };
+    private string[] _År = { "År 1", "År 2", "År 3" };
+    
+    //Valgt semester 
     private string selectedSemester;
-
-    private string selectedType;
 
     public void Open()
     {
         tilføjDelmål = new Goal();
-        if (År != null && År.Length > 0)
+        tilføjDelmål.Type = _Måltyper[0];
+        if (_År != null && _År.Length > 0)
         {
-            selectedSemester = År[0];
+            selectedSemester = _År[0];
+        }
+        
+        if (_Skoler != null && _Skoler.Length > 0)
+        {
+            tilføjDelmål.SkoleNavn = _Skoler[0];
         }
 
         tilføjDelmål.ForløbId = 0;
@@ -154,27 +169,40 @@
         StateHasChanged();
     }
 
-
-
     private async Task OnSubmit()
     {
         if (ElevPlan == null) return;
 
         tilføjDelmål.PlanId = ElevPlan.Id;
 
-        var success = await IGoalService.AddGoal(tilføjDelmål, StudentId);
-        if (success)
+        if (WorkInMemory)
         {
-            var forløb = ElevPlan.Forløbs.FirstOrDefault(f => f.Id == tilføjDelmål.ForløbId);
-            forløb?.Goals.Add(tilføjDelmål);
-            await OnGoalAdded.InvokeAsync();
+            // Just invoke callback, don't call DB service here
+            await OnGoalAdded.InvokeAsync(tilføjDelmål);
         }
         else
         {
-            Console.WriteLine("Fejl: Kunne ikke tilføje delmål");
+            if (tilføjDelmål.Type == "Skoleforløb")
+            {
+                var skoleForløb = ElevPlan.Forløbs
+                    .FirstOrDefault(f => f.Title == "Skoleforløb"
+                                         && f.Semester == selectedSemester);
+
+                tilføjDelmål.Title = "";
+                tilføjDelmål.Description = "";
+                tilføjDelmål.ForløbId = skoleForløb.Id;
+                
+                await IGoalService.UpdateSkole(tilføjDelmål, StudentId);
+            }   
+            else if (tilføjDelmål.Type == "Delmål")
+            {
+                await IGoalService.AddGoal(tilføjDelmål, StudentId); 
+                await OnGoalAdded.InvokeAsync(tilføjDelmål);
+            }
         }
 
         ModalRef?.Close();
-
+    }
+    
     }
 }

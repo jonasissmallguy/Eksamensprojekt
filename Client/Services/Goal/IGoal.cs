@@ -11,10 +11,11 @@ namespace Client
         //Goals
         Task DeleteGoal(Goal goal, int studentId);
         Task<bool> AddGoal(Goal goal, int studentId);
+        Task<bool> UpdateSkole(Goal goal, int studentId);
         
         //Goal progress 
-        Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor); //goal.status -> InProgress //Kan de her laves om?
-        Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment bruger); //goal.status -> AwaitingApproval //Kan de her laves om?
+        Task<Goal> StartGoal(MentorAssignment mentor); 
+        Task<Goal> ProcessGoal(MentorAssignment bruger); 
         Task<Goal> ConfirmGoal(int planId, int forløbId, int goalId);
         Task<Goal> ConfirmSchool(int planId, int forløbId, int goalId);
         Task<List<GoalProgessDTO>> GoalProgess(int studentId);

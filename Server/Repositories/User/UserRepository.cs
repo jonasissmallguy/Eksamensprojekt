@@ -97,35 +97,34 @@ namespace Server
             return true;
         }
 
-        public Task DeleteUser(int studentId)
+        public async Task<DeleteResult> DeleteUser(int studentId)
         {
             var filter = Builders<User>.Filter.Eq("_id", studentId);
-            return _userCollection.DeleteOneAsync(filter);
+            return await _userCollection.DeleteOneAsync(filter);
         }
 
-        public async Task DeactivateUser(int studentId)
+        public async Task<UpdateResult> DeactivateUser(int studentId)
         {
             var filter = Builders<User>.Filter.Eq("_id", studentId);
             var update = Builders<User>.Update.Set("Status", "Deactivated");
             
-            await _userCollection.UpdateOneAsync(filter, update);
+            return await _userCollection.UpdateOneAsync(filter, update);
         }
 
-        public async Task ActivateUser(int studentId)
+        public async Task<UpdateResult> ActivateUser(int studentId)
         {
             var filter = Builders<User>.Filter.Eq("_id", studentId);
             var update = Builders<User>.Update.Set("Status", "Active");
             
-            await _userCollection.UpdateOneAsync(filter, update);
+            return await _userCollection.UpdateOneAsync(filter, update);
         }
 
-        public async Task UpdateRolle(string rolle, int userId)
+        public async Task<UpdateResult> UpdateRolle(string rolle, int userId)
         {
             var filter = Builders<User>.Filter.Eq("_id", userId);
             var update = Builders<User>.Update.Set("Rolle", rolle);
             
-            await _userCollection.UpdateOneAsync(filter, update);
-            
+            return await _userCollection.UpdateOneAsync(filter, update);
         }
         
         public async Task<UpdateResult> UpadtePassword(string email, string updatedPassword)
@@ -134,11 +133,6 @@ namespace Server
             var update = Builders<User>.Update.Set("Password", updatedPassword);
             
             return await _userCollection.UpdateOneAsync(filter, update);
-        }
-
-        public Task<bool> UpdateUser(User user)
-        {
-            throw new NotImplementedException();
         }
         
 
@@ -156,6 +150,15 @@ namespace Server
         {
             var filter = Builders<User>.Filter.Eq("Rolle", "Elev");
             return await _userCollection.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<User>> GetAllStudentsByHotelId(int hotelId)
+        {
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq("HotelId", hotelId),
+                Builders<User>.Filter.Eq("Rolle", "Elev"));
+            
+             return await _userCollection.Find(filter).ToListAsync();
         }
 
         public async Task<List<User>> GetAllStudentsMissingCourse(string kursusCode)

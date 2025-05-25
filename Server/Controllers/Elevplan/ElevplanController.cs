@@ -20,34 +20,48 @@ namespace Server
         
         
         /// <summary>
-        /// Henter en elevs elevplan
+        /// Henter en elevplan
         /// </summary>
         /// <param name="studentId"></param>
+        /// <returns>En elevs plan, en fejl 400 eller en 404</returns>
         [HttpGet]
         [Route("{studentId:int}")]
         public async Task<IActionResult> GetElevplanByStudentId(int studentId)
         {
+            if (studentId <= 0)
+            {
+                return BadRequest("Forkert studentId");
+            }
+            
             var elevplan = await _elevplan.GetPlanByStudentId(studentId);
 
             if (elevplan == null)
             {
-                return NotFound();
+                return NotFound("Kunne ikke finde elevplanen");
             }
+            
             return Ok(elevplan);
         }
 
         /// <summary>
-        /// 
+        /// Henter skabelon og generer en plan med midligertidige Id'er.
         /// </summary>
         /// <param name="studentId"></param>
-        [HttpPost("{studentId:int}")]
-        public async Task<IActionResult> CreateElevplan(int studentId)
+        /// <returns>En ny Plan</returns>
+        [HttpGet]
+        [Route("gettemplate/{studentId:int}")]
+        public async Task<IActionResult> GetTemplate(int studentId)
         {
-        
+            if (studentId <= 0)
+            {
+                return BadRequest("Forkert studentId");
+            }
+            
             var template = await _template.GetPlanTemplate(1);
+            
             if (template == null)
             {
-                return NotFound();  
+                return NotFound("Kunne ikke finde skabelonen");  
             }
 
             var nyPlan = new Plan
@@ -58,15 +72,18 @@ namespace Server
                 CreatedAt = DateTime.Now,
                 Forløbs = new List<Forløb>()
             };
-            
+
+            int forløbIdCounter = -1;  
+            int goalIdCounter = -1;
 
             foreach (var forløbTemplate in template.Forløbs)
             {
                 var forløb = new Forløb
                 {
+                    Id = forløbIdCounter--,              
                     Title = forløbTemplate.Title,
                     Semester = forløbTemplate.Semester,
-                    Status =  "Active",
+                    Status = "Active",
                     Goals = new List<Goal>()
                 };
 
@@ -74,13 +91,13 @@ namespace Server
                 {
                     var goal = new Goal
                     {
+                        Id = goalIdCounter--,             
                         Type = goalTemplate.Type,
                         CourseCode = goalTemplate.CourseCode,
                         Title = goalTemplate.Title,
                         Description = goalTemplate.Description,
-                        //Semester = forløb.Semester,
                         Status = "Active",
-                        //Comments = new List<Comment>()
+                        ForløbId = forløb.Id                
                     };
 
                     forløb.Goals.Add(goal);
@@ -88,15 +105,39 @@ namespace Server
 
                 nyPlan.Forløbs.Add(forløb);
             }
+    
+            return Ok(nyPlan);
+        }
 
-            var elevplan = await _elevplan.SaveElevplan(studentId, nyPlan);
 
-            if (elevplan == null)
+        /// <summary>
+        /// Gemmer vores elevplan
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <param name="studentId"></param>
+        /// <returns>UpdateResult</returns>
+        [HttpPost]
+        [Route("{studentId}")]
+        public async Task<IActionResult> SaveElevplan([FromBody] Plan plan, int studentId)
+        {
+            if (plan == null || studentId <= 0)
+            {
+                return BadRequest("Forkert plan eller studentId");
+            }
+            
+            var elevplan = await _elevplan.SaveElevplan(studentId, plan);
+
+            if (elevplan.MatchedCount == 0)
             {
                 return NotFound();
             }
+
+            if (elevplan.ModifiedCount == 0)
+            {
+                return BadRequest();
+            }
             
-            return Ok(nyPlan);
+            return Ok(elevplan);
         }
 
     }

@@ -6,6 +6,7 @@ namespace Client
     public interface IElevPlan
     {
     
-        Task<Plan> CreateElevPlan(int studentId);
+        Task<Plan> GetElevPlanTemplate(int studentId);
+        Task<bool> SaveElevPlan(Plan plan, int studentId);
     }
 }

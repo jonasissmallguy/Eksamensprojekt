@@ -109,6 +109,11 @@ namespace Client
             throw new NotImplementedException();
         }
 
+        public Task<bool> UpdateSkole(Goal goal, int studentId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         //God
         public async Task<List<Goal>> CreateGoalsForTemplate(int planId, Forløb forløb, List<GoalTemplate> goalTemplates)
@@ -131,7 +136,7 @@ namespace Client
                     PlanId = planId,
                     Title = template.Title,
                     Description = template.Description,
-                    Semester = forløb.Semester, 
+                    //Semester = forløb.Semester, 
                     Status = "Active",
                     Comments = new List<Comment>()
                 };
@@ -146,7 +151,7 @@ namespace Client
 
         
         
-        public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> StartGoal(MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
             goal.StarterId = mentor.MentorId;
@@ -157,7 +162,7 @@ namespace Client
             
         }
         
-        public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<Goal> ProcessGoal(MentorAssignment mentor)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == mentor.GoalId);
             goal.ConfirmerId = mentor.MentorId;
@@ -183,7 +188,7 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public async Task<Goal> ConfirmGoal(ElevplanComponent.MentorAssignment leder)
+        public async Task<Goal> ConfirmGoal(MentorAssignment leder)
         {
             var goal = _goals.FirstOrDefault(x => x.Id == leder.GoalId);
             goal.CompletedAt = DateTime.Now;

@@ -1,5 +1,6 @@
 ﻿@using Core
 @using System.Linq
+@using Core
 @inject NavigationManager navMan
 
 
@@ -67,12 +68,18 @@
                                                                     <p>Start dato: @goal.StartDate.Value.ToString("dd.MM.yyyy")</p>
                                                                     <p>Slut dato: @goal.EndDate.Value.ToString("dd.MM.yyyy")</p>
                                                                 }
+                                                                @if (goal.Type == "Skoleophold" && goal.Status != "Active")
+                                                                {
+                                                                    <p>Skole: @goal.SkoleNavn</p>
+                                                                    <p>Start dato: @goal.StartDate.Value.ToString("dd.MM.yyyy")</p>
+                                                                    <p>Slut dato: @goal.EndDate.Value.ToString("dd.MM.yyyy")</p>
+                                                                }
                                                                 @if (goal.Status != "Active")
                                                                 {
                                                                     <img src="icons/info-circle.svg" @onclick="() => OpenModal(goal)" alt="Historik" style="width:16px; height: 16px"/>
                                                                 }
                                                             </div>
-                                                            @if (goal.Status != "Completed" && goal.Type == "Skoleophold" && _currentUser.Rolle == "Køkkenchef")
+                                                            @if (goal.Status == "InProgress"  && goal.Type == "Skoleophold" && _currentUser.Rolle == "Køkkenchef")
                                                             {
                                                                 <button class="btn btn-success" @onclick="() => ConfirmSchoolOphold(goal)">Godkend Skoleophold</button>
                                                             }
@@ -215,15 +222,6 @@
 
     private Goal _currentGoal;
     
-    // // Hjælpe klasse skal laves om
-    public class MentorAssignment
-    {
-        public int PlanId { get; set; }
-        public int ForløbId { get; set; }
-        public int GoalId { get; set; }
-        public int MentorId { get; set; }
-        public string MentorName { get; set; }
-    }
     
     //Kommentar
     private Dictionary<int, string> comments = new();

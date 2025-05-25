@@ -20,8 +20,5 @@ namespace Core
         [Required(ErrorMessage = "Venligst indtast en region")]
         public string Region { get; set; }
         
-        [Required]
-        public int KøkkenChefId { get; set; }
     }
-
 }

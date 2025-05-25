@@ -13,12 +13,11 @@ namespace Core
         
         public int PlanId { get; set; }
   
-        public string? Type { get; set; }  // Kursus, Skole, Kompetence
+        public string? Type { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string? Status { get; set; } = "Active";
-        [BsonIgnoreIfNull]
-        public string? Semester { get; set; } //hvorfor er det, at vi har semester på goal niveau?
+
         [BsonIgnoreIfNull]
         public int? StarterId { get; set; } 
         [BsonIgnoreIfNull]
@@ -35,8 +34,8 @@ namespace Core
         public DateTime? CompletedAt { get; set; } 
         [BsonIgnoreIfNull]
         public string? SkoleNavn { get; set; }
-        [BsonIgnoreIfNull]
-        public List<Comment> Comments { get; set; }
+
+        [BsonIgnoreIfNull] public List<Comment> Comments { get; set; } = new();
         [BsonIgnoreIfNull]
         public DateTime? StartDate { get; set; }
         [BsonIgnoreIfNull]

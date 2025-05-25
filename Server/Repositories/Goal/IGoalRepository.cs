@@ -1,23 +1,20 @@
 ﻿using Client;
 using Client.Components.Elevoversigt;
 using Core;
-using Core.DTO.Goal;
 
 namespace Server
 {
 
     public interface IGoalRepository
     {
-        
-
         Task<bool> DeleteGoal(int studentId, int planId, int forløbId, int goalId);
         Task<bool> AddGoal(int studentId, int planId, int forløbId, Goal newGoal);
         Task<Comment> AddComment(Comment comment);
-
+        Task<bool> UpdateSchoolWithDate(Goal goal, int studentId);
         
         //Goals progress
-        Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor); //kan dette laves om?
-        Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment mentor); //kan dette laves om?
+        Task<Goal> StartGoal(MentorAssignment mentor); 
+        Task<Goal> ProcessGoal(MentorAssignment mentor); 
         Task<Goal> ConfirmGoalHelper(int planId, int forløbId, int goalId);
         Task<Goal> ConfirmGoalAndHandleProgress(int planId, int forløbId, int goalId);
         

@@ -15,18 +15,28 @@ namespace Client
             _client = client;
         }
         
-        public async Task<Plan> CreateElevPlan(int studentId)
+        public async Task<Plan> GetElevPlanTemplate(int studentId)
         {
-            var response = await _client.PostAsJsonAsync($"elevplan/{studentId}", new { studentId });
+            var response = await _client.GetAsync($"elevplan/gettemplate/{studentId}");
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<Plan>();
+                return null;
             }
-            
-            throw new Exception($"Error creating elev plan: {response.StatusCode}");
+            return await response.Content.ReadFromJsonAsync<Plan>();
+
         }
-        
+
+        public async Task<bool> SaveElevPlan(Plan plan, int studentId)
+        {
+            var update = await _client.PostAsJsonAsync($"elevplan/{studentId}", plan);
+
+            if (!update.IsSuccessStatusCode)
+            {
+                return false;
+            }
+            return true;
+        }
     }
    
 
