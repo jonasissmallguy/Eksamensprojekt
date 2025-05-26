@@ -19,46 +19,64 @@ else
         @if (_currentUser?.Rolle == "Elev")
         {
             <div class="dashboard-card">
-                <h5 class="card-title">Velkomst Boks</h5>
-                <p>Velkommen til din side @_currentUser?.FirstName</p>
+                <h5 class="card-title">Velkommen til din side @_currentUser?.FirstName</h5>
+                <p>Her kan du få et overblik over din vigtigste information</p>
             </div>
 
             <div class="dashboard-card">
                 <h5 class="card-title">Kommende Skoleophold</h5>
                 @if (_futureSchool != null)
                 {
-                    <ul class="list-reset">
-                        @foreach (var g in _futureSchool)
-                        {
-                            <li style="cursor: pointer">
-                            <li style="cursor: pointer">
-                                Delmål: @g.Title
-                                @(g.SkoleNavn != null ? $" SkoleNavn: {g.SkoleNavn} - Periode: " : "")
-                                @(g.SkoleStart == null || g.SkoleEnd == null
-                                    ? "Afventer din leder"
-                                    : $"{g.SkoleStart} til {g.SkoleEnd}")
-                            </li>                                                                    
-                            </li>
-                        }
-                        
-                    </ul>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Forløb</th>
+                                <th>Skole</th>
+                                <th>Start dato</th>
+                                <th>Slut dato</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _futureSchool)
+                            {
+                                <tr>
+                                    <td>@g.Title</td>
+                                    <td>@g.SkoleNavn</td>
+                                    <td>@g.SkoleStart</td>
+                                    <td>@g.SkoleEnd</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>    
                 }
 
             </div>  
 
             <div class="dashboard-card">
                 <h5 class="card-title">Aktive Delmål</h5>
-                <p>Her kan du se dine delmål der er begyndt men ikke afsluttet</p>
                 @if (_needAction != null)
                 {
-                    <ul class="list-reset">
-                        @foreach (var g in _needAction)
-                        {
-                            <li style="cursor: pointer">
-                                Delmål: @g.GoalTitle - Status: @g.Status
-                            </li>
-                        }
-                    </ul>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Delmål</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _needAction)
+                            {
+                                <tr>
+                                    <td>@g.GoalTitle</td>
+                                    <td>@g.Status</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>    
                 }
             </div>
 
@@ -66,14 +84,27 @@ else
                 <h5 class="card-title">Kommende Kurser</h5>
                 @if (_futureCourses != null)
                 {
-                    <ul class="list-reset">
-                        @foreach (var g in _futureCourses)
-                        {
-                            <li style="cursor: pointer">
-                                Titel: @g.Title - Lokation: @g.Location - Start: @g.StartDate
-                            </li>
-                        }
-                    </ul>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Titel</th>
+                                <th>Lokation</th>
+                                <th>Start dato</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _futureCourses)
+                            {
+                                <tr>
+                                    <td>@g.Title</td>
+                                    <td>@g.Location</td>
+                                    <td>@g.StartDate</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>    
                 }
 
             </div>
@@ -82,24 +113,34 @@ else
         @if (_currentUser?.Rolle == "Kok")
         {
             <div class="dashboard-card">
-                <h5 class="card-title">Velkomst Boks</h5>
-                <p>Velkommen til din side @_currentUser?.FirstName</p>
-                <p>Tak, fordi du engagerer dig i dine elev-kolleager</p>
+                <h5 class="card-title">Velkommen til din side @_currentUser?.FirstName</h5>
+                <p>Tak, fordi du engagerer dig i dine elev-kollegager</p>
+                <p>Her kan du se delmål, som du kan hjælpe en kollega med at få færdiggjort</p>
             </div>
             
             <div class="dashboard-card">
                 <h5 class="card-title">Aktive Delmål</h5>
-                <p>Her kan du se delmål, som du kan hjælpe en kollega med at få færdiggjort</p>
                 @if (_inProgress != null)
                 {
-                    <ul class="list-reset">
-                        @foreach (var g in _inProgress)
-                        {
-                            <li style="cursor: pointer">
-                                Delmål: @g.FullName - @g.GoalTitle
-                            </li>
-                        }
-                    </ul>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Elev</th>
+                                <th>Delmål</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _inProgress)
+                            {
+                                <tr>
+                                    <td>@g.FullName</td>
+                                    <td>@g.GoalTitle</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>    
                 }
             </div>
         }
@@ -108,35 +149,61 @@ else
         {
             <div class="dashboard-card">
                 <h5 class="card-title">Kommende Kurser</h5>
-                <p>Oversigt over kurser det næste kvartal</p>
                 @if (_currentCourses != null)
                 {
-                    <ul class="list-reset">
-                        @foreach (var g in _currentCourses)
-                        {
-                            <li style="cursor: pointer">
-                                Kursusnavn: @g.Title - Lokation: @g.Location - Start: @g.StartDate
-                            </li>
-                        }
-                    </ul>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Kursus</th>
+                                <th>Lokation</th>
+                                <th>Start dato</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _currentCourses)
+                            {
+                                <tr>
+                                    <td>@g.Title</td>
+                                    <td>@g.Location</td>
+                                    <td>@g.StartDate</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>    
                 }
             </div>
 
             <div class="dashboard-card">
                 <h5 class="card-title">Elever ude af huset</h5>
-                <p>Her kan du se, hvornår dine elever er på skole eller på kursus</p>
                 @if (_outOfHouse != null)
                 {
-                    <ul class="list-reset">
-                        @foreach (var g in _outOfHouse)
-                        {
-                            <li style="cursor: pointer">
-                                Navn: @g.FullName - Startdato: @g.StartDate - Slutdato: @g.EndDate (@g.GoalTitle)
-                            </li>
-                        }
-                    </ul>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Elev</th>
+                                <th>Årsag</th>
+                                <th>Start dato</th>
+                                <th>Slut dato</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _outOfHouse)
+                            {
+                                <tr>
+                                    <td>@g.FullName</td>
+                                    <td>@g.GoalTitle</td>
+                                    <td>@g.StartDate</td>
+                                    <td>@g.EndDate</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table> 
+                    </div>
                 }
-
+                
             </div>
 
             <div class="dashboard-card">
@@ -154,24 +221,56 @@ else
                     </ul>
                 }
 
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Elev</th>
+                                <th>Kursus</th>
+                                <th>Tilmeld elev</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _missingCourses)
+                            {
+                                <tr>
+                                    <td>@g.FullName</td>
+                                    <td>@g.GoalTitle</td>
+                                    <td><button @onclick="() => OpenModal(g, g.CourseCode)" class="btn-approve">Tilmeld kursus</button></td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>    
+                }
+                
             </div>
+            
             <div class="dashboard-card">
                 <h5 class="card-title">Afventende godkendelser</h5>
                 @if (_missingApproval != null)
                 {
-                    <ul class="list-reset">
-                        @foreach (var g in _missingApproval)
-                        {
-                            <li @key="g.GoalId">
-                                Navn: @g.FullName - Delmål: @g.GoalTitle
-                                <button @onclick="() => ConfirmGoal(g)" class="btn-approve">Godkend mål</button>
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    <p>Du har klaret alle dine opgaver... </p>
+                    <div class="table-container">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Elev</th>
+                                <th>Delmål</th>
+                                <th>Godkend delmål</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var g in _missingApproval)
+                            {
+                                <tr>
+                                    <td>@g.FullName</td>
+                                    <td>@g.GoalTitle</td>
+                                    <td><button @onclick="() => ConfirmGoal(g)" class="btn-approve">Godkend</button></td>
+                                </tr>   
+                            }
+                            </tbody>
+                        </table>
+                    </div>    
                 }
             </div>
         }
