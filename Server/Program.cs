@@ -35,11 +35,21 @@ builder.Services.AddSingleton<IGoalRepository,GoalRepository>();
 builder.Services.AddSingleton<IHotelRepository, HotelRepository>();
 builder.Services.AddSingleton<IKursusRepository, KursusRepository>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
+
+
 
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapOpenApi();
 

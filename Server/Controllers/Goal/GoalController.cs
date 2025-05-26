@@ -2,11 +2,13 @@
 using Client.Components.Elevoversigt;
 using Core;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver.Linq;
 
 namespace Server
 {
     
+    /// <summary>
+    /// 
+    /// </summary>
     [ApiController]
     [Route("goals")]
     public class GoalController : ControllerBase
@@ -14,6 +16,10 @@ namespace Server
 
         private IGoalRepository _goalRepository;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="goalRepository"></param>
         public GoalController(IGoalRepository goalRepository)
         {
             _goalRepository = goalRepository;
@@ -38,8 +44,16 @@ namespace Server
             return NotFound();
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <param name="planId"></param>
+        /// <param name="forløbId"></param>
+        /// <param name="newGoal"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Route("{studentId}/{planId}/{forløbId}/")]
+        [Route("{studentId}/{planId}/{forløbId}")]
         public async Task<IActionResult> AddGoal(int studentId, int planId, int forløbId, [FromBody] Goal newGoal)
         {
             if (newGoal == null || string.IsNullOrWhiteSpace(newGoal.Title) || newGoal.PlanId <= 0 || newGoal.ForløbId <= 0)
@@ -54,6 +68,27 @@ namespace Server
                 return Ok();
             }
             return NotFound();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="goal"></param>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("updateschool/{studentId}")]
+        public async Task<IActionResult> UpdateSkole([FromBody] Goal goal, int studentId)
+        {
+            if (goal == null || studentId == null)
+            {
+                return BadRequest();
+            }
+            
+            var updateResult = _goalRepository.UpdateSchoolWithDate(goal, studentId);
+
+
+            return Ok();
         }
 
 
@@ -98,6 +133,12 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="elevId"></param>
+        /// <returns></returns>
+        [HttpGet]
         [Route("need-action-goals/{elevId}")]
         public async Task<IActionResult> NeedActionGoals(int elevId)
         {
@@ -259,6 +300,11 @@ namespace Server
             return Ok(result);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hotelId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("outofhouse/{hotelId}")]
         public async Task<IActionResult> GetOutOfHouse(int hotelId)
@@ -274,7 +320,7 @@ namespace Server
                 var outOfHouseGoals = user.ElevPlan.Forløbs
                     .SelectMany(f => f.Goals)
                     .Where(g => 
-                        (g.Type == "Kursus" || g.Type == "Skoleforløb") &&
+                        (g.Type == "Kursus" || g.Type == "Skoleophold") &&
                         g.Status == "InProgress" &&
                         g.StartDate != null &&
                         g.EndDate != null &&
@@ -302,7 +348,11 @@ namespace Server
             return Ok(result);
         }
         
-        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="elevId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("future-schools/{elevId}")]
         public async Task<IActionResult> GetFutureSchools(int elevId)
@@ -339,7 +389,7 @@ namespace Server
         /// <returns></returns>
         [HttpPut]
         [Route("startgoal")]
-        public async Task<IActionResult> StartGoal(ElevplanComponent.MentorAssignment bruger)
+        public async Task<IActionResult> StartGoal(MentorAssignment bruger)
         {
             var goal = await _goalRepository.StartGoal(bruger);
 
@@ -350,9 +400,14 @@ namespace Server
             return Ok(goal);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bruger"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("processgoal")]
-        public async Task<IActionResult> ProcessGoal(ElevplanComponent.MentorAssignment bruger)
+        public async Task<IActionResult> ProcessGoal(MentorAssignment bruger)
         {
             var processedGoal = await _goalRepository.ProcessGoal(bruger);
 
@@ -363,6 +418,13 @@ namespace Server
             return Ok(processedGoal);
         }
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="forløbId"></param>
+        /// <param name="goalId"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("confirmgoal/{planId}/{forløbId}/{goalId}")]
         public async Task<IActionResult> ConfirmGoal(int planId, int forløbId, int goalId)
@@ -376,7 +438,14 @@ namespace Server
             
             return Ok(processedGoal);
         }
-
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="planId"></param>
+        /// <param name="forløbId"></param>
+        /// <param name="goalId"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("confirmschool/{planId}/{forløbId}/{goalId}")]
         public async Task<IActionResult> ConfirmSchoolOphold(int planId, int forløbId, int goalId)
@@ -391,6 +460,11 @@ namespace Server
             return Ok(result);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="studentId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("progress/{studentId}")]
         public async Task<IActionResult> GetGoalProgress(int studentId)

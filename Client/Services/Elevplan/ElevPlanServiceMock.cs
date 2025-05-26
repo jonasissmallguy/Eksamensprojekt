@@ -26,7 +26,7 @@ namespace Client
         }
         
         
-        public async Task<Plan> CreateElevPlan(int studentId)
+        public async Task<Plan> GetElevPlanTemplate(int studentId)
         {
             //var template = await _template.GetTemplateById(1);
             /*
@@ -60,7 +60,12 @@ namespace Client
             */
             return new Plan();
         }
-     
+
+        public Task<bool> SaveElevPlan(Plan plan, int studentId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public async Task SavePlan(Plan plan)
         {

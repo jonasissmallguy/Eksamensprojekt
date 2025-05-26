@@ -77,6 +77,7 @@ namespace Client
             return true;
         }
 
+        /*
         public async Task<List<ManagerDTO>> GetAllManagers()
         {
             var managers = new List<ManagerDTO>();
@@ -95,6 +96,7 @@ namespace Client
 
             return managers;
         }
+        */
 
         public string GeneratePassword()
         {
@@ -179,6 +181,11 @@ namespace Client
             }
 
             return await Task.FromResult(elevOversigt);
+        }
+
+        public Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int hotelId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<BrugerLoginDTO>> GetAllUsers()

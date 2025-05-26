@@ -8,6 +8,7 @@ namespace Client
         Task<User> GetBrugerById(int userId);
         Task<User> OpretBruger(BrugerCreateDTO nyBruger);
         Task<List<ElevOversigtDTO>> GetElevOversigt();
+        Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int hotelId);
         Task<List<BrugerLoginDTO>> GetAllActiveUsers();
         Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId);
         Task<bool> DeleteUser(int userId, string rolle);

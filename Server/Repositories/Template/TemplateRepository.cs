@@ -1,7 +1,5 @@
 ﻿using Core;
 using MongoDB.Driver;
-using DotNetEnv;
-using MongoDB.Bson;
 
 namespace Server
 {

@@ -6,7 +6,6 @@
 @inject NavigationManager navMan;
 @inject IElevPlan IElevPlanService;
 @inject IBruger IBrugerService;
-@inject IGoal IGoalService;
 
 
 @page "/opretelevplan/{studentId:int}"
@@ -17,7 +16,7 @@
 }
 else
 {
-    @if (nyElevPlan != null)
+    @if (nyElevPlan != null && elev != null)
     {
         <h4>Elevplan for @elev.FirstName @elev.LastName</h4>
         
@@ -26,10 +25,20 @@ else
 
         <button @onclick="OpenModal" class="btn btn-primary">Opret delmål</button>
         
+        @if (_addingPlan)
+        {
+            <p>Tilføjer plan... vent venligst</p>
+        }
         <TilføjDelmålComponent @ref="addGoalModalRef"
                                StudentId="studentId"
                                ElevPlan="@nyElevPlan"
-                               OnGoalAdded="@OnGoalAdded"/>
+                               OnGoalAdded="OnGoalAdded"
+                               ShowSchoolSection="false"
+                               WorkInMemory="true"/>
+    }
+    else
+    {
+        <scan style="color: red">@errorText</scan>
     }
 }
 
@@ -38,11 +47,15 @@ else
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
     private bool _loading = true;
     [Parameter] public int studentId { get; set; }
-    private Plan? nyElevPlan = new();
+    private Plan nyElevPlan = new();
     private User elev = new();
     private TilføjDelmålComponent addGoalModalRef;
+    private bool _addingPlan = false;
 
+    //Errortext
+    string errorText = "";
 
+    
     protected override async Task OnInitializedAsync()
     {
         
@@ -59,46 +72,64 @@ else
         
         elev = await IBrugerService.GetBrugerById(studentId);
 
-        if (elev.ElevPlan != null)
+        if (elev == null)
         {
-            nyElevPlan = elev.ElevPlan;
+            errorText = "Kunen ikke finde brugeren";
         }
-        else
-        {
-            nyElevPlan = await IElevPlanService.CreateElevPlan(studentId);
-        }
+        
+        nyElevPlan = await IElevPlanService.GetElevPlanTemplate(studentId);
 
+        if (nyElevPlan == null)
+        {
+            errorText = "Kunne ikke finde template, prøv venligst igen";
+        }
+        
         _loading = false;
     }
     
     private async Task HandleDeleteGoal(Goal goal)
     {
-        await IGoalService.DeleteGoal(goal, studentId);
-
         var forløb = nyElevPlan.Forløbs.FirstOrDefault(f => f.Id == goal.ForløbId);
 
         if (forløb != null)
         {
-            forløb.Goals.RemoveAll(x => x.Id == goal.Id);
+            var goalToRemove = forløb.Goals.FirstOrDefault(x => x.Id == goal.Id);
+            if (goalToRemove != null)
+            {
+                forløb.Goals.Remove(goalToRemove);
+            }
         }
 
     }
     
+    private async Task OnGoalAdded(Goal newGoal)
+    {
+        var forløb = nyElevPlan.Forløbs.FirstOrDefault(f => f.Id == newGoal.ForløbId);
+        if (forløb != null)
+        {
+            forløb.Goals.Add(newGoal);
+        }
+        StateHasChanged();
+    }
+    
     private async Task HandleElevplanSubmit()
     {
+        _addingPlan = true;
+        
+        var result = await IElevPlanService.SaveElevPlan(nyElevPlan, studentId);
+
+        if (!result)
+        {
+            errorText = "Kunne ikke gemme elevplan, prøv venligst igen";
+        }
         navMan.NavigateTo("/dashboard");
+        
     }
-
-
+    
     private async Task OpenModal()
-    {
-
+    { 
         addGoalModalRef?.Open();
     }
 
-    private async Task OnGoalAdded()
-    {
-        StateHasChanged();
-    }
 
 }

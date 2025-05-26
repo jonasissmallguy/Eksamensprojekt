@@ -11,7 +11,7 @@ namespace Server
         Task<Kursus> CompleteCourse(int kursusId);
         Task<Kursus> AddStudentToCourse(User user, int kursusId);
         Task<List<KursusTemplate>> GetAllTemplates();
-        Task SaveCourse(Kursus kursus);
+        Task<Kursus> SaveCourse(Kursus kursus);
         Task<List<Kursus>> GetFutureCourses();
         Task<List<Kursus>> GetFutureCourseByStudentId(int studentId);
         

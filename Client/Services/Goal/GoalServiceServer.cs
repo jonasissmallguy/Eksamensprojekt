@@ -21,20 +21,29 @@ namespace Client
 
         public async Task<bool> AddGoal(Goal goal, int studentId)
         {
-            var url = $"goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/";
-            
-            var response = await _client.PostAsJsonAsync(url, goal);
+            var response = await _client.PostAsJsonAsync($"goals/{studentId}/{goal.PlanId}/{goal.ForløbId}", goal);
+   
             if (!response.IsSuccessStatusCode)
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Fejl fra server: {errorContent}");
             }
             return response.IsSuccessStatusCode;
-
         }
-        
 
-        public async Task<Goal> StartGoal(ElevplanComponent.MentorAssignment mentor)
+        public async Task<bool> UpdateSkole(Goal goal, int studentId)
+        {
+            var response = await _client.PutAsJsonAsync($"goals/updateschool/{studentId}", goal);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+            }
+            return response.IsSuccessStatusCode;
+        }
+
+
+        public async Task<Goal> StartGoal(MentorAssignment mentor)
         {
             var response = await _client.PutAsJsonAsync($"goals/startgoal", mentor);
 
@@ -47,7 +56,7 @@ namespace Client
             return null;
         }
 
-        public async Task<Goal> ProcessGoal(ElevplanComponent.MentorAssignment bruger)
+        public async Task<Goal> ProcessGoal(MentorAssignment bruger)
         {
             var response = await _client.PutAsJsonAsync($"goals/processgoal", bruger);
 

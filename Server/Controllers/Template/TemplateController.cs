@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Server.Controllers.Template
+namespace Server
 {
 
     [ApiController]
@@ -18,6 +18,11 @@ namespace Server.Controllers.Template
 
 
 
+        /// <summary>
+        /// Henter en template
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Retunerer en template</returns>
         [HttpGet]
         [Route("{id:int}")]
         public async Task<IActionResult> GetTemplate(int id)
@@ -32,6 +37,10 @@ namespace Server.Controllers.Template
             return Ok(template);
         }
 
+        /// <summary>
+        /// Henter alle templates
+        /// </summary>
+        /// <returns>En liste af templates</returns>
         [HttpGet]
         public async Task<IActionResult> GetTemplates()
         {

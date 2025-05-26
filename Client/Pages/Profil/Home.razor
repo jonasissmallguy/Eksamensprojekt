@@ -210,6 +210,17 @@ else
                 <h5 class="card-title">Manglende kurser</h5>
                 @if (_missingCourses != null)
                 {
+                    <ul class="list-reset">
+                        @foreach (var g in _missingCourses)
+                        {
+                            <li>
+                                Navn: @g.FullName - Kursus: @g.GoalTitle
+                                <button @onclick="() => OpenModal(g)" class="btn-approve">Tilmeld kursus</button>
+                            </li>
+                        }
+                    </ul>
+                }
+
                     <div class="table-container">
                         <table class="table table-striped">
                             <thead>
@@ -225,7 +236,7 @@ else
                                 <tr>
                                     <td>@g.FullName</td>
                                     <td>@g.GoalTitle</td>
-                                    <td><button @onclick="() => OpenModal(g, g.CourseCode)" class="btn-approve">Tilmeld kursus</button></td>
+                                    <td><button @onclick="() => OpenModal(g)" class="btn-approve">Tilmeld kursus</button></td>
                                 </tr>
                             }
                             </tbody>
@@ -306,6 +317,10 @@ else
     private ModalDialog _kursusModal { get; set; }
     private List<KursusKommendeDTO> _matchingCourses = new();
 
+    //refacor!!
+    private KursusManglendeDTO? _currentMissingCourse;
+
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -361,14 +376,25 @@ else
         }
     }
 
+    //Skal laves om!
     private async Task TilmeldKursus(KursusKommendeDTO kursus)
     {
-        
+        var userDto = new KursusDeltagerListeDTO
+        {
+            Id = _currentMissingCourse.Id,       
+            Navn = _currentMissingCourse.FullName,  
+            Hotel = _currentMissingCourse.Hotel     
+        };
+
+        await IKursusService.AddStudentToCourse(userDto, kursus.KursusId);
+        _kursusModal.Close();
+        _missingCourses = _missingCourses.Where(k => k.Id != _currentMissingCourse.Id).ToList(); //virker ikke korrekt?
     }
 
-    private async Task OpenModal(KursusManglendeDTO kursusManglendeDto, string corseCode)
+    private async Task OpenModal(KursusManglendeDTO kursusManglendeDto)
     {
-        _matchingCourses = _currentCourses.Where(k => k.CourseCode == corseCode).ToList();
+        _currentMissingCourse = kursusManglendeDto;
+        _matchingCourses = _currentCourses.Where(k => k.CourseCode == kursusManglendeDto.CourseCode).ToList();
         _kursusModal.Open();
     }
 }

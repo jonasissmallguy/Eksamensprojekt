@@ -12,7 +12,7 @@ namespace Server
         
         Task<UpdateResult> UpdateHotelChef(Hotel hotel);
         
-        Task RemoveManagerFromHotel(int køkkenChefId);
+        Task<UpdateResult> RemoveManagerFromHotel(int køkkenChefId);
         
 
     }

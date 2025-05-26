@@ -18,7 +18,15 @@ namespace Client
 
         public async Task<User> GetBrugerById(int userId)
         {
-            return await _client.GetFromJsonAsync<User>($"users/{userId}");
+            var result =  await _client.GetAsync($"users/{userId}");
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+            
+            var user = await result.Content.ReadFromJsonAsync<User>();
+            return user;
         }
         
         public async Task<User> OpretBruger(BrugerCreateDTO nyBruger)
@@ -40,7 +48,12 @@ namespace Client
         {
             return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt");
         }
-        
+
+        public async Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int hotelId)
+        {
+            return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt/{hotelId}");
+        }
+
         public async Task<List<BrugerLoginDTO>> GetAllActiveUsers()
         {
             return await _client.GetFromJsonAsync<List<BrugerLoginDTO>>($"users/active");

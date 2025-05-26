@@ -8,6 +8,11 @@
 @page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
 
+@if (!string.IsNullOrEmpty(errorText))
+{
+    <span style="color: red">@errorText</span>
+}
+
 @if (alleKurser != null)
 {
     <button @onclick="AddCourse">Tilføj kursus</button>
@@ -42,7 +47,7 @@
     <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
         <DataAnnotationsValidator />
         <ValidationSummary />
-
+        
         <div class="form-group mb-3">
             <label for="courseSelect">Vælg kursus:</label>
             <InputSelect class="form-select" @bind-Value="newCourse.TemplateId">
@@ -102,6 +107,8 @@
     private List<Kursus> Courses;
     private List<KursusTemplate> CoursesTemplates;
     
+    string errorText = "";
+    
     protected override async Task OnInitializedAsync()
     {
         if (_currentUser == null)
@@ -116,12 +123,23 @@
         }
         
         alleKurser = await IKursusService.GetAllCourses();
+
+        if (alleKurser == null)
+        {
+            errorText = "Kunne ikke finde nogen kurser, venligst opret nogen for at kunne vise siden";
+        }
+        
     }
 
     private async Task AddCourse()
     {
         _modalKursus.Open();
         CoursesTemplates = await IKursusService.GetAllTemplates();
+
+        if (CoursesTemplates == null)
+        {
+            errorText = "Ikke ikke finde nogen tempaltes, venligst be IT om at oprette nogen, eller få færdigudviklet din side...";
+        }
     }
 
     private void CloseCourseSelection()
@@ -138,9 +156,15 @@
             newCourse.CourseCode = selected.CourseCode;
         }
 
-        await IKursusService.SaveCourse(newCourse);
+        var kursus = await IKursusService.SaveCourse(newCourse);
+
+        if (kursus == null)
+        {
+            errorText = "Kunne ikke gemme kursus, prøv venligst igen";
+        }
+        
+        alleKurser.Add(kursus);
         _modalKursus.Close();
-        alleKurser = await IKursusService.GetAllCourses();
     }
 
     private void NavigateToCourse(int kursusId)

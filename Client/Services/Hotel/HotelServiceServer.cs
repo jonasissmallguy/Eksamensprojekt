@@ -16,12 +16,25 @@ namespace Client
 
         public async Task<List<Hotel>> GetHotels()
         {
-            return await _client.GetFromJsonAsync<List<Hotel>>($"hotels");
+            try
+            {
+               return await _client.GetFromJsonAsync<List<Hotel>>($"hotels");
+            }
+
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }   
 
         public async Task CreateHotel(HotelCreationDTO newHotel)
         { 
-            await _client.PostAsJsonAsync($"hotels", newHotel);
+            var hotel = await _client.PostAsJsonAsync($"hotels", newHotel);
+
+            if (!hotel.IsSuccessStatusCode)
+            {
+                throw new Exception("Kunne ikke oprette et hotel, prøv venligst igen");
+            }
         }
     }
 

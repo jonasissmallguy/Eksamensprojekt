@@ -4,6 +4,7 @@ using DotNetEnv;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Server
 {
@@ -24,11 +25,21 @@ namespace Server
             _hotelRepository = hotelRepository;
         }
 
+    
+        /// <summary>
+        /// Henter alle bruger og konverter til dto
+        /// </summary>
+        /// <returns>Retunerer en liste af users</returns>
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var allUsers = await _userRepository.GetAllUsers();
 
+            if (allUsers == null)
+            {
+                return NotFound("Kunne ikke finde nogen users");
+            }
+            
             List<BrugerLoginDTO> brugerLogins = new();
 
             foreach (User user in allUsers)
@@ -43,12 +54,6 @@ namespace Server
                     HotelId = user.HotelId
                 });
             }
-
-            if (allUsers == null)
-            {
-                return NotFound();
-            }
-
             return Ok(brugerLogins);
         }
 
@@ -56,11 +61,16 @@ namespace Server
         /// Henter alle bruger uden mig selv
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>Retunerer alle users uden mig selv</returns>
         [HttpGet]
         [Route("withoutmyself/{id:int}")]
         public async Task<IActionResult> GetAllUsersWithOutMyself(int id)
         {
+            if (id <= 0)
+            {
+                return BadRequest("Id er forkert");
+            }
+            
             List<BrugerAdministrationDTO> brugers = new();
 
             var allUsers = await _userRepository.GetAllUsersWithOutMyself(id);
@@ -81,84 +91,26 @@ namespace Server
                     Status = x.Status
                 });
             }
-
             return Ok(brugers);
         }
-
-        [NonAction]
-        //Hjælpefunktion til at reset email
-        public async Task SendResetCodeEmail(string email, string verificeringsKode)
-        {
-
-            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
-
-            //Anvender SendGrid
-            var client = new SendGridClient(apiKey);
-
-            //Fra & Til
-            var from = new EmailAddress("jonasdupontheidemann@gmail.com", "HR");
-            var to = new EmailAddress(email);
-
-            //Indhold
-            var subject = "Nulstilling af Comwell adgangskode";
-            var plainTextContent =
-                $"Opret din nye adgangskode\t\n\t\t\n\t" +
-                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
-                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
-                $"{verificeringsKode}" +
-                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
-
-            var htmlContent = $"{verificeringsKode}";
-
-            //Generer email og sender
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
-        }
-
-        [NonAction]
-        //Checker vores verificeringskode... i server memory
-        public async Task<bool> CheckVerficiationCode(string email, string kode)
-        {
-            if (verificeringsKoder.TryGetValue(email, out var output))
-            {
-                if (output.Kode == kode && output.Expiry > DateTime.Now)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        [NonAction]
-        //Generer verificeringskode
-        public string GenerateResetCode(string email)
-        {
-            Random ran = new Random();
-            string verificeringsKode = String.Empty;
-
-            string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
-            int size = 8;
-
-            for (int i = 0; i < size; i++)
-            {
-                //Tager et random index
-                int x = ran.Next(bogstaver.Length);
-                verificeringsKode = verificeringsKode + bogstaver[x];
-            }
-                
-            verificeringsKoder[email] = (verificeringsKode, DateTime.Now.AddMinutes(10));
-            
-            return verificeringsKode;
-        }
         
+        
+        /// <summary>
+        /// Finder en bruger efter email og sender resetkode til denne mail
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>En bruger </returns>
         [HttpGet]
         [Route("{email}")]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Email er blank");
+            }
+            
             var user = await _userRepository.GetUserByEmail(email);
             
-
             if (user == null)
             {
                 return NotFound();
@@ -171,38 +123,33 @@ namespace Server
         }
 
         
+        /// <summary>
+        /// Finder en bruger
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Retunererer en bruger</returns>
         [HttpGet]
         [Route("{id:int}")]
         public async Task<IActionResult> GetUserById(int id)
         {
+            if (id <= 0)
+            {
+                return BadRequest("Id er forkert");
+            }
             var user = await _userRepository.GetUserById(id);
-            
+
+            if (user == null)
+            {
+                return NotFound("Kunne ikke finde brugeren");
+            }
             return Ok(user);
         }
-
-        [NonAction]
-        //Opretter password
-        public string GeneratePassword()
-        {
-            var random = new Random();
-            var chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-            var password = "";
-
-            for (int i = 0; i < 8; i++)
-            {
-                var index = random.Next(chars.Length);
-                password += chars[index];
-            }
-
-            return password;
-        }
-        
 
         /// <summary>
         /// Metode til at opret en bruger
         /// </summary>
         /// <param name="user"></param>
-        /// <returns></returns>
+        /// <returns>Retuner en bruger</returns>
         [HttpPost]
         public async Task<IActionResult> PostUser(BrugerCreateDTO user)
         {
@@ -225,6 +172,11 @@ namespace Server
             if (string.IsNullOrWhiteSpace(user.Køn))
                 return Conflict("Venligst angiv et køn");
 
+            if (!user.Email.Contains("@"))
+            {
+                return Conflict("Dette er ikke en valid email");
+            }
+            
             // Tjekker unik email
             var result = await _userRepository.CheckUnique(user.Email);
             if (!result)
@@ -237,10 +189,10 @@ namespace Server
 
                 if (user.EndDate == null)
                     return Conflict("Venligst angiv en slutdato");
-
-                if (user.StartDate > user.EndDate)
+                
+                if (user.StartDate <= user.EndDate)
                     return Conflict("Mismatch i start og slutdato");
-
+                
                 if (string.IsNullOrWhiteSpace(user.Year))
                     return Conflict("Venligst angiv en årgang");
 
@@ -287,7 +239,6 @@ namespace Server
 
             if (user.Rolle == "Køkkenchef")
             {
-        
                 if (hotel != null && (hotel.KøkkenChefId != null || !string.IsNullOrEmpty(hotel.KøkkenChefNavn)))
                 {
                     return Conflict("Dette hotel har allerede en køkkenchef");
@@ -295,14 +246,26 @@ namespace Server
             }
     
             var newUser = await _userRepository.SaveBruger(nyBruger);
+
+            if (newUser == null)
+            {
+                return BadRequest("Kunne ikke gemme den nye bruger, prøv igen");
+            }
+            
     
             if (user.Rolle == "Køkkenchef" && hotel != null)
             {
                 hotel.KøkkenChefId = newUser.Id;
                 hotel.KøkkenChefNavn = newUser.FirstName + " " + newUser.LastName;
-                await _hotelRepository.UpdateHotelChef(hotel);
+                var updateResult = await _hotelRepository.UpdateHotelChef(hotel);
+
+                if (updateResult.MatchedCount == 0)
+                {
+                    return NotFound("Kunne ikke opdatere hotelchefen");
+                }
             }
 
+            //Deaktiveret indtil vi går live...
             /*var mailSent = await SendLoginDetails(nyBruger);
 
             if (!mailSent)
@@ -314,6 +277,505 @@ namespace Server
             return Ok(newUser);
         }
 
+        /// <summary>
+        /// Sletter en bruger, hvis brugeren er køkkenchef, så fjerner vi også fra hotellet
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="rolle"></param>
+        /// <returns>Stauts 200</returns>
+        [HttpDelete]
+        [Route("{userId}/{rolle}")]
+        public async Task<IActionResult> DeleteUser(int userId, string rolle)
+        {
+            if (userId <= 0 || string.IsNullOrWhiteSpace(rolle))
+            {
+                return BadRequest("Forkert userId eller rolle er blank");
+            }
+            
+            if (rolle == "Køkkenchef")
+            {
+                var updateResult = await _hotelRepository.RemoveManagerFromHotel(userId);
+
+                if (updateResult.MatchedCount == 0)
+                {
+                    return NotFound("Kunne ikke finde køkkenchefen");
+                }
+                
+            }
+            var deleteResult = await _userRepository.DeleteUser(userId);
+
+            if (deleteResult.DeletedCount == 0)
+            {
+                return NotFound("Kunne ikke slette brugeren");
+            }
+            
+            return Ok();
+        }
+
+        /// <summary>
+        /// Deaktiver en bruger der har status aktiv
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Stauts 200</returns>
+        [HttpPut]
+        [Route("deactivate/{userId}/{rolle}")]
+        public async Task<IActionResult> DeactivateUser(int userId, string rolle)
+        {
+            if (userId <= 0 || string.IsNullOrWhiteSpace(rolle))
+            {
+                return BadRequest("Forkert userId eller rolle er blank");
+            }
+            
+            if (rolle == "Køkkenchef")
+            {
+                var hotelUpdate = await _hotelRepository.RemoveManagerFromHotel(userId);
+
+                if (hotelUpdate.MatchedCount == 0)
+                {
+                    return NotFound("Kunne ikke fjerne køkkenchefen fra hotellet");
+                }
+                
+            }
+            
+            var deactiveResult = await _userRepository.DeactivateUser(userId);
+
+            if (deactiveResult.MatchedCount == 0)
+            {
+                return NotFound("Kunne ikke deaktivere brugeren");
+            }
+            
+            return Ok();
+        }
+
+        /// <summary>
+        /// Aktiver en bruger der er deaktiveret
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Stauts 200</returns>
+        [HttpPut]
+        [Route("activate/{userId}")]
+        public async Task<IActionResult> ActivateUser(int userId)
+        {
+            if (userId <= 0)
+            {
+                return BadRequest("Forkert userId");
+            }
+            
+            var activateResult = await _userRepository.ActivateUser(userId);
+
+            if (activateResult.MatchedCount == 0)
+            {
+                return NotFound("Kunne ikke finde brugeren");
+            }
+            
+            
+            return Ok();
+
+        }
+
+        /// <summary>
+        /// Ændrer rolle på en bruger
+        /// </summary>
+        /// <returns>Stauts 200</returns>
+        [HttpPut]
+        [Route("updaterolle/{userId}/{newRolle}")]
+        public async Task<IActionResult> UpdateRole(string newRolle, int userId)
+        {
+            if (string.IsNullOrWhiteSpace(newRolle) || userId <= 0)
+            {
+                return BadRequest("Forkert userId eller rolle er blank");
+            }
+            
+            var updateResult = await _userRepository.UpdateRolle(newRolle, userId);
+
+            if (updateResult.MatchedCount == 0)
+            {
+                return NotFound("Kunne ikke finde brugeren");
+            }
+            
+            
+            return Ok();
+        }
+        
+        /// <summary>
+        /// Opdater password
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="updatedPassword"></param>
+        /// <returns>UpdateResult</returns>
+        [HttpPut]
+        [Route("updatepassword/{email}")]
+        public async Task<IActionResult> UpdatePassword(string email, [FromBody] string updatedPassword)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Emailen er blank");
+            }
+            
+            if (string.IsNullOrWhiteSpace(updatedPassword))
+            {
+                return BadRequest("Opdateret password er blank");
+            }
+
+            if (updatedPassword.Length < 8)
+            {
+                return BadRequest("Password skal være 8 cifre eller mere");
+            }
+            
+            var result = await _userRepository.UpadtePassword(email, updatedPassword);
+
+            if (result.MatchedCount == 0)
+            {
+                return NotFound("Kunne ikke finde brugeren");
+            }
+            
+            return Ok(result);
+
+        }
+
+        /// <summary>
+        /// Metode til at tjekke, at vores verificeringskoder er rigtige
+        /// </summary>
+        /// <returns>true eller false</returns>
+        [HttpGet]
+        [Route("{email}/{kode}")]
+        public async Task<IActionResult> CheckVerificationCoed(string email, string kode)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(kode))
+            {
+                return BadRequest("Emailen eller verificeringskoden er blank");
+            }
+            
+            if (verificeringsKoder.TryGetValue(email, out var output))
+            {
+                if (output.Kode == kode && output.Expiry > DateTime.Now)
+                {
+                    return Ok(true);
+                }
+            }
+
+            return BadRequest(false);
+        }
+
+        /// <summary>
+        /// Henter alle elever og konverter til DTO
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("allstudents")]
+        public async Task<IActionResult> GetAllStudents()
+        {
+            List<KursusDeltagerListeDTO> students = new();
+            var users = await _userRepository.GetAllStudents();
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde nogen elever");
+            }
+
+            foreach (var user in users)
+            {
+                students.Add(new KursusDeltagerListeDTO
+                {
+                    Id = user.Id,
+                    Hotel = user.HotelNavn,
+                    Navn = user.FirstName + "  " + user.LastName
+                });
+            }
+
+            return Ok(students);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="kursusCode"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("allstudents/{kursusCode}")]
+        public async Task<IActionResult> GetAllStudentsWithCourse(string kursusCode)
+        {
+            if (string.IsNullOrWhiteSpace(kursusCode))
+            {
+                return BadRequest("Kursus koden er blank");
+            }
+            
+            List<KursusDeltagerListeDTO> students = new();
+            var users = await _userRepository.GetAllStudentsMissingCourse(kursusCode);
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde nogen elever med de mang");
+            }
+            
+            foreach (var user in users)
+            {
+                students.Add(new KursusDeltagerListeDTO
+                {
+                    Id = user.Id,
+                    Hotel = user.HotelNavn,
+                    Navn = user.FirstName + "  " + user.LastName
+                });
+            }
+
+            return Ok(students);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("oversigt")]
+        public async Task<IActionResult> GetElevOversigt()
+        {
+            var users = await _userRepository.GetAllStudents();
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde nogen elever");
+            }
+            
+            var elevOversigt = new List<ElevOversigtDTO>();
+
+            foreach (var elev in users.Where(x => x.Rolle == "Elev"))
+            {
+                elevOversigt.Add(new ElevOversigtDTO
+                {
+                    Id = elev.Id,
+                    Name = elev.FirstName + " " + elev.LastName,
+                    HotelId = elev.HotelId,
+                    HotelNavn = elev.HotelNavn,
+                    Roller = elev.Rolle,
+                    Year = elev.Year,
+                    Skole = elev.Skole,
+                    Uddannelse = elev.Uddannelse,
+                    StartDate = elev.StartDate,
+                    EndDate = elev.EndDate,
+                    TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0,
+                    CompletedGoals =
+                        elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
+                });
+            }
+
+            return Ok(elevOversigt);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hotelId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("oversigt/{hotelId}")]
+        public async Task<IActionResult> GetElevOversigtByHotel(int hotelId)
+        {
+            if (hotelId <= 0)
+            {
+                return BadRequest("Forkert hotelId");
+            }
+            
+            var elever = await _userRepository.GetAllStudentsByHotelId(hotelId);
+
+            if (!elever.Any())
+            {
+                return NotFound();
+            }
+            
+            List<ElevOversigtDTO> elevOversigt = new();
+
+            foreach (var elev in elever)
+            {
+                elevOversigt.Add(new ElevOversigtDTO
+                {
+                    Id = elev.Id,
+                    Name = elev.FirstName + " " + elev.LastName,
+                    HotelId = elev.HotelId,
+                    HotelNavn = elev.HotelNavn,
+                    Roller = elev.Rolle,
+                    Year = elev.Year,
+                    Skole = elev.Skole,
+                    Uddannelse = elev.Uddannelse,
+                    StartDate = elev.StartDate,
+                    EndDate = elev.EndDate,
+                    TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0,
+                    CompletedGoals =
+                        elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
+                });
+            }
+            
+            return Ok(elevOversigt);
+        }
+
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="studentIds"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("sendemail/{email}")]
+        public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds, string email)
+        {
+            if (!studentIds.Any() || string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Emailen er blank eller ingen studentids");
+            }
+            
+            var students = await _userRepository.GetAllStudents();
+
+            if (!students.Any())
+            {
+                return NotFound("Kunne ikke finde nogen elever");
+            }
+            
+            var filter = students.Where(x => studentIds.Contains(x.Id)).ToList();
+
+            var emailStatus = await GenerateExcelFileAndSendMail(filter, email);
+            
+            return Ok(emailStatus);
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="hotelId"></param>
+        /// <param name="hotelNavn"></param>
+        /// <returns></returns>
+        [HttpPut]
+        [Route("updatehotel/{userId}/{hotelId}")]
+        public async Task<IActionResult> UpdateUser(int userId, int hotelId, [FromBody] string hotelNavn)
+        {
+            var result = await _userRepository.UpdateHotel(userId, hotelId, hotelNavn);
+
+            if (result.MatchedCount == 0)
+            {
+                return NotFound("Kunne ikke finde hotel");
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("active")]
+        public async Task<IActionResult> GetAllActiveUsers()
+        {
+            var activeUsers = await _userRepository.GetAllActiveUsers();
+
+            if (!activeUsers.Any())
+            {
+                return NotFound("Kunne ikke finde nogen aktive elever");
+            }
+
+            List<BrugerLoginDTO> users = new();
+
+            foreach (var user in activeUsers)
+            {
+                users.Add(new BrugerLoginDTO
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    Email = user.Email,
+                    Password = user.Password,
+                    HotelId = user.HotelId,
+                    Rolle = user.Rolle
+                });
+                
+            }
+            return Ok(users);
+        }
+        
+        [NonAction]
+        //Hjælpefunktion til at reset email
+        public async Task SendResetCodeEmail(string email, string verificeringsKode)
+        {
+
+            var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+
+            //Anvender SendGrid
+            var client = new SendGridClient(apiKey);
+
+            //Fra & Til
+            var from = new EmailAddress("jonasdupontheidemann@gmail.com", "HR");
+            var to = new EmailAddress(email);
+
+            //Indhold
+            var subject = "Nulstilling af Comwell adgangskode";
+            var plainTextContent =
+                $"Opret din nye adgangskode\t\n\t\t\n\t" +
+                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
+                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
+                $"{verificeringsKode}" +
+                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
+
+            var htmlContent = $"{verificeringsKode}";
+
+            //Generer email og sender
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await client.SendEmailAsync(msg);
+        }
+
+        [NonAction]
+        //Checker vores verificeringskode... i server memory
+        public async Task<bool> CheckVerficiationCode(string email, string kode)
+        {
+            if (verificeringsKoder.TryGetValue(email, out var output))
+            {
+                if (output.Kode == kode && output.Expiry > DateTime.Now)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        //Generer verificeringskode
+        [NonAction]
+        public string GenerateResetCode(string email)
+        {
+            Random ran = new Random();
+            string verificeringsKode = String.Empty;
+
+            string bogstaver = "abcdefghijklmnopqrstuvwxyz0123456789";
+            int size = 8;
+
+            for (int i = 0; i < size; i++)
+            {
+                //Tager et random index
+                int x = ran.Next(bogstaver.Length);
+                verificeringsKode = verificeringsKode + bogstaver[x];
+            }
+                
+            verificeringsKoder[email] = (verificeringsKode, DateTime.Now.AddMinutes(10));
+            
+            return verificeringsKode;
+        }
+        
+        //Opretter password
+        [NonAction]
+        public string GeneratePassword()
+        {
+            var random = new Random();
+            var chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            var password = "";
+
+            for (int i = 0; i < 8; i++)
+            {
+                var index = random.Next(chars.Length);
+                password += chars[index];
+            }
+
+            return password;
+        }
+        
+        
         [NonAction]
         public async Task<bool> SendLoginDetails(User newUser)
         {
@@ -346,193 +808,9 @@ namespace Server
             }
 
             return true;
-
         }
         
-
-        /// <summary>
-        /// Sletter en bruger
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="rolle"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        [Route("{userId}/{rolle}")]
-        public async Task<IActionResult> DeleteUser(int userId, string rolle)
-        {
-            if (rolle == "Køkkenchef")
-            {
-                await _hotelRepository.RemoveManagerFromHotel(userId);
-            }
-            await _userRepository.DeleteUser(userId);
-            return Ok();
-        }
-
-        /// <summary>
-        /// Deaktiver en bruger der har status aktiv
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPut]
-        [Route("deactivate/{userId}/{rolle}")]
-        public async Task<IActionResult> DeactivateUser(int userId, string rolle)
-        {
-            if (rolle == "Køkkenchef")
-            {
-                await _hotelRepository.RemoveManagerFromHotel(userId);
-            }
-            
-            await _userRepository.DeactivateUser(userId);
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// Aktiver en bruger der er deaktiveret
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpPut]
-        [Route("activate/{userId}")]
-        public async Task<IActionResult> ActivateUser(int userId)
-        {
-            await _userRepository.ActivateUser(userId);
-
-            return Ok();
-
-        }
-
-        /// <summary>
-        /// Ændrer rolle på en bruger
-        /// </summary>
-        /// <returns></returns>
-        [HttpPut]
-        [Route("updaterolle/{userId}/{newRolle}")]
-        public async Task<IActionResult> UpdateRole(string newRolle, int userId)
-        {
-            await _userRepository.UpdateRolle(newRolle, userId);
-
-            return Ok();
-        }
-
-        [HttpPut]
-        [Route("update")]
-        public async Task<IActionResult> UpdateUser([FromBody] User updateBruger)
-        {
-            var user = await _userRepository.UpdateUser(updateBruger);
-
-            return Ok(user);
-        }
-
-
-        [HttpPut]
-        [Route("updatepassword/{email}")]
-        public async Task<IActionResult> UpdatePassword(string email, [FromBody] string updatedPassword)
-        {
-            var result = await _userRepository.UpadtePassword(email, updatedPassword);
-
-            if (result == null)
-            {
-                return BadRequest();
-            }
-
-            return Ok(result);
-
-        }
-
-        /// <summary>
-        /// Metode til at tjekke, at vores verificeringskoder er rigtige
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{email}/{kode}")]
-        public async Task<bool> CheckVerificationCoed(string email, string kode)
-        {
-            if (verificeringsKoder.TryGetValue(email, out var output))
-            {
-                if (output.Kode == kode && output.Expiry > DateTime.Now)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        //BRUGES KUN TIL TEST MENS VI VENTER!!
-        [HttpGet]
-        [Route("allstudents")]
-        public async Task<IActionResult> GetAllStudents()
-        {
-            List<KursusDeltagerListeDTO> students = new();
-            var users = await _userRepository.GetAllStudents();
-
-            foreach (var user in users)
-            {
-                students.Add(new KursusDeltagerListeDTO
-                {
-                    Id = user.Id,
-                    Hotel = user.HotelNavn,
-                    Navn = user.FirstName + "  " + user.LastName
-                });
-            }
-
-            return Ok(students);
-        }
-        
-        [HttpGet]
-        [Route("allstudents/{kursusCode}")]
-        public async Task<IActionResult> GetAllStudentsWithCourse(string kursusCode)
-        {
-            List<KursusDeltagerListeDTO> students = new();
-            var users = await _userRepository.GetAllStudentsMissingCourse(kursusCode);
-
-            foreach (var user in users)
-            {
-                students.Add(new KursusDeltagerListeDTO
-                {
-                    Id = user.Id,
-                    Hotel = user.HotelNavn,
-                    Navn = user.FirstName + "  " + user.LastName
-                });
-            }
-
-            return Ok(students);
-        }
-
-        [HttpGet]
-        [Route("oversigt")]
-        public async Task<IActionResult> GetElevOversigt()
-        {
-            var users = await _userRepository.GetAllStudents();
-            var elevOversigt = new List<ElevOversigtDTO>();
-
-            foreach (var elev in users.Where(x => x.Rolle == "Elev"))
-            {
-                elevOversigt.Add(new ElevOversigtDTO
-                {
-                    Id = elev.Id,
-                    Name = elev.FirstName + " " + elev.LastName,
-                    HotelId = elev.HotelId,
-                    HotelNavn = elev.HotelNavn,
-                    Roller = elev.Rolle,
-                    Year = elev.Year,
-                    Skole = elev.Skole,
-                    Uddannelse = elev.Uddannelse,
-                    StartDate = elev.StartDate,
-                    EndDate = elev.EndDate,
-                    TotalGoals = elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count) ?? 0,
-                    CompletedGoals =
-                        elev.ElevPlan?.Forløbs?.Sum(f => f.Goals?.Count(g => g.Status == "Completed")) ?? 0,
-                });
-            }
-
-            return Ok(elevOversigt);
-        }
-
-
-
-    //Generer excel fil
+        //Generer excel fil
         [NonAction]
         public async Task<bool> GenerateExcelFileAndSendMail(List<User> users, string email)
         {
@@ -591,7 +869,6 @@ namespace Server
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             var client = new SendGridClient(apiKey);
             
-            //fra og til skal ændres dynamisk... brugt til test.
             var from = new EmailAddress("jonasdupontheidemann@gmail.com", "Jonas Heidemann");
             var subject = "Alle produkter";
             var to = new EmailAddress(email, "Example User");
@@ -606,63 +883,8 @@ namespace Server
             return true;
         }
         
-        [HttpPost]
-        [Route("sendemail/{email}")]
-        public async Task<IActionResult> SendEmail([FromBody] HashSet<int> studentIds, string email)
-        {
-            //Skal laves specifik til hvem der ser??
-            var students = await _userRepository.GetAllStudents();
-            
-            var filter = students.Where(x => studentIds.Contains(x.Id)).ToList();
 
-            var emailStatus = await GenerateExcelFileAndSendMail(filter, email);
-            
-            return Ok(emailStatus);
 
-        }
-
-        [HttpPut]
-        [Route("updatehotel/{userId}/{hotelId}")]
-        public async Task<IActionResult> UpdateUser(int userId, int hotelId, [FromBody] string hotelNavn)
-        {
-            var result = await _userRepository.UpdateHotel(userId, hotelId, hotelNavn);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("active")]
-        public async Task<IActionResult> GetAllActiveUsers()
-        {
-            var activeUsers = await _userRepository.GetAllActiveUsers();
-
-            if (activeUsers == null)
-            {
-                return NotFound();
-            }
-
-            List<BrugerLoginDTO> users = new();
-
-            foreach (var user in activeUsers)
-            {
-                users.Add(new BrugerLoginDTO
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    Email = user.Email,
-                    Password = user.Password,
-                    HotelId = user.HotelId,
-                    Rolle = user.Rolle
-                });
-                
-            }
-            return Ok(users);
-        }
-        
         
     }
 

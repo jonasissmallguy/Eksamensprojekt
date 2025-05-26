@@ -7,11 +7,11 @@ namespace Client
     {
         Task<List<Kursus>> GetAllCourses();
         Task<Kursus> GetCourseById(int kursusId);
-        Task SaveCourse(KursusCreationDTO kursus);
+        Task<Kursus> SaveCourse(KursusCreationDTO kursus);
         
         Task<Kursus> RemoveStudentFromCourse(int studentId, Kursus kursus);
 
-        Task CompleteCourse(int kursusId);
+        Task<bool> CompleteCourse(int kursusId);
         
         Task<List<KursusTemplate>> GetAllTemplates();
         

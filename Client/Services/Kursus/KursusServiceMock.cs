@@ -42,7 +42,7 @@ public class KursusServiceMock : IKursus
         return kursus;
     }
 
-    public Task SaveCourse(KursusCreationDTO kursus)
+    public Task<Kursus> SaveCourse(KursusCreationDTO kursus)
     {
         throw new NotImplementedException();
     }
@@ -75,7 +75,7 @@ public class KursusServiceMock : IKursus
         return kursuset;
     }
 
-    public async Task CompleteCourse(int kursusId)
+    public async Task<bool> CompleteCourse(int kursusId)
     {
         List<User> allParticipants = new();
         //string _kursusnavn = kursus.Title;
@@ -100,6 +100,8 @@ public class KursusServiceMock : IKursus
                 }
             }
         }
+
+        return true;
     }
 
     public async Task<Kursus> AddStudentToCourse(int userId, string userName, string hotelName, int kursusId)

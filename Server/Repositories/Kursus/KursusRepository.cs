@@ -107,10 +107,11 @@ namespace Server
             return await _collectionTemplate.Find(filter).ToListAsync();
         }
 
-        public async Task SaveCourse(Kursus kursus)
+        public async Task<Kursus> SaveCourse(Kursus kursus)
         {
             kursus.Id = await GetNextSequenceValue("kursusId");
-            _collection.InsertOne(kursus);
+            await _collection.InsertOneAsync(kursus);
+            return kursus;
         }
 
         public async Task<List<Kursus>> GetFutureCourses()

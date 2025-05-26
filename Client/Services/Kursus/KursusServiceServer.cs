@@ -15,16 +15,36 @@ namespace Client
 
         public async Task<List<Kursus>> GetAllCourses()
         {
-            return await _client.GetFromJsonAsync<List<Kursus>>($"kursus");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<Kursus>>($"kursus");
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
         public async Task<Kursus> GetCourseById(int kursusId)
         {
-            return await _client.GetFromJsonAsync<Kursus>($"kursus/{kursusId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<Kursus>($"kursus/{kursusId}");
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
         
-        public async Task SaveCourse(KursusCreationDTO kursus)
+        public async Task<Kursus> SaveCourse(KursusCreationDTO kursus)
         {
-             await _client.PostAsJsonAsync($"kursus", kursus);
+             var result = await _client.PostAsJsonAsync($"kursus", kursus);
+
+             if (!result.IsSuccessStatusCode)
+             {
+                 return null;
+             }
+             return await result.Content.ReadFromJsonAsync<Kursus>();
         }
         
 
@@ -39,14 +59,28 @@ namespace Client
             return result.Content.ReadFromJsonAsync<Kursus>().Result;
         }
 
-        public async Task CompleteCourse(int kursusId)
+        public async Task<bool> CompleteCourse(int kursusId)
         {
-            await _client.PutAsJsonAsync($"kursus/complete/{kursusId}", new{});
+            var result = await _client.PutAsJsonAsync($"kursus/complete/{kursusId}", new{});
+
+            if (!result.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            return true;
         }
         
         public async Task<List<KursusTemplate>> GetAllTemplates()
         {
-            return await _client.GetFromJsonAsync<List<KursusTemplate>>($"kursus/templates");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<KursusTemplate>>($"kursus/templates");
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
 
         public async Task<Kursus> AddStudentToCourse(KursusDeltagerListeDTO user, int kursusId)
@@ -62,12 +96,26 @@ namespace Client
 
         public async Task<List<KursusKommendeDTO>> GetFutureCourses()
         {
-            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"kursus/nextup");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"kursus/nextup");
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
 
         public async Task<List<KursusKommendeDTO>> GetFutureCoursesByStudentId(int studentId)
         {
-            return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"kursus/nextup/{studentId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<KursusKommendeDTO>>($"kursus/nextup/{studentId}");
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
     }
 }
