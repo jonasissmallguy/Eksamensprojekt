@@ -144,7 +144,6 @@
         
         _kursus = await IKursusService.GetCourseById(kursusId);
         allStudents = await IBrugerService.GetAllStudentsMissingCourse(_kursus.CourseCode);
-
     }
     
     private async Task FinishCourse()

@@ -8,15 +8,16 @@
 @page "/kursusoversigt"
 <h3>Kursusoversigt</h3>
 
+<button @onclick="AddCourse">Tilføj kursus</button>
+
 @if (!string.IsNullOrEmpty(errorText))
 {
     <span style="color: red">@errorText</span>
 }
 
+
 @if (alleKurser != null)
 {
-    <button @onclick="AddCourse">Tilføj kursus</button>
-
     <table>
         <tr>
             <th>Titel</th>

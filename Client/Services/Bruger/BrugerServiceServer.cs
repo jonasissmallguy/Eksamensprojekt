@@ -107,12 +107,28 @@ namespace Client
 
         public async Task<List<KursusDeltagerListeDTO>> GetAllStudents()
         {
-            return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents");
+            }
+            catch (HttpRequestException)
+            {
+                return new List<KursusDeltagerListeDTO>();
+            }
         }
 
         public async Task<List<KursusDeltagerListeDTO>> GetAllStudentsMissingCourse(string courseCode)
         {
-            return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents/{courseCode}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents/{courseCode}");
+            }
+
+            catch (HttpRequestException)
+            {
+                return new List<KursusDeltagerListeDTO>();
+            }
+            
         }
 
         public async Task<bool> SendEmail(HashSet<int> studentIds, string email)

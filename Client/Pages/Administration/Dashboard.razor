@@ -18,11 +18,7 @@ else if (alleElever == null)
 }
 else
 {
-
     <h3>Dashboard</h3>
-    @if (alleElever != null)
-    {
-
         <div class="dashboard-topline">
 
             <!-- Div med en søgebar, dropdown menuer og knap til eksport af lister -->
@@ -152,7 +148,6 @@ else
                     <Button class="btn btn-primary" @onclick="OpenModal">Tilføj delmål</Button>
                 </div>
             }
-
             @if (selectedStudentIds.Any() && _currentUser.Rolle == "HR")
             {
                 <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
@@ -200,15 +195,14 @@ else
                 </tr>
             }
         </table>
-
+        }
         <TilføjDelmålComponent @ref="addGoalModalRef"
                                StudentId="@selectedStudentIds.FirstOrDefault()"
                                ElevPlan="@elevPlan"
                                OnGoalAdded="@OnGoalAdded"
                                ShowSchoolSection="true"
                                WorkInMemory="false"/>
-
-    }
+}
 }
 
 @code {
@@ -269,6 +263,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        _currentUser = await AuthService.GetBruger();
 
         //Navigation
         if (_currentUser == null)

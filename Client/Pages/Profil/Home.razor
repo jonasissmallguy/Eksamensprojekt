@@ -208,20 +208,7 @@ else
 
             <div class="dashboard-card">
                 <h5 class="card-title">Manglende kurser</h5>
-                @if (_missingCourses != null)
-                {
-                    <ul class="list-reset">
-                        @foreach (var g in _missingCourses)
-                        {
-                            <li>
-                                Navn: @g.FullName - Kursus: @g.GoalTitle
-                                <button @onclick="() => OpenModal(g)" class="btn-approve">Tilmeld kursus</button>
-                            </li>
-                        }
-                    </ul>
-                }
-
-                    <div class="table-container">
+                <div class="table-container">
                         <table class="table table-striped">
                             <thead>
                             <tr>
@@ -242,8 +229,6 @@ else
                             </tbody>
                         </table>
                     </div>    
-                }
-                
             </div>
             
             <div class="dashboard-card">
@@ -388,7 +373,8 @@ else
 
         await IKursusService.AddStudentToCourse(userDto, kursus.KursusId);
         _kursusModal.Close();
-        _missingCourses = _missingCourses.Where(k => k.Id != _currentMissingCourse.Id).ToList(); //virker ikke korrekt?
+        _missingCourses = _missingCourses.Where(k => k.Id != _currentMissingCourse.Id).ToList();
+        //_outOfHouse = _outOfHouse.Where(k => k.GoalId != _currentMissingCourse.Id).ToList();
     }
 
     private async Task OpenModal(KursusManglendeDTO kursusManglendeDto)

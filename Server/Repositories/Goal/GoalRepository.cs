@@ -450,13 +450,6 @@ namespace Server
                     )
                 )
             );
-            
-            /*
-            var projection = Builders<User>.Projection
-                .Include(u => u.FirstName)
-                .Include(u => u.LastName)
-                .Include(u => u.ElevPlan.Forløbs); 
-            */
             return await _goalCollection
                 .Find(filter)
                 .ToListAsync();
