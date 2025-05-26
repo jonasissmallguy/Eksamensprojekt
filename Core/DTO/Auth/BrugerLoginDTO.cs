@@ -14,6 +14,7 @@ namespace Core
         public string Password { get; set; }
         public string Rolle { get; set; }
         public string FirstName { get; set; }
+        public string LastName { get; set; }
         
         public int HotelId { get; set; }
         
