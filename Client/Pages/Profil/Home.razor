@@ -43,8 +43,8 @@ else
                                 <tr>
                                     <td>@g.Title</td>
                                     <td>@g.SkoleNavn</td>
-                                    <td>@g.SkoleStart</td>
-                                    <td>@g.SkoleEnd</td>
+                                    <td>@(g.SkoleStart?.ToString("dd-MM-yyyy"))</td>
+                                    <td>@(g.SkoleEnd?.ToString("dd-MM-yyyy"))</td>
                                 </tr>
                             }
                             </tbody>
