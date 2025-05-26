@@ -23,7 +23,12 @@
                     <div class="user-profile">
                         @if (_currentUser != null)
                         {
-                            <div @onclick="@(() => NavigateToMinSide(_currentUser.Id))" class="intialer" style="cursor: pointer">@_currentUser.FirstName.Substring(0,1)@_currentUser.LastName.Substring(0,1)</div>
+                            <div @onclick="@(() => NavigateToMinSide(_currentUser.Id))" class="intialer" style="cursor: pointer">
+                                @(
+                                (!string.IsNullOrEmpty(_currentUser.FirstName) ? _currentUser.FirstName.Substring(0, 1) : "")
+                                + (!string.IsNullOrEmpty(_currentUser.LastName) ? _currentUser.LastName.Substring(0, 1) : "")
+                                )
+                            </div>
                         }
                     </div>
                 </div>
