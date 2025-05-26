@@ -190,7 +190,7 @@ namespace Server
                 if (user.EndDate == null)
                     return Conflict("Venligst angiv en slutdato");
                 
-                if (user.StartDate <= user.EndDate)
+                if (user.StartDate > user.EndDate)
                     return Conflict("Mismatch i start og slutdato");
                 
                 if (string.IsNullOrWhiteSpace(user.Year))

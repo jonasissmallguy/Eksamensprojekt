@@ -152,7 +152,7 @@ namespace Server
 
                 var actionGoals = user.ElevPlan.Forløbs
                     .SelectMany(f => f.Goals)
-                    .Where(g => g.Status == "InProgress" || g.Status == "AwaitingApproval")
+                    .Where(g => g.Type == "Delmål" && g.Status == "InProgress" || g.Status == "AwaitingApproval")
                     .ToList();
 
                 foreach (var goal in actionGoals)
@@ -235,7 +235,7 @@ namespace Server
                 
                 var inProgressGoals = user.ElevPlan.Forløbs
                     .SelectMany(f => f.Goals)
-                    .Where(g => g.Status == "InProgress")
+                    .Where(g => g.Status == "InProgress" && g.Type == "Delmål")
                     .ToList();
 
                 if (inProgressGoals != null)
