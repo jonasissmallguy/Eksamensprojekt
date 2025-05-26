@@ -1,9 +1,32 @@
 ﻿.page-title {
     font-size: 3rem;
     font-weight: 700;
-    color: #1f2937; /* Mørk gråblå */
+    color: #152238;
     margin-bottom: 2rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.table-container {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+}
+
+.table-container .table {
+    margin-bottom: 0;
+}
+
+.table-container thead {
+    position: sticky;
+    top: 0;
+    background-color: #152238;
+    color: white;
+    z-index: 10;
+}
+
+th{
+    background: #152238;
+    color: #ffffff;
 }
 
 /* Container med grid: 2 kolonner på bredere skærme */
@@ -38,7 +61,7 @@
 .card-title {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #2563eb; /* Blå */
+    color: #000000;
     margin-bottom: 0.75rem;
 }
 
@@ -65,19 +88,18 @@
 
 /* Knap styling */
 .btn-approve {
-    background-color: #2563eb;
+    background-color: #152238;
     border: none;
     border-radius: 6px;
     color: white;
     padding: 0.4rem 1rem;
-    margin-left: 1rem;
     font-size: 0.9rem;
     cursor: pointer;
     transition: background-color 0.25s ease;
 }
 
 .btn-approve:hover {
-    background-color: #1e40af;
+    background-color: #2e5984;
 }
 
 /* Responsivt: én kolonne på smallere skærme */

@@ -15,6 +15,7 @@
         <TextInput @bind-value="_searchText" Placeholder="Søg efter en medarbejders navn..."></TextInput>
     </div>
 
+    <div class="container-table">
     <table class="table table-striped">
         <thead>
         <tr>
@@ -72,6 +73,7 @@
         }
         </tbody>
     </table>
+    </div>
 }
 
 else
@@ -100,10 +102,10 @@ else
 
 
 @code {
-    
+
     //En liste af alle brugere
     List<BrugerAdministrationDTO> _allUsers = new();
-    
+
     //En liste af alle vores hoteller
     List<Hotel> _allHotels = new();
 
@@ -112,10 +114,10 @@ else
 
     //En ModalRolle  variabel
     private ModalDialog rolleModal { get; set; }
-    
+
     //En ModalHotel variabel
     private ModalDialog hotelModal { get; set; }
-    
+
     //En bruger, som vi ønsker at ændre rolle på
     private BrugerAdministrationDTO _userToChange { get; set; }
 
@@ -128,7 +130,7 @@ else
     //En IEnumerable liste, der er brugt til filtering   
     private IEnumerable<BrugerAdministrationDTO> _filteredUsers => _allUsers.Where(b =>
         (string.IsNullOrWhiteSpace(_searchText) || b.FirstName.Contains(_searchText, StringComparison.OrdinalIgnoreCase)));
-    
+
     protected override async Task OnInitializedAsync()
     {
         if (_currentUser == null)
@@ -136,13 +138,13 @@ else
             navMan.NavigateTo("login/brugeradministration");
             return;
         }
-        
+
         if (_currentUser.Rolle != "HR")
         {
             navMan.NavigateTo("");
         }
 
-        
+
         _allUsers = await IBrugerService.GetAllUsersWithOutCurrent(_currentUser.Id);
     }
 
@@ -151,7 +153,7 @@ else
         rolleModal.Open();
         _userToChange = userChange;
     }
-    
+
     private async Task ChangeHotel(BrugerAdministrationDTO user)
     {
         _allHotels = await IHotelService.GetHotels();
@@ -159,7 +161,7 @@ else
         hotelModal.Open();
         _userToChange = user;
     }
-    
+
 
     //Mangler validering!!
     private async Task DeleteUser(int userId, string rolle)
@@ -170,22 +172,22 @@ else
         {
             return;
         }
-        
+
         _allUsers = _allUsers.Where(x => x.Id != userId).ToList();
-        
+
     }
 
     //Mangler validering!
     private async Task DeActivateUser(int userId, string rolle)
     {
         await IBrugerService.DeActivateUser(userId, rolle);
-        
+
         var user = _allUsers.FirstOrDefault(x => x.Id == userId);
         if (user != null)
         {
             user.Status = "Deactivated";
         }
-        
+
         StateHasChanged();
     }
 
@@ -225,6 +227,7 @@ else
         {
             return;
         }
+
         var user = _allUsers.FirstOrDefault(x => x.Id == _userToChange.Id);
         if (user != null)
         {
@@ -232,5 +235,4 @@ else
             StateHasChanged();
         }
     }
-
 }
