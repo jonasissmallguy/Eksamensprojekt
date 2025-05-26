@@ -42,9 +42,14 @@ namespace Client
             return goalTypes;
         }
 
-        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
+        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int? hotelId)
         {
             return new List<StartedGoalsDTO>();
+        }
+
+        public Task<List<KursusManglendeDTO>> GetMissingCourses(int? hotelId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId)
@@ -53,6 +58,21 @@ namespace Client
         }
 
         public Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<FutureSchoolDTO>> GetFutureSchools(int? elevId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<OutOfHouseDTO>> GetOutOfHouse(int? hotelId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<StartedGoalsDTO>> GetStartedGoals(int? hotelId)
         {
             throw new NotImplementedException();
         }

@@ -29,6 +29,7 @@ namespace Server
             _countersCollection = _goalsDatabase.GetCollection<BsonDocument>("counters"); 
         }
         
+        //Finder næste fortløbende id
         public async Task<int> GetNextSequenceValue(string sequenceName)
         {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", sequenceName);
@@ -60,6 +61,7 @@ namespace Server
             return result.ModifiedCount > 0;
         }
 
+        //Tilføjer et nyt goal
         public async Task<bool> AddGoal(int studentId, int planId, int forløbId, Goal newGoal)
         {
             var filter = Builders<User>.Filter.And(
@@ -67,7 +69,6 @@ namespace Server
                 Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs, f => f.Id == forløbId)
             );
             
-            //Generer id til nyt goal
             newGoal.Id = await GetNextSequenceValue("goalId");
 
             var update = Builders<User>.Update.AddToSet("ElevPlan.Forløbs.$.Goals", newGoal);
@@ -292,15 +293,15 @@ namespace Server
             return confirmedGoal;
         }
 
+     
         public async Task<List<Forløb>> GetGoalsByStudentId(int studentId)
         {
             var filter = Builders<User>.Filter.Eq(u => u.Id, studentId);
             var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
 
-            return user?.ElevPlan?.Forløbs ?? new List<Forløb>();
+            return user.ElevPlan.Forløbs;
         }
-
-        //Skriv om 
+        
         public async Task UpdateForløbStatus(int planId, int forløbId)
         {
             var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);

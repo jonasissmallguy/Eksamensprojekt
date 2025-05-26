@@ -91,7 +91,10 @@
                             <tr>
                                 <th>Navn</th>
                                 <th>Restaurant</th>
-                                <th>Tildel kursus</th>
+                                @if (_kursus.Participants < _kursus.MaxParticipants)
+                                {
+                                    <th>Tildel kursus</th>
+                                }
                             </tr>
                             </thead>
                             <tbody>
@@ -100,9 +103,12 @@
                                 <tr>
                                     <td>@x.Navn</td>
                                     <td>@x.Hotel</td>
-                                    <td>
-                                        <button class="btn btn-primary" @onclick="() => AddToCourse(x)">Tildel kursus</button>
-                                    </td>
+                                    @if (_kursus.Participants < _kursus.MaxParticipants)
+                                    {
+                                        <td>
+                                            <button class="btn btn-primary" @onclick="() => AddToCourse(x)">Tildel kursus</button>
+                                        </td>   
+                                    }
                                 </tr>
                             }
                             </tbody>

@@ -23,12 +23,12 @@ namespace Client
         //Comments
         Task<Comment> AddComment(NewComment comment);
         
-        Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId); 
-        Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId); 
+        Task<List<StartedGoalsDTO>> GetAwaitingApproval(int? hotelId); 
+        Task<List<KursusManglendeDTO>> GetMissingCourses(int? hotelId); 
         Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId); 
-        Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId);
-        Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId); 
-        Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId); 
+        Task<List<FutureSchoolDTO>> GetFutureSchools(int? elevId);
+        Task<List<OutOfHouseDTO>> GetOutOfHouse(int? hotelId); 
+        Task<List<StartedGoalsDTO>> GetStartedGoals(int? hotelId); 
         
     }
 

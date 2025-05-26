@@ -134,6 +134,7 @@
 
     private async Task AddCourse()
     {
+        newCourse = new KursusCreationDTO(); 
         _modalKursus.Open();
         CoursesTemplates = await IKursusService.GetAllTemplates();
 

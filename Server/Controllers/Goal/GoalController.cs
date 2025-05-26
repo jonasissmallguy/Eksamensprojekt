@@ -1,92 +1,95 @@
 ﻿using Client;
-using Client.Components.Elevoversigt;
 using Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server
 {
     
-    /// <summary>
-    /// 
-    /// </summary>
     [ApiController]
     [Route("goals")]
     public class GoalController : ControllerBase
     {
 
         private IGoalRepository _goalRepository;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="goalRepository"></param>
+        
         public GoalController(IGoalRepository goalRepository)
         {
             _goalRepository = goalRepository;
         }
         
         /// <summary>
-        /// Sletter et mål i den nested struktur
+        /// Sletter et mål under elevplanen
         /// </summary>
-        /// <param name="planId"></param>
         /// <param name="studentId"></param>
+        /// <param name="planId"></param>
+        /// <param name="forløbId"></param>
         /// <param name="goalId"></param>
+        /// <returns>Status 200</returns>
         [HttpDelete]
         [Route("{studentId}/{planId}/{forløbId}/{goalId}")]
         public async Task<IActionResult> DeleteGoal(int studentId, int planId, int forløbId, int goalId)
         {
+            if (studentId <= 0 || planId <= 0 || forløbId <= 0 || goalId <= 0)
+            {
+                return BadRequest("Forkert studentId, planId, forløbId eller goalId");
+            }
+            
             var delete =  await _goalRepository.DeleteGoal(studentId, planId, forløbId, goalId);
 
-            if (delete)
+            if (!delete)
             {
-                return Ok();
+                return NotFound("Kunne ikke finde målet");
             }
-            return NotFound();
+            return Ok();
         }
         
         /// <summary>
-        /// 
+        /// Tilføjer et mål til en elevs elevplan
         /// </summary>
         /// <param name="studentId"></param>
         /// <param name="planId"></param>
         /// <param name="forløbId"></param>
         /// <param name="newGoal"></param>
-        /// <returns></returns>
+        /// <returns>Status 200</returns>
         [HttpPost]
         [Route("{studentId}/{planId}/{forløbId}")]
         public async Task<IActionResult> AddGoal(int studentId, int planId, int forløbId, [FromBody] Goal newGoal)
         {
-            if (newGoal == null || string.IsNullOrWhiteSpace(newGoal.Title) || newGoal.PlanId <= 0 || newGoal.ForløbId <= 0)
+            if (newGoal == null || studentId <= 0 || newGoal.PlanId <= 0 || newGoal.ForløbId <= 0)
             {
-                return BadRequest("Goal-objektet mangler påkrævede felter.");
+                return BadRequest("Mangler påkrævede felter");
             }
 
             var add = await _goalRepository.AddGoal(studentId, planId, forløbId, newGoal);
 
-            if (add)
+            if (!add)
             {
-                return Ok();
+                return BadRequest("Kunne ikke tilføje goalet");
             }
-            return NotFound();
+            return Ok();
         }
 
         /// <summary>
-        /// 
+        /// Opdater et skolegoal
         /// </summary>
         /// <param name="goal"></param>
         /// <param name="studentId"></param>
-        /// <returns></returns>
+        /// <returns>Status 200</returns>
         [HttpPut]
         [Route("updateschool/{studentId}")]
         public async Task<IActionResult> UpdateSkole([FromBody] Goal goal, int studentId)
         {
-            if (goal == null || studentId == null)
+            if (goal == null || studentId <= 0)
             {
-                return BadRequest();
+                return BadRequest("Input er forkert");
             }
             
-            var updateResult = _goalRepository.UpdateSchoolWithDate(goal, studentId);
+            var updateResult = await _goalRepository.UpdateSchoolWithDate(goal, studentId);
 
+            if (!updateResult)
+            {
+                return NotFound("Kunne ikke opdatere skolegoalet");
+            }
 
             return Ok();
         }
@@ -96,7 +99,7 @@ namespace Server
         /// Tilføjer en kommentar til vores goal
         /// </summary>
         /// <param name="goal"></param>
-        /// <returns></returns>
+        /// <returns>Kommentaren, som vi har tilføjet</returns>
         [HttpPost]
         [Route("comment")]
         public async Task<IActionResult> PostComment(NewComment comment)
@@ -104,7 +107,7 @@ namespace Server
             try
             {
                 if (comment == null)
-                    return BadRequest("Data");
+                    return BadRequest("Data mangler");
 
                 var newComment = new Comment
                 {
@@ -128,28 +131,35 @@ namespace Server
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error " + ex.Message);
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
 
         /// <summary>
-        /// 
+        /// Finder alle mål for en elev med type = delmål , der har statusen InProgress eller AwaitingApproval
         /// </summary>
         /// <param name="elevId"></param>
-        /// <returns></returns>
+        /// <returns>Liste med GoalNeedActionDTO</returns>
         [HttpGet]
         [Route("need-action-goals/{elevId}")]
         public async Task<IActionResult> NeedActionGoals(int elevId)
         {
+            if (elevId <= 0)
+            {
+                return BadRequest("Forkert elevId");
+            }
+            
             var users = await _goalRepository.GetActionGoals(elevId);
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde nogen elever");
+            }
 
             var result = new List<GoalNeedActionDTO>();
 
             foreach (var user in users)
             {
-                var name = user.FirstName + " " + user.LastName;
-
                 var actionGoals = user.ElevPlan.Forløbs
                     .SelectMany(f => f.Goals)
                     .Where(g => g.Type == "Delmål" && g.Status == "InProgress" || g.Status == "AwaitingApproval")
@@ -179,12 +189,22 @@ namespace Server
         /// <summary>
         /// Henter mål for en køkkenchef som mangler godkendelse 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Retunerer en liste af StartedGoalsDTO</returns>
         [HttpGet]
         [Route("awaiting-approval/{hotelId}")]
         public async Task<IActionResult> GetAwaitingApproval(int hotelId)
         {
+            if (hotelId <= 0)
+            {
+                return BadRequest("Forkert hotelId");
+            }
+            
             var users = await _goalRepository.GetAwaitingApproval(hotelId);
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde nogen hotel");
+            }
 
             var result = new List<StartedGoalsDTO>();
 
@@ -217,15 +237,25 @@ namespace Server
         }
 
         /// <summary>
-        /// Indeholder mål der er InProgress
+        /// Indeholder Goal med typen = Delmål der er InProgress
         /// </summary>
         /// <param name="hotelId"></param>
-        /// <returns></returns>
+        /// <returns>Retunerer en liste af StartedGoalsDTO</returns>
         [HttpGet]
         [Route("started-goals/{hotelId}")]
         public async Task<IActionResult> GetStartedGoals(int hotelId)
         {
+            if (hotelId <= 0)
+            {
+                return BadRequest("Forkert hotelId");
+            }
+            
             var users = await _goalRepository.GetStartedGoals(hotelId);
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde nogen mål for hotellet");
+            }
             
             var result = new List<StartedGoalsDTO>();
 
@@ -257,14 +287,24 @@ namespace Server
         }
 
         /// <summary>
-        /// Henter alle kurser en elev mangler 
+        /// Henter alle kurser en elev mangler med status = Active
         /// </summary>
         /// <param name="hotelId"></param>
-        /// <returns></returns>
+        /// <returns>En liste af KursusManglendeDTO</returns>
         [HttpGet("missing-courses/{hotelId}")]
         public async Task<IActionResult> GetMissingCourses(int hotelId)
         {
+            if (hotelId <= 0)
+            {
+                return BadRequest("Forkert hotelId");
+            }
+            
             var users = await _goalRepository.GetMissingCourses(hotelId);
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde manglende kurser for elverne på dette hotel");
+            }
 
             var result = new List<KursusManglendeDTO>();
 
@@ -301,15 +341,25 @@ namespace Server
         }
 
         /// <summary>
-        /// 
+        /// Finder alle goals med typen kursus eller skoleophold, med status = InProgress for dd. og 1 år frem
         /// </summary>
         /// <param name="hotelId"></param>
-        /// <returns></returns>
+        /// <returns>En liste af OutOfHouseDTO</returns>
         [HttpGet]
         [Route("outofhouse/{hotelId}")]
         public async Task<IActionResult> GetOutOfHouse(int hotelId)
         {
+            if (hotelId <= 0)
+            {
+                return BadRequest("Forkert hotelId");
+            }
+            
             var users = await _goalRepository.GetOutOfHouse(hotelId);
+
+            if (!users.Any())
+            {
+                return NotFound("Kunne ikke finde nogen delmål med typen kursus eller skoleophold med status InProgress");
+            }
             
             var result = new List<OutOfHouseDTO>();
 
@@ -349,21 +399,21 @@ namespace Server
         }
         
         /// <summary>
-        /// 
+        /// Finder alle kommende skoleophold for en 
         /// </summary>
         /// <param name="elevId"></param>
-        /// <returns></returns>
+        /// <returns>En liste af FutureSchoolDTO</returns>
         [HttpGet]
         [Route("future-schools/{elevId}")]
         public async Task<IActionResult> GetFutureSchools(int elevId)
         {
-            if (elevId <= 0 || elevId == null)
-                return BadRequest();
+            if (elevId <= 0)
+                return BadRequest("Forkert elevId");
 
             var goals = await _goalRepository.GetFutureSchools(elevId);
-
-            if (goals == null || !goals.Any())
-                return NotFound();
+            
+            if (!goals.Any())
+                return NotFound("Kunne ikke finde nogen kommende skoleophold");
 
             List<FutureSchoolDTO> futureSchools = new ();
             
@@ -383,93 +433,122 @@ namespace Server
 
 
         /// <summary>
-        /// Starter goal
+        /// Starter goal med type = "Delmål" og sætter type = "InProgress" 
         /// </summary>
         /// <param name="bruger"></param>
-        /// <returns></returns>
+        /// <returns>Goal</returns>
         [HttpPut]
         [Route("startgoal")]
         public async Task<IActionResult> StartGoal(MentorAssignment bruger)
         {
+            if (bruger == null)
+            {
+                return BadRequest("Input er forkert");
+            }
+            
             var goal = await _goalRepository.StartGoal(bruger);
 
             if (goal == null)
             {
-                return BadRequest();
+                return NotFound("Kunne ikke finde brugeren");
             }
             return Ok(goal);
         }
 
         /// <summary>
-        /// 
+        /// Opdater goal til at være i status = "AwaitingApproval"
         /// </summary>
         /// <param name="bruger"></param>
-        /// <returns></returns>
+        /// <returns>Goal</returns>
         [HttpPut]
         [Route("processgoal")]
         public async Task<IActionResult> ProcessGoal(MentorAssignment bruger)
         {
+            if (bruger == null)
+            {
+                return BadRequest("Input er forkert");
+            }
             var processedGoal = await _goalRepository.ProcessGoal(bruger);
 
             if (processedGoal == null)
             {
-                return BadRequest();
+                return NotFound("Kunne ikke starte målet");
             }
             return Ok(processedGoal);
         }
         
         /// <summary>
-        /// 
+        /// Sætter goal med status = Completed, og tjekker om hele forløbet er færdiggjort
         /// </summary>
         /// <param name="planId"></param>
         /// <param name="forløbId"></param>
         /// <param name="goalId"></param>
-        /// <returns></returns>
+        /// <returns>Retunerer et goal</returns>
         [HttpPut]
         [Route("confirmgoal/{planId}/{forløbId}/{goalId}")]
         public async Task<IActionResult> ConfirmGoal(int planId, int forløbId, int goalId)
         {
+            if (planId <= 0 || forløbId <= 0 || goalId <= 0)
+            {
+                return BadRequest("Input er forkert");
+            }
+            
             var processedGoal = await _goalRepository.ConfirmGoalAndHandleProgress(planId, forløbId, goalId);
 
             if (processedGoal == null)
             {
-                return NotFound();
+                return NotFound("Kunne ikke færdiggøre målet eller forløbet");
             }
             
             return Ok(processedGoal);
         }
         
         /// <summary>
-        /// 
+        /// Færdiggør et goal med type = Skoleophold og sætter status = Completed
         /// </summary>
         /// <param name="planId"></param>
         /// <param name="forløbId"></param>
         /// <param name="goalId"></param>
-        /// <returns></returns>
+        /// <returns>Opdateret goal</returns>
         [HttpPut]
         [Route("confirmschool/{planId}/{forløbId}/{goalId}")]
         public async Task<IActionResult> ConfirmSchoolOphold(int planId, int forløbId, int goalId)
         {
+            if (planId <= 0 || forløbId <= 0 || goalId <= 0)
+            {
+                return BadRequest("Input er forkert");
+            } 
+            
              var result = await _goalRepository.UpdateSchoolStatus(planId, forløbId, goalId);
 
              if (result == null)
              {
-                 return NotFound();
+                 return NotFound("Kunne ikke opdatere skolestatus");
              }
              
             return Ok(result);
         }
 
         /// <summary>
-        /// 
+        /// Udregner, hvor mange mål pr. år en elev har og, hvor mange der er færdiggjort
         /// </summary>
         /// <param name="studentId"></param>
-        /// <returns></returns>
+        /// <returns>Ordered liste efter år.</returns>
         [HttpGet]
         [Route("progress/{studentId}")]
         public async Task<IActionResult> GetGoalProgress(int studentId)
         {
+            if (studentId <= 0)
+            {
+                return BadRequest("Input er forkert");                      
+            }
+            
             var forløbs = await _goalRepository.GetGoalsByStudentId(studentId);
+
+            if (!forløbs.Any())
+            {
+                return NotFound("Kunne ikke finde nogen forløb");
+            }
 
             var result = new List<GoalProgessDTO>();
 
@@ -484,7 +563,7 @@ namespace Server
 
                 foreach (var forløb in forløbs.Where(f => f.Semester == semester))
                 {
-                    var goals = forløb.Goals ?? new List<Goal>();
+                    var goals = forløb.Goals;
                     totalGoals += goals.Count;
                     completedGoals += goals.Count(g => g.Status == "Completed");
                 }
