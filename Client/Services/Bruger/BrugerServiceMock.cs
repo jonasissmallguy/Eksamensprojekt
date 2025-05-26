@@ -183,6 +183,11 @@ namespace Client
             return await Task.FromResult(elevOversigt);
         }
 
+        public Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int? hotelId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int hotelId)
         {
             throw new NotImplementedException();

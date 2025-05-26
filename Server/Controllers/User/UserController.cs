@@ -165,6 +165,10 @@ namespace Server
 
             if (!user.Mobile.HasValue)
                 return Conflict("Venligst indtast et mobilnummer");
+            
+            var mobileStr = user.Mobile.Value.ToString();
+            if (mobileStr.Length != 8)
+                return Conflict("Mobilnummer skal være 8 cifre");
 
             if (string.IsNullOrWhiteSpace(user.Rolle))
                 return Conflict("Venligst vælg en rolle");
@@ -202,15 +206,8 @@ namespace Server
                 if (string.IsNullOrWhiteSpace(user.Uddannelse))
                     return Conflict("Venligst angiv en uddannelse");
             }
-
-            Hotel hotel = null;
-            hotel = await _hotelRepository.GetHotelById(user.HotelId);
-
-            if (hotel == null)
-            {
-                return BadRequest();
-            }
-
+            
+            
             var nyBruger = new User
             {
                 FirstName = user.FirstName,
@@ -222,8 +219,27 @@ namespace Server
            
             };
 
+            if (user.Rolle == "HR")
+            {
+                nyBruger.HotelId = null;
+            }
+
+            Hotel hotel = null;
+
             if (user.Rolle != "HR")
             {
+                if (user.HotelId <= 0)
+                {
+                    return BadRequest("Venligst indsæt et hotel");
+                }
+                
+                hotel = await _hotelRepository.GetHotelById(user.HotelId);
+
+                if (hotel == null)
+                {
+                    return NotFound("Kunne ikke finde hotellet");
+                }
+                
                 nyBruger.HotelId = user.HotelId;
                 nyBruger.HotelNavn = hotel?.HotelNavn;
             }
@@ -487,7 +503,7 @@ namespace Server
         }
         
         /// <summary>
-        /// 
+        /// Finder alle studerende, der mangler et kursus
         /// </summary>
         /// <param name="kursusCode"></param>
         /// <returns></returns>
@@ -522,7 +538,7 @@ namespace Server
         }
 
         /// <summary>
-        /// 
+        /// Henter elevoversigten for HR
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -562,7 +578,7 @@ namespace Server
         }
         
         /// <summary>
-        /// 
+        /// Finder elevoversigten pr hotel
         /// </summary>
         /// <param name="hotelId"></param>
         /// <returns></returns>
@@ -609,7 +625,7 @@ namespace Server
 
         
         /// <summary>
-        /// 
+        /// Sender en mail med oplysninger 
         /// </summary>
         /// <param name="studentIds"></param>
         /// <param name="email"></param>
@@ -639,7 +655,7 @@ namespace Server
         }
 
         /// <summary>
-        /// 
+        /// Opdater en users hotel
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="hotelId"></param>
@@ -659,9 +675,9 @@ namespace Server
         }
 
         /// <summary>
-        /// 
+        /// Finder alle aktive users
         /// </summary>
-        /// <returns></returns>
+        /// <returns>BrugerLoginDTO</returns>
         [HttpGet]
         [Route("active")]
         public async Task<IActionResult> GetAllActiveUsers()

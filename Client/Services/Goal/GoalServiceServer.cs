@@ -16,7 +16,12 @@ namespace Client
 
         public async Task DeleteGoal(Goal goal, int studentId)
         {
-            await _client.DeleteAsync($"goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
+           var response = await _client.DeleteAsync($"goals/{studentId}/{goal.PlanId}/{goal.ForløbId}/{goal.Id}");
+
+           if (!response.IsSuccessStatusCode)
+           {
+               throw new Exception("Kunne ikke slette målet");
+           }
         }
 
         public async Task<bool> AddGoal(Goal goal, int studentId)
@@ -25,10 +30,9 @@ namespace Client
    
             if (!response.IsSuccessStatusCode)
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Fejl fra server: {errorContent}");
+                throw new Exception("Kunne ikke tilføje målet");
             }
-            return response.IsSuccessStatusCode;
+            return true;
         }
 
         public async Task<bool> UpdateSkole(Goal goal, int studentId)
@@ -37,9 +41,9 @@ namespace Client
 
             if (!response.IsSuccessStatusCode)
             {
-                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception("Kunne ikke opdatere skoleopholdet korrekt");
             }
-            return response.IsSuccessStatusCode;
+            return true;
         }
 
 
@@ -47,26 +51,22 @@ namespace Client
         {
             var response = await _client.PutAsJsonAsync($"goals/startgoal", mentor);
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var goal = await response.Content.ReadFromJsonAsync<Goal>();
-                return goal;
+                throw new Exception("Kunne ikke starte målet korrekt");
             }
-
-            return null;
+            return await response.Content.ReadFromJsonAsync<Goal>();
         }
 
         public async Task<Goal> ProcessGoal(MentorAssignment bruger)
         {
             var response = await _client.PutAsJsonAsync($"goals/processgoal", bruger);
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var goal = await response.Content.ReadFromJsonAsync<Goal>();
-                return goal;
+                throw new Exception("Kunne ikke opdatere målet");
             }
-            return null;
-            
+            return await response.Content.ReadFromJsonAsync<Goal>();
         }
 
         public async Task<Goal> ConfirmGoal(int planId, int forløbId, int goalId)
@@ -74,25 +74,22 @@ namespace Client
             
             var response = await _client.PutAsJsonAsync($"goals/confirmgoal/{planId}/{forløbId}/{goalId}", new{});
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var goal = await response.Content.ReadFromJsonAsync<Goal>();
-                return goal;
+                throw new Exception("Kunne ikke bekræfte målet");
             }
-
-            return null;
+            return await response.Content.ReadFromJsonAsync<Goal>();
         }
 
         public async Task<Goal> ConfirmSchool(int planId, int forløbId, int goalId)
         {
             var response = await _client.PutAsJsonAsync($"goals/confirmschool/{planId}/{forløbId}/{goalId}", new{});
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var goal = await response.Content.ReadFromJsonAsync<Goal>();
-                return goal;
+                throw new Exception("Kunne ikke bekræfte skoleopholdet");
             }
-            return null;
+            return await response.Content.ReadFromJsonAsync<Goal>();
         }
 
         public async Task<List<GoalProgessDTO>> GoalProgess(int studentId)
@@ -116,34 +113,78 @@ namespace Client
             }
         }
 
-        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int hotelId)
+        public async Task<List<StartedGoalsDTO>> GetAwaitingApproval(int? hotelId)
         {
-            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/awaiting-approval/{hotelId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/awaiting-approval/{hotelId}");
+            }
+            catch (HttpRequestException)
+            {
+                return new List<StartedGoalsDTO>();
+            }
         }
-
-        public async Task<List<KursusManglendeDTO>> GetMissingCourses(int hotelId)
+        
+        public async Task<List<KursusManglendeDTO>> GetMissingCourses(int? hotelId)
         {
-            return await _client.GetFromJsonAsync<List<KursusManglendeDTO>>($"goals/missing-courses/{hotelId}");
-        }
+            try
+            {
+                return await _client.GetFromJsonAsync<List<KursusManglendeDTO>>($"goals/missing-courses/{hotelId}");
+            }
+            catch (HttpRequestException)
+            {
+                return new List<KursusManglendeDTO>();
+            }
+        }   
 
         public async Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId)
         {
-            return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"goals/need-action-goals/{elevId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"goals/need-action-goals/{elevId}");
+            }
+            catch (HttpRequestException)
+            {
+                return new List<GoalNeedActionDTO>();  
+            }
         }
 
-        public async Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
+        public async Task<List<FutureSchoolDTO>> GetFutureSchools(int? elevId)
         {
-            return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"goals/future-schools/{elevId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"goals/future-schools/{elevId}");
+            }
+            catch (HttpRequestException)
+            {
+                return new List<FutureSchoolDTO>();
+            }
         }
 
-        public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int hotelId)
+        public async Task<List<OutOfHouseDTO>> GetOutOfHouse(int? hotelId)
         {
-            return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"goals/outofhouse/{hotelId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"goals/outofhouse/{hotelId}");
+            }
+            catch (HttpRequestException)
+            {
+                return new List<OutOfHouseDTO>();
+            }
         }
         
-        public async Task<List<StartedGoalsDTO>> GetStartedGoals(int hotelId)
+        public async Task<List<StartedGoalsDTO>> GetStartedGoals(int? hotelId)
         {
-            return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/started-goals/{hotelId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/started-goals/{hotelId}");
+
+            }
+            catch (HttpRequestException)
+            {
+                return new List<StartedGoalsDTO>();
+            }
+            
         }
         
         

@@ -164,27 +164,32 @@
     {
         <button class="btn btn-success mt-3" @onclick="HandleSubmitButtonClicked">Opret Elevplan</button>
     }
-    
-    
+
+
     <ModalDialog @ref=_goalHistoryModal Title="Historie">
         <div class="hotel-list">
             @if (_currentGoal != null)
             {
-                @if (_currentGoal.StartedAt != null && _currentGoal.StarterName != null)
+                @if (_currentGoal.StartedAt != null || _currentGoal.ConfirmedAt != null || _currentGoal.CompletedAt != null)
                 {
-                    <p>Tidspunkt for start: @_currentGoal.StartedAt</p>
-                    <p>Starter: @_currentGoal.StarterName</p>
-                    <br/>
+                    @if (_currentGoal.StartedAt != null && _currentGoal.StarterName != null)
+                    {
+                        <p>Tidspunkt for start: @_currentGoal.StartedAt</p>
+                        <p>Starter: @_currentGoal.StarterName</p>
+                        <br/>
+                    }
+
                     @if (_currentGoal.ConfirmedAt != null && _currentGoal.ConfirmerName != null)
                     {
-                        <p>Tidspunkt for afsluttet: @_currentGoal.ConfirmedAt </p>
+                        <p>Tidspunkt for afsluttet: @_currentGoal.ConfirmedAt</p>
                         <p>Bekræfter: @_currentGoal.ConfirmerName</p>
                         <br/>
                     }
-                }
-                @if (_currentGoal.CompletedAt != null)
-                {
-                    <p>Godkendt af leder den: @_currentGoal.CompletedAt</p>
+
+                    @if (_currentGoal.CompletedAt != null)
+                    {
+                        <p>Godkendt af leder den: @_currentGoal.CompletedAt</p>
+                    }
                 }
                 else
                 {
