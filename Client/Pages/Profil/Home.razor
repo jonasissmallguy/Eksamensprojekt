@@ -195,8 +195,8 @@ else
                                 <tr>
                                     <td>@g.FullName</td>
                                     <td>@g.GoalTitle</td>
-                                    <td>@g.StartDate</td>
-                                    <td>@g.EndDate</td>
+                                    <td>@(g.StartDate?.ToString("dd-MM-yyyy"))</td>
+                                    <td>@(g.EndDate?.ToString("dd-MM-yyyy"))</td>
                                 </tr>
                             }
                             </tbody>
