@@ -9,15 +9,30 @@
 
 <div class="form-page-container">
     <div class="form-wrapper">
-        <div class="form-card">
-            <div class="form-header">
-                <h1 class="form-title">Opret ny bruger</h1>
-                <p class="form-description">Udfyld nedenstående felter for at oprette en ny bruger i systemet.</p>
-            </div>
-            <EditForm Model="newUser" OnSubmit="@HandleNewUser">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <scan style="color: red">@errorText</scan>
+        <EditForm Model="newUser" OnSubmit="@HandleNewUser">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <scan style="color: red">@errorText</scan>
+            
+            <!-- Cards Container for Side-by-Side Layout -->
+            <div class="cards-container" style="display: flex; gap: 20px; align-items: flex-start; margin: 20px;">
+                <!-- Main User Information Card -->
+                <div class="form-card" style="min-width: 400px; flex: 0 0 auto;">
+                    <div class="form-header">
+                        <h1 class="form-title">Opret ny bruger</h1>
+                        <p class="form-description">Udfyld nedenstående felter for at oprette en ny bruger i systemet.</p>
+                    </div>
+                
+                <div class="form-group">
+                    <label class="form-label required-field">Rolle</label>
+                    <InputSelect class="form-select" @bind-Value="newUser.Rolle">
+                        @foreach (var rolle in roller)
+                        {
+                            <option value="@rolle">@rolle</option>
+                        }
+                    </InputSelect>
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label required-field">Fornavn</label>
                     <InputText class="form-control" @bind-Value="newUser.FirstName" placeholder="Indtast fornavn" />
@@ -35,8 +50,9 @@
 
                 <div class="form-group">
                     <label class="form-label required-field">Mobil</label>
-                    <InputNumber class="form-control" @bind-Value="newUser.Mobile" placeholder="Indtast mobilnummer" />
+                    <InputNumber type="tel" class="form-control" @bind-Value="newUser.Mobile" placeholder="Indtast mobilnummer" />
                 </div>
+                
                 <div class="form-group">
                     <label class="form-label required-field">Køn</label>
                     <InputSelect class="form-select" @bind-Value="newUser.Køn">
@@ -46,15 +62,7 @@
                         }
                     </InputSelect>
                 </div>
-                <div class="form-group">
-                    <label class="form-label required-field">Rolle</label>
-                    <InputSelect class="form-select" @bind-Value="newUser.Rolle">
-                        @foreach (var rolle in roller)
-                        {
-                            <option value="@rolle">@rolle</option>
-                        }
-                    </InputSelect>
-                </div>
+                
                 @if (newUser.Rolle != "HR")
                 {
                     <div class="form-group">
@@ -67,16 +75,30 @@
                         </InputSelect>
                     </div>
                 }
+                    <div class="form-card">
+                        <button type="submit" class="submit-btn">Opret bruger</button>
+                    </div>
+                </div>
+
+                <!-- Student Specific Information Card -->
                 @if (newUser.Rolle == "Elev")
                 {
+                    <div class="form-card" style="min-width: 400px; flex: 0 0 auto;">
+                        <div class="form-header">
+                            <h2 class="form-title">Elev information</h2>
+                            <p class="form-description">Yderligere oplysninger for elever.</p>
+                        </div>
+                    
                     <div class="form-group">
                         <label class="form-label required-field">Start Dato</label>
                         <InputDate class="form-control" @bind-Value="newUser.StartDate" placeholder="Indtast ansættelsedato"/>
                     </div>
+                    
                     <div class="form-group">
                         <label class="form-label required-field">Afslutnings Dato</label>
-                        <InputDate class="form-control" @bind-Value="newUser.EndDate" placeholder="Indtast afslutningsdatoedato"/>
+                        <InputDate class="form-control" @bind-Value="newUser.EndDate" placeholder="Indtast afslutningsdato"/>
                     </div>
+                    
                     <div class="form-group">
                         <label class="form-label required-field">Årgang</label>
                         <InputSelect class="form-select" @bind-Value="newUser.Year">
@@ -86,6 +108,7 @@
                             }
                         </InputSelect>
                     </div>
+                    
                     <div class="form-group">
                         <label class="form-label required-field">Skole</label>
                         <InputSelect class="form-select" @bind-Value="newUser.Skole">
@@ -95,6 +118,7 @@
                             }
                         </InputSelect>
                     </div>
+                    
                     <div class="form-group">
                         <label class="form-label required-field">Uddannelse</label>
                         <InputSelect class="form-select" @bind-Value="newUser.Uddannelse">
@@ -103,15 +127,11 @@
                                 <option value="@u">@u</option>
                             }
                         </InputSelect>
+                        </div>
                     </div>
                 }
-                <button type="submit" class="submit-btn">Opret bruger</button>
-            </EditForm>
-        </div>
-    </div>
-
-    <div class="image-wrapper">
-        <img src="icons/chef-create.jpg"  class="form-image" />
+            </div>
+        </EditForm>
     </div>
 </div>
 
@@ -124,9 +144,8 @@
     private List<Hotel> hoteller = new();
     private string[] roller = {"Elev", "Køkkenchef", "Kok", "HR" };
     private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
-    private string[] regioner = { "Jylland", "Fyn", "Sjælland" };
     private string[] år = { "År 1", "År 2", "År 3" };
-    private string[] skole = { "Kold Kollege", "Bæskolen Kronjylland", "Hansted Kokkeskole" };
+    private string[] skole = { "Kold Kollege", "Hansted Kokkeskole" };
     private string[] uddannelse = { "EUX", "Voksenelev"};
     private string errorText;
 
