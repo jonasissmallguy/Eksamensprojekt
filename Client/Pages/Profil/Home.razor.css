@@ -29,21 +29,21 @@ th{
     color: #ffffff;
 }
 
-/* Container med grid: 2 kolonner på bredere skærme */
+
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* To kolonner */
+    grid-template-columns: repeat(2, 1fr); 
     gap: 1.75rem;
     width: 100%;
-    max-width: 1200px; /* Maks bredde, kan justeres */
-    margin: 0 auto; /* Centrerer containeren */
+    max-width: 1200px; 
+    margin: 0 auto; 
 }
 
-/* Kort-stil */
+
 .dashboard-card {
     background-color: #fff;
     border-radius: 12px;
-    border: 1.5px solid #d1d5db; /* Kant */
+    border: 1.5px solid #d1d5db; 
     box-shadow: 0 6px 12px rgba(0,0,0,0.08);
     padding: 1.5rem 2rem;
     display: flex;
@@ -65,15 +65,15 @@ th{
     margin-bottom: 0.75rem;
 }
 
-/* Tekst i kort */
+
 .dashboard-card p {
     font-size: 1.1rem;
     line-height: 1.5;
-    color: #4b5563; /* Medium grå */
+    color: #4b5563; 
     margin-top: 0;
 }
 
-/* Liste styling */
+
 .list-reset {
     list-style-type: none;
     padding-left: 0;
@@ -86,7 +86,7 @@ th{
     color: #374151;
 }
 
-/* Knap styling */
+
 .btn-approve {
     background-color: #152238;
     border: none;
@@ -109,7 +109,7 @@ button{
     color: white;
 }
 
-/* Responsivt: én kolonne på smallere skærme */
+
 @media (max-width: 768px) {
     .dashboard-grid {
         grid-template-columns: 1fr;

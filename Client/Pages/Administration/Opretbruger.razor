@@ -137,16 +137,22 @@
 
 @code {
     
+    //Brugeren der er logget ind
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
     
-
+    //Brugeren der skal oprettes
     private BrugerCreateDTO newUser = new();
+    //Indeholder vores hoteller
     private List<Hotel> hoteller = new();
+    
+    //Dropdown lister
     private string[] roller = {"Elev", "Køkkenchef", "Kok", "HR" };
     private string[] køn = { "Mand", "Kvinde", "Ikke anviget" };
     private string[] år = { "År 1", "År 2", "År 3" };
     private string[] skole = { "Kold Kollege", "Hansted Kokkeskole" };
     private string[] uddannelse = { "EUX", "Voksenelev"};
+    
+    //Fejlbesked
     private string errorText;
 
     protected override async Task OnInitializedAsync()

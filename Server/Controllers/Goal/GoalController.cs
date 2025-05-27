@@ -34,7 +34,7 @@ namespace Server
                 return BadRequest("Forkert studentId, planId, forløbId eller goalId");
             }
             
-            var delete =  await _goalRepository.DeleteGoal(studentId, planId, forløbId, goalId);
+            var delete =  await _goalRepository.DeleteGoal(studentId, forløbId, goalId);
 
             if (!delete)
             {
@@ -60,7 +60,7 @@ namespace Server
                 return BadRequest("Mangler påkrævede felter");
             }
 
-            var add = await _goalRepository.AddGoal(studentId, planId, forløbId, newGoal);
+            var add = await _goalRepository.AddGoal(studentId, forløbId, newGoal);
 
             if (!add)
             {

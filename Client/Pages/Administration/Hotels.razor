@@ -58,9 +58,13 @@
 
 @code {
 
+    //Brugeren der er logget ind
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
 
+    //Nyt hotel
     private HotelCreationDTO newHotel = new();
+    
+    //Dropdown regioner
     private string[] regioner = { "Jylland", "Sjælland", "Fyn" };
 
     string errorText = "";

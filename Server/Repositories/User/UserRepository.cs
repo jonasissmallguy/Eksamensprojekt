@@ -1,8 +1,8 @@
 ﻿using Core;
-using DotNetEnv;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.GridFS;
+
 namespace Server
 {
 
@@ -12,7 +12,6 @@ namespace Server
         private IMongoDatabase _userDatabase;
         private IMongoCollection<User> _userCollection;
         private readonly IMongoCollection<BsonDocument> _countersCollection;
-        private GridFSBucket _imageBucket;
 
 
         public UserRepository()
@@ -23,7 +22,6 @@ namespace Server
             _userDatabase = _userClient.GetDatabase("comwell");
             _userCollection = _userDatabase.GetCollection<User>("users");
             _countersCollection = _userDatabase.GetCollection<BsonDocument>("counters"); 
-            _imageBucket = new GridFSBucket(_userDatabase, new GridFSBucketOptions{ BucketName = "billeder" });
 
         }
 
@@ -42,9 +40,9 @@ namespace Server
         }
 
 
-        public async Task<User> GetUserById(int id)
+        public async Task<User> GetUserById(int userId)
         {
-            var filter = Builders<User>.Filter.Eq("_id", id);
+            var filter = Builders<User>.Filter.Eq("_id", userId);
             return await _userCollection.Find(filter).FirstOrDefaultAsync();
         }
 
@@ -97,23 +95,23 @@ namespace Server
             return true;
         }
 
-        public async Task<DeleteResult> DeleteUser(int studentId)
+        public async Task<DeleteResult> DeleteUser(int userId)
         {
-            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            var filter = Builders<User>.Filter.Eq("_id", userId);
             return await _userCollection.DeleteOneAsync(filter);
         }
 
-        public async Task<UpdateResult> DeactivateUser(int studentId)
+        public async Task<UpdateResult> DeactivateUser(int userId)
         {
-            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            var filter = Builders<User>.Filter.Eq("_id", userId);
             var update = Builders<User>.Update.Set("Status", "Deactivated");
             
             return await _userCollection.UpdateOneAsync(filter, update);
         }
 
-        public async Task<UpdateResult> ActivateUser(int studentId)
+        public async Task<UpdateResult> ActivateUser(int userId)
         {
-            var filter = Builders<User>.Filter.Eq("_id", studentId);
+            var filter = Builders<User>.Filter.Eq("_id", userId);
             var update = Builders<User>.Update.Set("Status", "Active");
             
             return await _userCollection.UpdateOneAsync(filter, update);
@@ -127,7 +125,7 @@ namespace Server
             return await _userCollection.UpdateOneAsync(filter, update);
         }
         
-        public async Task<UpdateResult> UpadtePassword(string email, string updatedPassword)
+        public async Task<UpdateResult> UpdatePassword(string email, string updatedPassword)
         {
             var filter = Builders<User>.Filter.Eq("Email", email);
             var update = Builders<User>.Update.Set("Password", updatedPassword);

@@ -1,10 +1,8 @@
 ﻿using Core;
 using Microsoft.AspNetCore.Mvc;
-using DotNetEnv;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using ClosedXML.Excel;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Server
 {
@@ -310,7 +308,7 @@ namespace Server
             
             if (rolle == "Køkkenchef")
             {
-                var updateResult = await _hotelRepository.RemoveManagerFromHotel(userId);
+                var updateResult = await _hotelRepository.RemoveChefFromHotel(userId);
 
                 if (updateResult.MatchedCount == 0)
                 {
@@ -344,7 +342,7 @@ namespace Server
             
             if (rolle == "Køkkenchef")
             {
-                var hotelUpdate = await _hotelRepository.RemoveManagerFromHotel(userId);
+                var hotelUpdate = await _hotelRepository.RemoveChefFromHotel(userId);
 
                 if (hotelUpdate.MatchedCount == 0)
                 {
@@ -438,7 +436,7 @@ namespace Server
                 return BadRequest("Password skal være 8 cifre eller mere");
             }
             
-            var result = await _userRepository.UpadtePassword(email, updatedPassword);
+            var result = await _userRepository.UpdatePassword(email, updatedPassword);
 
             if (result.MatchedCount == 0)
             {

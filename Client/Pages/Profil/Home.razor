@@ -278,17 +278,18 @@ else
 
 @code {
 
+    //Variabel til at styre, at data er hentet før HTML vises
     private bool _loading = true;
-
     
+    //Brugeren der er logget ind
     private BrugerLoginDTO _currentUser;
 
-    //Elev instant variablER
+    //Elev instans variabler
     private List<GoalNeedActionDTO> _needAction; //Indeholder liste med delmål, hvor eleven mangler godkendelse
     private List<FutureSchoolDTO> _futureSchool; //Indeholder liste med kommende skoleophold
     private List<KursusKommendeDTO> _futureCourses; //Indeholder liste med tilmeldte kurser
 
-    //Kok instans variabelER
+    //Kok instans variabler
     private List<StartedGoalsDTO> _inProgress; //Indeholder liste med delmål der er startet men ikke godkendt
 
     //Køkkenchef instans variabler
@@ -299,12 +300,13 @@ else
 
     //Modal dialog
     private ModalDialog _kursusModal { get; set; }
+    
+    //Indeholder liste med kurser med samme CourseCode
     private List<KursusKommendeDTO> _matchingCourses = new();
 
-    //refacor!!
+    //Indeholder kurset man ønsker at tilmelde
     private KursusManglendeDTO? _currentMissingCourse;
-
-
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -348,7 +350,7 @@ else
         _loading = false;
     }
 
-    //Mangler fejlmeddelser
+    
     private async Task ConfirmGoal(StartedGoalsDTO goalDto)
     {
         var success = await IGoalService.ConfirmGoal(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);

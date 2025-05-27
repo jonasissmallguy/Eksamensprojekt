@@ -52,10 +52,13 @@
 
 @code {
 
+    //Id på brugeren
     [Parameter] public int id { get; set; }
 
+    //Brugeren der er logget ind
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
 
+    //Brugeren vi viser data for
     private User _minBruger { get; set; }
     
     protected override async Task OnInitializedAsync()

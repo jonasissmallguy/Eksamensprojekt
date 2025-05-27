@@ -6,9 +6,10 @@ namespace Server
 
     public interface IElevplan
     {
-        
+        //Gemmer en elevplan efter studentId = _id
         Task<UpdateResult> SaveElevplan(int studentId, Plan plan);
         
+        //Retunerer en elevplan efter studentId = _id
         Task<Plan> GetPlanByStudentId(int studentId);
 
     }

@@ -2,8 +2,6 @@
 
 @inject IKursus IKursusService;
 @inject IBruger IBrugerService;
-@inject IGoal GoalService;
-@inject IBruger BrugerService;
 @inject NavigationManager navMan;
 
 
@@ -122,13 +120,18 @@
 }
 
 @code {
+    //Brugeren der er logget ind
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
     
+    //Kurset vi ser
     [Parameter] public int kursusId { get; set; }
 
+    //Kurset vi henter ind
     private Kursus _kursus;
     
+    //Alle elever der mangler kurset
     private List<KursusDeltagerListeDTO> allStudents;
+    
     private string _searchText;
 
     //En IEnumerable liste, der er brugt til filtering   
