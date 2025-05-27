@@ -35,7 +35,7 @@ th{
     align-items: center;
     gap: 1rem;
     margin-bottom: 1rem;
-    min-height: 2rem; /* Ensure consistent height */
+    min-height: 2rem;
 }
 
 .section_header h6 {

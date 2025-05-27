@@ -70,6 +70,8 @@
     [Parameter] public int studentId { get; set; }
     private User elev;
     private Plan? elevPlan;
+    
+    //Alle mål fordelt på år / progress
     private List<GoalProgessDTO> goalList;
 
 
@@ -83,6 +85,8 @@
         
         elev = await IBrugerService.GetBrugerById(studentId);
         elevPlan = elev.ElevPlan;
+        
+        //Hener vores mål for goal progress
         goalList = await IGoalService.GoalProgess(studentId);
 
     }
@@ -108,7 +112,6 @@
         }
     }
     
-    //Skal alt det her under laves om? 
     private async Task HandlingGoalStart(MentorAssignment assignment)
     {
         var updatedGoal = await IGoalService.StartGoal(assignment);
@@ -133,7 +136,7 @@
 
     private async Task ConfirmGoal(MentorAssignment bruger)
     {
-        if (_currentUser.Rolle == "Kok") //hvorfor det her?
+        if (_currentUser.Rolle == "Kok")
         {
             var processedGoal = await IGoalService.ProcessGoal(bruger); 
 

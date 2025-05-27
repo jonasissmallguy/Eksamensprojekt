@@ -2,13 +2,13 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 80px; /* adjust as needed */
+    width: 80px; 
     height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: white; /* Optional: ensure it's visible */
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05); /* Optional visual polish */
+    background-color: white; 
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05); 
     z-index: 1000;
 }
 

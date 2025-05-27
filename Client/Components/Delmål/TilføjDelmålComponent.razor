@@ -177,7 +177,6 @@
 
         if (WorkInMemory)
         {
-            // Just invoke callback, don't call DB service here
             await OnGoalAdded.InvokeAsync(tilføjDelmål);
         }
         else
