@@ -880,8 +880,6 @@ namespace Server
             
             string base64 = Convert.ToBase64String(fileBytes);
             
-            Env.Load();
-            
             var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
             var client = new SendGridClient(apiKey);
             

@@ -14,7 +14,6 @@ namespace Server
         private IMongoClient _goalClient;
         private IMongoDatabase _goalsDatabase;
         private IMongoCollection<User> _goalCollection;
-        private IMongoCollection<User> _brugerCollection;
         private readonly IMongoCollection<BsonDocument> _countersCollection;
 
 
@@ -25,7 +24,6 @@ namespace Server
             _goalClient = new MongoClient(ConnectionString);
             _goalsDatabase = _goalClient.GetDatabase("comwell");
             _goalCollection = _goalsDatabase.GetCollection<User>("users");
-            _brugerCollection = _goalsDatabase.GetCollection<User>("users");
             _countersCollection = _goalsDatabase.GetCollection<BsonDocument>("counters"); 
         }
         
@@ -204,15 +202,16 @@ namespace Server
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", mentor.GoalId))
             };
 
-            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+            var options = new FindOneAndUpdateOptions<User>
+            {
+                ArrayFilters = arrayFilters,
+                ReturnDocument = ReturnDocument.After
+                
+            };
 
-            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
-            if (result.ModifiedCount == 0)
-                return null;
-
-            //Skal dette laves om - herunder?
-            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
-            var goal = user?.ElevPlan?.Forløbs?
+            var result =  await _goalCollection.FindOneAndUpdateAsync(filter, update, options);
+            
+            var goal = result?.ElevPlan?.Forløbs?
                 .FirstOrDefault(f => f.Id == mentor.ForløbId)?
                 .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);
 
@@ -340,8 +339,7 @@ namespace Server
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", forløbId)),
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
             };
-
-            //bør det være after?
+            
             var options = new FindOneAndUpdateOptions<User> 
             { 
                 ArrayFilters = arrayFilters,

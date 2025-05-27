@@ -23,7 +23,7 @@ namespace Client
 
             catch (HttpRequestException)
             {
-                return null;
+                return new List<Hotel>();
             }
         }   
 
