@@ -28,6 +28,7 @@ else
         @if (_addingPlan)
         {
             <p>Tilføjer plan... vent venligst</p>
+            
         }
         <TilføjDelmålComponent @ref="addGoalModalRef"
                                StudentId="studentId"
@@ -80,7 +81,7 @@ else
             navMan.NavigateTo("dashboard");
         }
         
-        elev = await IBrugerService.GetBrugerById(studentId);
+        elev = await IBrugerService.GetBrugerById(99);
 
         if (elev == null)
         {
@@ -91,7 +92,7 @@ else
 
         if (nyElevPlan == null)
         {
-            errorText = "Kunne ikke finde template, prøv venligst igen";
+            errorText = "En fejl opstod, venglist prøv igen";
         }
         
         _loading = false;
