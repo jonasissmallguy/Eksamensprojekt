@@ -124,7 +124,7 @@ else
     //Et array af mulige roller
     private string[] _roller = { "HR", "Kok", "Køkkenchef" };
 
-    //E
+    //Error text
     private string _searchText;
 
     //En IEnumerable liste, der er brugt til filtering   
@@ -162,8 +162,7 @@ else
         _userToChange = user;
     }
 
-
-    //Mangler validering!!
+    
     private async Task DeleteUser(int userId, string rolle)
     {
         var result = await IBrugerService.DeleteUser(userId, rolle);
@@ -177,7 +176,7 @@ else
 
     }
 
-    //Mangler validering!
+
     private async Task DeActivateUser(int userId, string rolle)
     {
         await IBrugerService.DeActivateUser(userId, rolle);
@@ -191,7 +190,7 @@ else
         StateHasChanged();
     }
 
-    //Mangler validering!
+
     private async Task HandleNewRolle(string rolle)
     {
         await IBrugerService.ChangeRolle(rolle, _userToChange.Id);
@@ -204,8 +203,7 @@ else
 
         }
     }
-
-    //Mangler validering!
+    
     private async Task AktiverUser(int userId)
     {
         await IBrugerService.ActivateUser(userId);

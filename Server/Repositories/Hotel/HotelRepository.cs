@@ -1,7 +1,5 @@
 ﻿using Core;
-using Server;
 using MongoDB.Driver;
-using DotNetEnv;
 using MongoDB.Bson;
 
 namespace Server
@@ -55,9 +53,9 @@ namespace Server
             await _hotelCollection.InsertOneAsync(hotel);
         }
 
-        public async Task<Hotel> GetHotelById(int id)
+        public async Task<Hotel> GetHotelById(int hotelId)
         {
-            var filter = Builders<Hotel>.Filter.Eq("_id", id);
+            var filter = Builders<Hotel>.Filter.Eq("_id", hotelId);
             return await _hotelCollection.Find(filter).FirstOrDefaultAsync();
         }
 
@@ -71,7 +69,7 @@ namespace Server
             return await _hotelCollection.UpdateOneAsync(filter, update);
         }
 
-        public async Task<UpdateResult> RemoveManagerFromHotel(int køkkenChefId)
+        public async Task<UpdateResult> RemoveChefFromHotel(int køkkenChefId)
         {
             var filter = Builders<Hotel>.Filter.Eq("KøkkenChefId", køkkenChefId);
             var update = Builders<Hotel>.Update

@@ -161,7 +161,7 @@ else
         <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
         <table>
             <tr>
-                @if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Køkkenhef")
+                @if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Køkkenchef")
                 {
                     <th>
                         <input type="checkbox"
@@ -181,7 +181,7 @@ else
             @foreach (var x in FiltreredElever)
             {
                 <tr>
-                    @if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Køkkenhef")
+                    @if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Køkkenchef")
                     {
                         <td>
                             <input type="checkbox"
@@ -213,8 +213,10 @@ else
 
 @code {
     
+    //Loader data før HTML vises
     private bool isLoading = false;
 
+    //Brugeren der er logget ind
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
     
     //Eleven
@@ -227,22 +229,26 @@ else
     // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
 
+    //Variabler der sættes ved filtering
     private string selectedYear = String.Empty;
     private int? selectedHotelId = null;
-    private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
     private string selectedSkole = String.Empty;
     private string selectedRegion = String.Empty;
     private string selectedUddannelse = String.Empty;
-    
-    private List<ElevOversigtDTO> alleElever = new();
-    private List<Hotel> alleHoteller = new();
-    private HashSet<int> selectedStudentIds = new();
-
     private DateOnly? selectedSkolestartBefore = null;
     private DateOnly? selectedSkolestartAfter = null;
     private DateOnly? selectedSkoleendBefore = null;
     private DateOnly? selectedSkoleendAfter = null;
+
+    //Alle elever vi viser
+    private List<ElevOversigtDTO> alleElever = new();
+    //Alle hoteller
+    private List<Hotel> alleHoteller = new();
+    //Gemmer valgte elever fra select
+    private HashSet<int> selectedStudentIds = new();
     
+    //Vælger alle elever 
+    private bool AreAllFilteredSelected => FiltreredElever.Any() && FiltreredElever.All(e => selectedStudentIds.Contains(e.Id));
 
     // Filter til søgetekst og til valg af hotel
     private IEnumerable<ElevOversigtDTO> FiltreredElever

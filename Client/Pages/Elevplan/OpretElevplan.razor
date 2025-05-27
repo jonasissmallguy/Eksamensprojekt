@@ -44,12 +44,22 @@ else
 
 @code {
 
+    //Brugeren der er logget ind
     [CascadingParameter] private BrugerLoginDTO _currentUser { get; set; }
+  
+    //Henter dataen før HTML vises
     private bool _loading = true;
+    
+    //Elevens id
     [Parameter] public int studentId { get; set; }
+    
     private Plan nyElevPlan = new();
+    
     private User elev = new();
+    
     private TilføjDelmålComponent addGoalModalRef;
+    
+    //Viser besked, når vi sætter til true
     private bool _addingPlan = false;
 
     //Errortext

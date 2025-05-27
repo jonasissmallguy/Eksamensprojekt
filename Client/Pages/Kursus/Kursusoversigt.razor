@@ -98,14 +98,20 @@
 
 @code {
     
+    //Brugeren der logget ind
     [CascadingParameter] 
     private BrugerLoginDTO _currentUser { get; set; }
 
-    
+    //Alle kurser
     private List<Kursus> alleKurser;
+    
+    //Modaldialog
     private ModalDialog _modalKursus { get; set; }
+    
+    //Nyt kursus
     private KursusCreationDTO newCourse = new();
-    private List<Kursus> Courses;
+    
+    //Indeholder alle vores kursustemplates
     private List<KursusTemplate> CoursesTemplates;
     
     string errorText = "";

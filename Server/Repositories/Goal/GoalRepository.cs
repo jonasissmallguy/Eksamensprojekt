@@ -14,7 +14,6 @@ namespace Server
         private IMongoClient _goalClient;
         private IMongoDatabase _goalsDatabase;
         private IMongoCollection<User> _goalCollection;
-        private IMongoCollection<User> _brugerCollection;
         private readonly IMongoCollection<BsonDocument> _countersCollection;
 
 
@@ -25,7 +24,6 @@ namespace Server
             _goalClient = new MongoClient(ConnectionString);
             _goalsDatabase = _goalClient.GetDatabase("comwell");
             _goalCollection = _goalsDatabase.GetCollection<User>("users");
-            _brugerCollection = _goalsDatabase.GetCollection<User>("users");
             _countersCollection = _goalsDatabase.GetCollection<BsonDocument>("counters"); 
         }
         
@@ -46,7 +44,7 @@ namespace Server
         
         
         //Fjerner et goal i vores nestedarray 
-        public async Task<bool> DeleteGoal(int studentId, int planId, int forløbId, int goalId)
+        public async Task<bool> DeleteGoal(int studentId, int forløbId, int goalId)
         {
             var filter = Builders<User>.Filter.And(
                 Builders<User>.Filter.Eq(u => u.Id, studentId),
@@ -62,7 +60,7 @@ namespace Server
         }
 
         //Tilføjer et nyt goal
-        public async Task<bool> AddGoal(int studentId, int planId, int forløbId, Goal newGoal)
+        public async Task<bool> AddGoal(int studentId, int forløbId, Goal newGoal)
         {
             var filter = Builders<User>.Filter.And(
                 Builders<User>.Filter.Eq(u => u.Id, studentId),
@@ -204,15 +202,16 @@ namespace Server
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", mentor.GoalId))
             };
 
-            var options = new UpdateOptions { ArrayFilters = arrayFilters };
+            var options = new FindOneAndUpdateOptions<User>
+            {
+                ArrayFilters = arrayFilters,
+                ReturnDocument = ReturnDocument.After
+                
+            };
 
-            var result = await _goalCollection.UpdateOneAsync(filter, update, options);
-            if (result.ModifiedCount == 0)
-                return null;
-
-            //Skal dette laves om - herunder?
-            var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
-            var goal = user?.ElevPlan?.Forløbs?
+            var result =  await _goalCollection.FindOneAndUpdateAsync(filter, update, options);
+            
+            var goal = result?.ElevPlan?.Forløbs?
                 .FirstOrDefault(f => f.Id == mentor.ForløbId)?
                 .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);
 
@@ -250,7 +249,7 @@ namespace Server
             return goal;
         }
 
-        public async Task<Goal> ConfirmGoalHelper(int planId, int forløbId, int goalId)
+        public async Task<Goal> CompleteGoal(int planId, int forløbId, int goalId)
         {
             var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
 
@@ -282,7 +281,7 @@ namespace Server
 
         public async Task<Goal> ConfirmGoalAndHandleProgress(int planId, int forløbId, int goalId)
         {
-            var confirmedGoal = await ConfirmGoalHelper(planId, forløbId, goalId);
+            var confirmedGoal = await CompleteGoal(planId, forløbId, goalId);
 
             if (confirmedGoal == null)
             {
@@ -340,8 +339,7 @@ namespace Server
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("f._id", forløbId)),
                 new BsonDocumentArrayFilterDefinition<BsonDocument>(new BsonDocument("g._id", goalId))
             };
-
-            //bør det være after?
+            
             var options = new FindOneAndUpdateOptions<User> 
             { 
                 ArrayFilters = arrayFilters,
@@ -356,7 +354,7 @@ namespace Server
             }
             
             await UpdateForløbStatus(planId, forløbId);
-            await UpdateYearStauts(planId);
+            await UpdateYearStatus(planId);
     
             var goal = updatedUser?.ElevPlan?.Forløbs?
                 .FirstOrDefault(f => f.Id == forløbId)?
@@ -365,7 +363,7 @@ namespace Server
             return goal;
         }
 
-        public async Task UpdateYearStauts(int planId)
+        public async Task UpdateYearStatus(int planId)
         {
             var filter = Builders<User>.Filter.Eq("ElevPlan._id", planId);
             var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();

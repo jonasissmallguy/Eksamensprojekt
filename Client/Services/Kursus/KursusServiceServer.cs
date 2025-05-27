@@ -21,7 +21,7 @@ namespace Client
             }
             catch (HttpRequestException)
             {
-                return null;
+                return new List<Kursus>();
             }
         }
         public async Task<Kursus> GetCourseById(int kursusId)
@@ -102,7 +102,7 @@ namespace Client
             }
             catch (HttpRequestException)
             {
-                return null;
+                return new List<KursusKommendeDTO>();
             }
         }
 
@@ -114,7 +114,8 @@ namespace Client
             }
             catch (HttpRequestException)
             {
-                return null;
+                Console.WriteLine("Kunne ikke finde data");
+                return new List<KursusKommendeDTO>();
             }
         }
     }
