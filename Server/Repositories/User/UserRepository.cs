@@ -16,9 +16,9 @@ namespace Server
 
         public UserRepository()
         {
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+            string _connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
 
-            _userClient = new MongoClient(ConnectionString);
+            _userClient = new MongoClient(_connectionString);
             _userDatabase = _userClient.GetDatabase("comwell");
             _userCollection = _userDatabase.GetCollection<User>("users");
             _countersCollection = _userDatabase.GetCollection<BsonDocument>("counters"); 

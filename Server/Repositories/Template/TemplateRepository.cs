@@ -14,9 +14,9 @@ namespace Server
         public TemplateRepository()
         {
             
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+            string _connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
             
-            _templateClient = new MongoClient(ConnectionString);
+            _templateClient = new MongoClient(_connectionString);
             _templateDatabase = _templateClient.GetDatabase("comwell");
             _templateCollection = _templateDatabase.GetCollection<PlanTemplate>("plantemplate");
         }

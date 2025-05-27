@@ -17,7 +17,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<Kursus>>($"kursus");
+                var result = await _client.GetFromJsonAsync<List<Kursus>>($"kursus");
+                
+                return result ?? new List<Kursus>();
+                
             }
             catch (HttpRequestException)
             {
@@ -75,7 +78,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<KursusTemplate>>($"kursus/templates");
+                var result = await _client.GetFromJsonAsync<List<KursusTemplate>>($"kursus/templates");
+                
+                return result ?? new List<KursusTemplate>();
+                
             }
             catch (HttpRequestException)
             {

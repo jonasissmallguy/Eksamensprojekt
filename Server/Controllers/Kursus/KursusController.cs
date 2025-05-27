@@ -27,11 +27,6 @@ namespace Server
         public async Task<IActionResult> GetAll()
         {
             var kurser = await _kursusRepository.GetAllCourses();
-
-            if (!kurser.Any())
-            {
-                return NotFound("Kunne ikke finde nogen kursuser");
-            }
             
             return Ok(kurser);
         }
@@ -135,11 +130,6 @@ namespace Server
         public async Task<IActionResult> GetAllTemplates()
         {
             var kursus = await _kursusRepository.GetAllTemplates();
-
-            if (!kursus.Any())
-            {
-                return NotFound("Kunne ikke finde nogen templates");
-            }
             
             return Ok(kursus);
         }

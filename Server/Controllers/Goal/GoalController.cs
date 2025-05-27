@@ -139,7 +139,7 @@ namespace Server
         /// Finder alle mål for en elev med type = delmål , der har statusen InProgress eller AwaitingApproval
         /// </summary>
         /// <param name="elevId"></param>
-        /// <returns>Liste med GoalNeedActionDTO</returns>
+        /// <returns>Liste med GoalNeedActionDTO</returns> 
         [HttpGet]
         [Route("need-action-goals/{elevId}")]
         public async Task<IActionResult> NeedActionGoals(int elevId)
@@ -150,11 +150,6 @@ namespace Server
             }
             
             var users = await _goalRepository.GetActionGoals(elevId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever");
-            }
 
             var result = new List<GoalNeedActionDTO>();
 
@@ -200,11 +195,7 @@ namespace Server
             }
             
             var users = await _goalRepository.GetAwaitingApproval(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen hotel");
-            }
+            
 
             var result = new List<StartedGoalsDTO>();
 
@@ -251,11 +242,6 @@ namespace Server
             }
             
             var users = await _goalRepository.GetStartedGoals(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen mål for hotellet");
-            }
             
             var result = new List<StartedGoalsDTO>();
 
@@ -300,12 +286,7 @@ namespace Server
             }
             
             var users = await _goalRepository.GetMissingCourses(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde manglende kurser for elverne på dette hotel");
-            }
-
+            
             var result = new List<KursusManglendeDTO>();
 
             foreach (var user in users)
@@ -355,11 +336,6 @@ namespace Server
             }
             
             var users = await _goalRepository.GetOutOfHouse(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen delmål med typen kursus eller skoleophold med status InProgress");
-            }
             
             var result = new List<OutOfHouseDTO>();
 
@@ -411,9 +387,6 @@ namespace Server
                 return BadRequest("Forkert elevId");
 
             var goals = await _goalRepository.GetFutureSchools(elevId);
-            
-            if (!goals.Any())
-                return NotFound("Kunne ikke finde nogen kommende skoleophold");
 
             List<FutureSchoolDTO> futureSchools = new ();
             

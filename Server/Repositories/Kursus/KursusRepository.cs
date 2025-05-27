@@ -15,9 +15,9 @@ namespace Server
 
         public KursusRepository()
         {
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+            string _connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
             
-            _client = new MongoClient(ConnectionString);
+            _client = new MongoClient(_connectionString);
             _database = _client.GetDatabase("comwell");
             _collection = _database.GetCollection<Kursus>("kurser");
             _collectionTemplate = _database.GetCollection<KursusTemplate>("kursertemplate");

@@ -32,11 +32,6 @@ namespace Server
         public async Task<IActionResult> GetAllUsers()
         {
             var allUsers = await _userRepository.GetAllUsers();
-
-            if (allUsers == null)
-            {
-                return NotFound("Kunne ikke finde nogen users");
-            }
             
             List<BrugerLoginDTO> brugerLogins = new();
 
@@ -73,10 +68,6 @@ namespace Server
 
             var allUsers = await _userRepository.GetAllUsersWithOutMyself(id);
 
-            if (allUsers == null)
-            {
-                return NotFound();
-            }
 
             foreach (var x in allUsers)
             {
@@ -480,11 +471,7 @@ namespace Server
         {
             List<KursusDeltagerListeDTO> students = new();
             var users = await _userRepository.GetAllStudents();
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever");
-            }
+            
 
             foreach (var user in users)
             {
@@ -515,11 +502,6 @@ namespace Server
             
             List<KursusDeltagerListeDTO> students = new();
             var users = await _userRepository.GetAllStudentsMissingCourse(kursusCode);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever med de mang");
-            }
             
             foreach (var user in users)
             {
@@ -543,11 +525,6 @@ namespace Server
         public async Task<IActionResult> GetElevOversigt()
         {
             var users = await _userRepository.GetAllStudents();
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever");
-            }
             
             var elevOversigt = new List<ElevOversigtDTO>();
 
@@ -589,11 +566,6 @@ namespace Server
             }
             
             var elever = await _userRepository.GetAllStudentsByHotelId(hotelId);
-
-            if (!elever.Any())
-            {
-                return NotFound();
-            }
             
             List<ElevOversigtDTO> elevOversigt = new();
 
@@ -680,12 +652,7 @@ namespace Server
         public async Task<IActionResult> GetAllActiveUsers()
         {
             var activeUsers = await _userRepository.GetAllActiveUsers();
-
-            if (!activeUsers.Any())
-            {
-                return NotFound("Kunne ikke finde nogen aktive elever");
-            }
-
+            
             List<BrugerLoginDTO> users = new();
 
             foreach (var user in activeUsers)

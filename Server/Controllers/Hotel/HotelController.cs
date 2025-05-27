@@ -45,11 +45,6 @@ namespace Server
         public async Task<IActionResult> GetAllHotels()
         {
             var hotels = await _hotelRepository.GetAllHotels();
-
-            if (!hotels.Any())
-            {
-                return NotFound("Kunne ikke finde nogen hoteller");
-            }
             
             return Ok(hotels);
         }

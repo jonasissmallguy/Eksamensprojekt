@@ -6,7 +6,7 @@ using MongoDB.Bson;
 namespace Server
 {
 
-    public class ElevplanRepository : IElevplan
+    public class ElevplanRepositoryRepository : IElevplanRepository
     {
         
         private IMongoClient _elevplanClient;
@@ -15,11 +15,11 @@ namespace Server
         private readonly IMongoCollection<BsonDocument> _countersCollection;
 
 
-        public ElevplanRepository()
+        public ElevplanRepositoryRepository()
         {
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+             string _connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
             
-            _elevplanClient = new MongoClient(ConnectionString);
+            _elevplanClient = new MongoClient(_connectionString);
             _elevplanDatabase = _elevplanClient.GetDatabase("comwell");
             _elevPlanCollection = _elevplanDatabase.GetCollection<User>("users");
             _countersCollection = _elevplanDatabase.GetCollection<BsonDocument>("counters"); 

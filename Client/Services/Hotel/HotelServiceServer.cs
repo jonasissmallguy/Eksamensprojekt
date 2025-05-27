@@ -18,7 +18,9 @@ namespace Client
         {
             try
             {
-               return await _client.GetFromJsonAsync<List<Hotel>>($"hotels");
+               var result = await _client.GetFromJsonAsync<List<Hotel>>($"hotels");
+               
+               return result ?? new List<Hotel>();
             }
 
             catch (HttpRequestException)

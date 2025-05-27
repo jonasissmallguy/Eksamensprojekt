@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<IUserRepository,UserRepository>();
 builder.Services.AddSingleton<ITemplateRepository,TemplateRepository>();
-builder.Services.AddSingleton<IElevplan,ElevplanRepository>();
+builder.Services.AddSingleton<IElevplanRepository,ElevplanRepositoryRepository>();
 builder.Services.AddSingleton<IGoalRepository,GoalRepository>();
 builder.Services.AddSingleton<IHotelRepository, HotelRepository>();
 builder.Services.AddSingleton<IKursusRepository, KursusRepository>();
