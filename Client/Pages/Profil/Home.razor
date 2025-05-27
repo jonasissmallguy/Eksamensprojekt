@@ -42,8 +42,8 @@ else
                                 <tr>
                                     <td>@g.Title</td>
                                     <td>@g.SkoleNavn</td>
-                                    <td>@g.SkoleStart</td>
-                                    <td>@g.SkoleEnd</td>
+                                    <td>@(g.SkoleStart?.ToString("dd-MM-yyyy"))</td>
+                                    <td>@(g.SkoleEnd?.ToString("dd-MM-yyyy"))</td>
                                 </tr>
                             }
                             </tbody>
@@ -194,8 +194,8 @@ else
                                 <tr>
                                     <td>@g.FullName</td>
                                     <td>@g.GoalTitle</td>
-                                    <td>@g.StartDate</td>
-                                    <td>@g.EndDate</td>
+                                    <td>@(g.StartDate?.ToString("dd-MM-yyyy"))</td>
+                                    <td>@(g.EndDate?.ToString("dd-MM-yyyy"))</td>
                                 </tr>
                             }
                             </tbody>

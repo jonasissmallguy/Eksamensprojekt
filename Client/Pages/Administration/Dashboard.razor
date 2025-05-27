@@ -158,39 +158,45 @@ else
 
     </div>
 
-    <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
-    <table>
-        <tr>
-            <th>
-                <input type="checkbox"
-                       @onchange="ToggleSelectAll"
-                       checked="@AreAllFilteredSelected"/>
-            </th>
-            <th>Navn</th>
-            <th>Hotel</th>
-            <th>Status</th>
-            <th>År</th>
-            <th>Skole</th>
-            <th>Uddannelse</th>
-            <th>Start</th>
-            <th>Slut</th>
-        </tr>
-        @foreach (var x in FiltreredElever)
-        {
+        <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
+        <table>
             <tr>
-                <td>
-                    <input type="checkbox"
-                           checked="@selectedStudentIds.Contains(x.Id)"
-                           @onchange="(e) => CheckboxValueChanged(x.Id, (bool)((ChangeEventArgs)e).Value)"/>
-                </td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.HotelNavn</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.CompletedGoals / @x.TotalGoals</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Skole</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Uddannelse</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.StartDate</td>
-                <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.EndDate</td>
+                @if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Køkkenhef")
+                {
+                    <th>
+                        <input type="checkbox"
+                               @onchange="ToggleSelectAll"
+                               checked="@AreAllFilteredSelected"/>
+                    </th>
+                }
+                <th>Navn</th>
+                <th>Hotel</th>
+                <th>Status</th>
+                <th>År</th>
+                <th>Skole</th>
+                <th>Uddannelse</th>
+                <th>Start</th>
+                <th>Slut</th>
+            </tr>
+            @foreach (var x in FiltreredElever)
+            {
+                <tr>
+                    @if (_currentUser.Rolle == "HR" || _currentUser.Rolle == "Køkkenhef")
+                    {
+                        <td>
+                            <input type="checkbox"
+                                   checked="@selectedStudentIds.Contains(x.Id)"
+                                   @onchange="(e) => CheckboxValueChanged(x.Id, (bool)((ChangeEventArgs)e).Value)"/>
+                        </td>
+                    }
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Name</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.HotelNavn</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.CompletedGoals / @x.TotalGoals</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Year</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Skole</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.Uddannelse</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.StartDate</td>
+                    <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.EndDate</td>
 
             </tr>
         }
