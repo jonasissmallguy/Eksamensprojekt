@@ -102,6 +102,13 @@ th{
     background-color: #2e5984;
 }
 
+button{
+    background-color: #152238;
+    border: none;
+    border-radius: 6px;
+    color: white;
+}
+
 /* Responsivt: én kolonne på smallere skærme */
 @media (max-width: 768px) {
     .dashboard-grid {
