@@ -279,15 +279,14 @@ namespace Server
                 }
             }
 
-            //Deaktiveret indtil vi går live...
-            /*var mailSent = await SendLoginDetails(nyBruger);
+            //Sender mail med logindetaljer
+            var mailSent = await SendLoginDetails(nyBruger);
 
             if (!mailSent)
             {
-                return Confligt(); //skal give fejlbesked med invalid mail
+                return Conflict("Dette er ikke en valid mail");
             }
-            */
-    
+            
             return Ok(newUser);
         }
 
