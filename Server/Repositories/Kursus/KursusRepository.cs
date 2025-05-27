@@ -1,6 +1,5 @@
 ﻿using Core;
 using MongoDB.Driver;
-using DotNetEnv;
 using MongoDB.Bson;
 
 namespace Server
@@ -120,7 +119,13 @@ namespace Server
             
             var filter1 = Builders<Kursus>.Filter.Lte("StartDate", cutOff);
             var filter2 = Builders<Kursus>.Filter.Eq("Status", "Active");
-            var filter = Builders<Kursus>.Filter.And(filter1, filter2);
+            var filter3 = new BsonDocumentFilterDefinition<Kursus>(
+                new BsonDocument("$expr", 
+                    new BsonDocument("$lt", new BsonArray { "$Participants", "$MaxParticipants" })
+                )
+            ); 
+            
+            var filter = Builders<Kursus>.Filter.And(filter1, filter2,filter3);
             
             return await _collection.Find(filter).ToListAsync();
         }

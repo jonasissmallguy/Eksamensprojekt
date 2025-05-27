@@ -14,7 +14,6 @@
 }
 else
 {
-    <h3 class="page-title">Oversigt</h3>
     <div class="dashboard-grid">
         @if (_currentUser?.Rolle == "Elev")
         {
@@ -360,8 +359,8 @@ else
             StateHasChanged();
         }
     }
-
-    //Skal laves om!
+    
+    
     private async Task TilmeldKursus(KursusKommendeDTO kursus)
     {
         var userDto = new KursusDeltagerListeDTO
@@ -373,8 +372,10 @@ else
 
         await IKursusService.AddStudentToCourse(userDto, kursus.KursusId);
         _kursusModal.Close();
-        _missingCourses = _missingCourses.Where(k => k.Id != _currentMissingCourse.Id).ToList();
-        //_outOfHouse = _outOfHouse.Where(k => k.GoalId != _currentMissingCourse.Id).ToList();
+        _missingCourses = _missingCourses.Where(k => k.GoalId != _currentMissingCourse.GoalId).ToList();
+        _outOfHouse = await IGoalService.GetOutOfHouse(_currentUser.HotelId);
+        StateHasChanged();
+        
     }
 
     private async Task OpenModal(KursusManglendeDTO kursusManglendeDto)

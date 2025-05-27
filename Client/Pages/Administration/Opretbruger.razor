@@ -171,6 +171,8 @@
         
         hoteller = await IHotelService.GetHotels();
         newUser.HotelId = hoteller.Select(x => x.Id).FirstOrDefault();
+
+        
     }
 
     private async Task HandleNewUser()

@@ -22,7 +22,7 @@ namespace Core
         public string Rolle { get; set; }  // "Elev", "HR", etc.
 
         [BsonIgnoreIfNull]
-        public int HotelId { get; set; }
+        public int? HotelId { get; set; }
         [BsonIgnoreIfNull]
         public string HotelNavn { get; set; }
 

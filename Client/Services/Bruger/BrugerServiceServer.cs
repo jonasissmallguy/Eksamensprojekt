@@ -49,9 +49,16 @@ namespace Client
             return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt");
         }
 
-        public async Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int hotelId)
+        public async Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int? hotelId)
         {
-            return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt/{hotelId}");
+            try
+            {
+                return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt/{hotelId}");
+            }
+            catch (HttpRequestException)
+            {
+                return new List<ElevOversigtDTO>();
+            }
         }
 
         public async Task<List<BrugerLoginDTO>> GetAllActiveUsers()

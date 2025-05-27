@@ -19,144 +19,144 @@ else if (alleElever == null)
 else
 {
     <h3>Dashboard</h3>
-        <div class="dashboard-topline">
+    <div class="dashboard-topline">
 
-            <!-- Div med en søgebar, dropdown menuer og knap til eksport af lister -->
-            <div class="searchbar">
-                <TextInput @bind-value="@searchText" Placeholder="Søg ved navn..."></TextInput>
-            </div>
-
-            @if (_currentUser.Rolle == "HR")
-            {
-                <!-- Dropdown til hotelvalg -->
-                <div class="dropdownmenu">
-                    <Dropdown Color="DropdownColor.Secondary">
-                        <DropdownToggleButton>@(selectedHotelId == null ? "Hotel" : GetHotelName(selectedHotelId))</DropdownToggleButton>
-                        <DropdownMenu>
-                            <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
-                            @foreach (var y in alleHoteller)
-                            {
-                                <DropdownItem @onclick="() => SelectHotel(y.Id)">@y.HotelNavn</DropdownItem>
-                            }
-                        </DropdownMenu>
-                    </Dropdown>
-                </div>
-                <!-- Dropdown til regionvalg -->
-                <div class="dropdownmenu">
-                    <Dropdown Color="DropdownColor.Secondary">
-                        <DropdownToggleButton>@(string.IsNullOrEmpty(selectedRegion) ? "Region" : selectedRegion)</DropdownToggleButton>
-                        <DropdownMenu>
-                            <DropdownItem @onclick="() => SelectRegion(String.Empty)">Alle regioner</DropdownItem>
-                            <DropdownItem @onclick="@(() => SelectRegion("Jylland"))">Jylland</DropdownItem>
-                            <DropdownItem @onclick="@(() => SelectRegion("Fyn"))">Fyn</DropdownItem>
-                            <DropdownItem @onclick="@(() => SelectRegion("Sjælland"))">Sjælland</DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
-                </div>
-            }
-            else
-            {
-                <div class="dropdownmenu">
-                    <Dropdown Color="DropdownColor.Secondary">
-                        <DropdownToggleButton>@(GetCurrentUserHotelName())</DropdownToggleButton>
-                    </Dropdown>
-                </div>
-            }
-
-            <!-- Dropdown til rolle -->
-            <div class="dropdownmenu">
-                <Dropdown Color="DropdownColor.Secondary">
-                    <DropdownToggleButton>@(string.IsNullOrEmpty(selectedYear) ? "År" : selectedYear)</DropdownToggleButton>
-                    <DropdownMenu>
-                        <DropdownItem @onclick="() => SelectYear(String.Empty)">Alle år</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectYear("År 1"))">År 1</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectYear("År 2"))">År 2</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectYear("År 3"))">År 3</DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
-            </div>
-
-            <!-- Dropdown til skole -->
-            <div class="dropdownmenu">
-                <Dropdown Color="DropdownColor.Secondary">
-                    <DropdownToggleButton>@(string.IsNullOrEmpty(selectedSkole) ? "Skole" : selectedSkole)</DropdownToggleButton>
-                    <DropdownMenu>
-                        <DropdownItem @onclick="() => SelectSkole(String.Empty)">Alle skoler</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectSkole("Kold Kollege"))">Kold Kollege</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectSkole("EUX Kronjylland"))">EUX Kronjylland</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectSkole("Hansted Kokkeskole"))">Hansted Kokkeskole</DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
-            </div>
-
-            <!-- Dropdown til uddannelse -->
-            <div class="dropdownmenu">
-                <Dropdown Color="DropdownColor.Secondary">
-                    <DropdownToggleButton>@(string.IsNullOrEmpty(selectedUddannelse) ? "Uddannelse" : selectedUddannelse)</DropdownToggleButton>
-                    <DropdownMenu>
-                        <DropdownItem @onclick="() => SelectUddannelse(String.Empty)">Alle uddannelser</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectUddannelse("EUX"))">EUX</DropdownItem>
-                        <DropdownItem @onclick="@(() => SelectUddannelse("Voksenelev"))">Voksenelev</DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
-            </div>
-
-            <!-- Input til startdatofiltrering -->
-            <div class="dropdownmenu">
-                <Dropdown Color="DropdownColor.Secondary">
-                    <DropdownToggleButton>Start</DropdownToggleButton>
-                    <DropdownMenu>
-                        <DropdownItem>
-                            Start før:
-                            <DateInput TValue="DateOnly?" @bind-Value="@selectedSkolestartBefore" Placeholder="Enter Date"/>
-                        </DropdownItem>
-                        <DropdownItem>
-                            Start efter:
-                            <DateInput TValue="DateOnly?" @bind-Value="@selectedSkolestartAfter" Placeholder="Enter Date"/>
-                        </DropdownItem>
-                        <DropdownItem>
-                            <button class="btn btn-primary" @onclick="ResetStartDateFilters">Nulstil</button>
-                        </DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
-            </div>
-
-            <!-- Input til slutdatofiltrering -->
-            <div class="dropdownmenu">
-                <Dropdown Color="DropdownColor.Secondary">
-                    <DropdownToggleButton>Slut</DropdownToggleButton>
-                    <DropdownMenu>
-                        <DropdownItem>
-                            Afslutter før:
-                            <DateInput TValue="DateOnly?" @bind-Value="@selectedSkoleendBefore" Placeholder="Enter Date"/>
-                        </DropdownItem>
-                        <DropdownItem>
-                            Afslutter efter:
-                            <DateInput TValue="DateOnly?" @bind-Value="@selectedSkoleendAfter" Placeholder="Enter Date"/>
-                        </DropdownItem>
-                        <DropdownItem>
-                            <button class="btn btn-primary" @onclick="ResetEndDateFilters">Nulstil</button>
-                        </DropdownItem>
-                    </DropdownMenu>
-                </Dropdown>
-            </div>
-
-            @if (selectedStudentIds.Count == 1 && _currentUser.Rolle == "Køkkenchef")
-            {
-                <!-- Knap til at tilføje et delmål-->
-                <div class="addgoal-button">
-                    <Button class="btn btn-primary" @onclick="OpenModal">Tilføj delmål</Button>
-                </div>
-            }
-            @if (selectedStudentIds.Any() && _currentUser.Rolle == "HR")
-            {
-                <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
-                <div class="export-button">
-                    <Button @onclick="() => SendExcelFile(selectedStudentIds)" class="btn btn-primary">Eksporter fil</Button>
-                </div>
-            }
-
+        <!-- Div med en søgebar, dropdown menuer og knap til eksport af lister -->
+        <div class="searchbar">
+            <TextInput @bind-value="@searchText" Placeholder="Søg ved navn..."></TextInput>
         </div>
+
+        @if (_currentUser.Rolle == "HR")
+        {
+            <!-- Dropdown til hotelvalg -->
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(selectedHotelId == null ? "Hotel" : GetHotelName(selectedHotelId))</DropdownToggleButton>
+                    <DropdownMenu>
+                        <DropdownItem @onclick="() => SelectHotel(null)">Alle hoteller</DropdownItem>
+                        @foreach (var y in alleHoteller)
+                        {
+                            <DropdownItem @onclick="() => SelectHotel(y.Id)">@y.HotelNavn</DropdownItem>
+                        }
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+            <!-- Dropdown til regionvalg -->
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(string.IsNullOrEmpty(selectedRegion) ? "Region" : selectedRegion)</DropdownToggleButton>
+                    <DropdownMenu>
+                        <DropdownItem @onclick="() => SelectRegion(String.Empty)">Alle regioner</DropdownItem>
+                        <DropdownItem @onclick="@(() => SelectRegion("Jylland"))">Jylland</DropdownItem>
+                        <DropdownItem @onclick="@(() => SelectRegion("Fyn"))">Fyn</DropdownItem>
+                        <DropdownItem @onclick="@(() => SelectRegion("Sjælland"))">Sjælland</DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+        }
+        else
+        {
+            <div class="dropdownmenu">
+                <Dropdown Color="DropdownColor.Secondary">
+                    <DropdownToggleButton>@(GetCurrentUserHotelName())</DropdownToggleButton>
+                </Dropdown>
+            </div>
+        }
+
+        <!-- Dropdown til rolle -->
+        <div class="dropdownmenu">
+            <Dropdown Color="DropdownColor.Secondary">
+                <DropdownToggleButton>@(string.IsNullOrEmpty(selectedYear) ? "År" : selectedYear)</DropdownToggleButton>
+                <DropdownMenu>
+                    <DropdownItem @onclick="() => SelectYear(String.Empty)">Alle år</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectYear("År 1"))">År 1</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectYear("År 2"))">År 2</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectYear("År 3"))">År 3</DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+
+        <!-- Dropdown til skole -->
+        <div class="dropdownmenu">
+            <Dropdown Color="DropdownColor.Secondary">
+                <DropdownToggleButton>@(string.IsNullOrEmpty(selectedSkole) ? "Skole" : selectedSkole)</DropdownToggleButton>
+                <DropdownMenu>
+                    <DropdownItem @onclick="() => SelectSkole(String.Empty)">Alle skoler</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectSkole("Kold Kollege"))">Kold Kollege</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectSkole("EUX Kronjylland"))">EUX Kronjylland</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectSkole("Hansted Kokkeskole"))">Hansted Kokkeskole</DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+
+        <!-- Dropdown til uddannelse -->
+        <div class="dropdownmenu">
+            <Dropdown Color="DropdownColor.Secondary">
+                <DropdownToggleButton>@(string.IsNullOrEmpty(selectedUddannelse) ? "Uddannelse" : selectedUddannelse)</DropdownToggleButton>
+                <DropdownMenu>
+                    <DropdownItem @onclick="() => SelectUddannelse(String.Empty)">Alle uddannelser</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectUddannelse("EUX"))">EUX</DropdownItem>
+                    <DropdownItem @onclick="@(() => SelectUddannelse("Voksenelev"))">Voksenelev</DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+
+        <!-- Input til startdatofiltrering -->
+        <div class="dropdownmenu">
+            <Dropdown Color="DropdownColor.Secondary">
+                <DropdownToggleButton>Start</DropdownToggleButton>
+                <DropdownMenu>
+                    <DropdownItem>
+                        Start før:
+                        <DateInput TValue="DateOnly?" @bind-Value="@selectedSkolestartBefore" Placeholder="Enter Date"/>
+                    </DropdownItem>
+                    <DropdownItem>
+                        Start efter:
+                        <DateInput TValue="DateOnly?" @bind-Value="@selectedSkolestartAfter" Placeholder="Enter Date"/>
+                    </DropdownItem>
+                    <DropdownItem>
+                        <button class="btn btn-primary" @onclick="ResetStartDateFilters">Nulstil</button>
+                    </DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+
+        <!-- Input til slutdatofiltrering -->
+        <div class="dropdownmenu">
+            <Dropdown Color="DropdownColor.Secondary">
+                <DropdownToggleButton>Slut</DropdownToggleButton>
+                <DropdownMenu>
+                    <DropdownItem>
+                        Afslutter før:
+                        <DateInput TValue="DateOnly?" @bind-Value="@selectedSkoleendBefore" Placeholder="Enter Date"/>
+                    </DropdownItem>
+                    <DropdownItem>
+                        Afslutter efter:
+                        <DateInput TValue="DateOnly?" @bind-Value="@selectedSkoleendAfter" Placeholder="Enter Date"/>
+                    </DropdownItem>
+                    <DropdownItem>
+                        <button class="btn btn-primary" @onclick="ResetEndDateFilters">Nulstil</button>
+                    </DropdownItem>
+                </DropdownMenu>
+            </Dropdown>
+        </div>
+
+        @if (selectedStudentIds.Count == 1 && _currentUser.Rolle == "Køkkenchef")
+        {
+            <!-- Knap til at tilføje et delmål-->
+            <div class="addgoal-button">
+                <Button class="btn btn-primary" @onclick="OpenModal">Tilføj delmål</Button>
+            </div>
+        }
+        @if (selectedStudentIds.Any() && _currentUser.Rolle == "HR")
+        {
+            <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
+            <div class="export-button">
+                <Button @onclick="() => SendExcelFile(selectedStudentIds)" class="btn btn-primary">Eksporter fil</Button>
+            </div>
+        }
+
+    </div>
 
         <!-- Tabel som laver en ny række for hver elev som indeholder navn, rolle og hotel. -->
         <table>
@@ -198,17 +198,17 @@ else
                     <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.StartDate</td>
                     <td @onclick="@(() => NavigateToElevPlan(x.Id))">@x.EndDate</td>
 
-                </tr>
-            }
-        </table>
+            </tr>
         }
-        <TilføjDelmålComponent @ref="addGoalModalRef"
-                               StudentId="@selectedStudentIds.FirstOrDefault()"
-                               ElevPlan="@elevPlan"
-                               OnGoalAdded="@OnGoalAdded"
-                               ShowSchoolSection="true"
-                               WorkInMemory="false"/>
-}
+    </table>
+
+    <TilføjDelmålComponent @ref="addGoalModalRef"
+                           StudentId="@selectedStudentIds.FirstOrDefault()"
+                           ElevPlan="@elevPlan"
+                           OnGoalAdded="@OnGoalAdded"
+                           ShowSchoolSection="true"
+                           WorkInMemory="false"/>
+
 }
 
 @code {
