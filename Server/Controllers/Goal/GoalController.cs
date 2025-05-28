@@ -554,7 +554,41 @@ namespace Server
             return Ok(result);
         }
         
+                
+        /// <summary>
+        /// Finder alle studerende, der mangler et kursus
+        /// </summary>
+        /// <param name="kursusCode"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("allstudents/{kursusCode}")]
+        public async Task<IActionResult> GetAllStudentsWithCourse(string kursusCode)
+        {
+            if (string.IsNullOrWhiteSpace(kursusCode))
+            {
+                return BadRequest("Kursus koden er blank");
+            }
+            
+            List<KursusDeltagerListeDTO> students = new();
+            var users = await _goalRepository.GetAllStudentsMissingCourse(kursusCode);
+            
+            foreach (var user in users)
+            {
+                students.Add(new KursusDeltagerListeDTO
+                {
+                    Id = user.Id,
+                    Hotel = user.HotelNavn,
+                    Navn = user.FirstName + "  " + user.LastName
+                });
+            }
+
+            return Ok(students);
+        }
+
+        
         
     }
+    
+    
 
 }

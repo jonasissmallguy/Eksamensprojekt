@@ -28,8 +28,9 @@ namespace Client
         Task<List<GoalNeedActionDTO>> GetNeedActionGoals(int elevId); 
         Task<List<FutureSchoolDTO>> GetFutureSchools(int? elevId);
         Task<List<OutOfHouseDTO>> GetOutOfHouse(int? hotelId); 
-        Task<List<StartedGoalsDTO>> GetStartedGoals(int? hotelId); 
-        
+        Task<List<StartedGoalsDTO>> GetStartedGoals(int? hotelId);
+        Task<List<KursusDeltagerListeDTO>> GetAllStudentsMissingCourse(string courseCode);
+
     }
 
 }

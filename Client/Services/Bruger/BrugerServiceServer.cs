@@ -162,7 +162,7 @@ namespace Client
         {
             try
             {
-                var result = await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents/{courseCode}");
+                var result = await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"goals/allstudents/{courseCode}");
                 
                 return result ?? new List<KursusDeltagerListeDTO>();
                 

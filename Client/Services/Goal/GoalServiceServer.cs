@@ -203,6 +203,23 @@ namespace Client
             
         }
         
+        public async Task<List<KursusDeltagerListeDTO>> GetAllStudentsMissingCourse(string courseCode)
+        {
+            try
+            {
+                var result = await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"goals/allstudents/{courseCode}");
+                
+                return result ?? new List<KursusDeltagerListeDTO>();
+                
+            }
+
+            catch (HttpRequestException)
+            {
+                return new List<KursusDeltagerListeDTO>();
+            }
+            
+        }
+        
         
     }
 }

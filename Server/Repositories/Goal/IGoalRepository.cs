@@ -50,6 +50,8 @@ namespace Server
         Task<List<User>> GetOutOfHouse(int hotelId);
         //Retunerer en liste af mål hvor type = Delmål og Status = InProgress
         Task<List<User>> GetStartedGoals(int hotelId);
+        //Retunerer alle elever hvor kursusCode = CourseCode, Type = Kursus og Status = Active
+        Task<List<User>> GetAllStudentsMissingCourse(string kursusCode);
     }
 
 

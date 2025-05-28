@@ -77,6 +77,11 @@ namespace Client
             throw new NotImplementedException();
         }
 
+        public Task<List<KursusDeltagerListeDTO>> GetAllStudentsMissingCourse(string courseCode)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<List<FutureSchoolDTO>> GetFutureSchools(int elevId)
         {
             throw new NotImplementedException();
