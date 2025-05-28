@@ -658,12 +658,12 @@ namespace Server
 
             //Indhold
             var subject = "Nulstilling af Comwell adgangskode";
-            var plainTextContent =
-                $"Opret din nye adgangskode\t\n\t\t\n\t" +
-                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
-                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
-                $"{verificeringsKode}" +
-                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
+            var plainTextContent = 
+                "Opret din nye adgangskode\n\n" +
+                "Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil.\n\n" +
+                "Du skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\n" +
+                $"{verificeringsKode}\n\n" +
+                "Har du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.";
 
             var htmlContent = $"{verificeringsKode}";
 

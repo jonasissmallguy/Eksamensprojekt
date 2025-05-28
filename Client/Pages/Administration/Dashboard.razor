@@ -151,8 +151,8 @@ else
         @if (selectedStudentIds.Any() && _currentUser.Rolle == "HR")
         {
             
-            <scan style="color: red">@_failedMailSent</scan>
-            <scan style="color: green">@_sucessMailSent</scan>
+            <span style="color: red">@_failedMailSent</span>
+            <span style="color: green">@_sucessMailSent</span>
        
             <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
             <div class="export-button">

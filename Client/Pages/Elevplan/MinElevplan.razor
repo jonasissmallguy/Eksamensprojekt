@@ -1,15 +1,17 @@
-﻿@using Core
+﻿
+@using Core
 @using Client.Components.Elevoversigt
 
 
 @inject IBruger IBrugerService;
 @inject NavigationManager navMan;
 @inject IGoal IGoalService;
+@inject IAuth IAuthService;
 
 @page "/minelevplan/{studentId:int}"
 
 <div class="page-wrapper">
-    <scan style="color: red">@_errorMessage</scan>
+    <span style="color: red">@_errorMessage</span>
     @if (elev != null)
     {
         <div class="bio">
@@ -76,6 +78,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+
+        _currentUser = await IAuthService.GetBruger();
+        
         if (_currentUser == null)
         {
             navMan.NavigateTo($"login/minelevplan/{studentId}");
@@ -84,7 +89,7 @@
 
         try
         {
-            elev = await IBrugerService.GetBrugerById(99);
+            elev = await IBrugerService.GetBrugerById(studentId);
             elevPlan = elev.ElevPlan;
 
             //Hener vores mål for goal progress

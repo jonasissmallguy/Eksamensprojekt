@@ -1,4 +1,6 @@
-﻿    using MongoDB.Bson;
+﻿    using System.ComponentModel.DataAnnotations;
+    using Microsoft.VisualBasic;
+    using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Core
@@ -9,12 +11,15 @@ namespace Core
         [BsonRepresentation(BsonType.Int32)]
         public int Id { get; set; }
         
+        [Required(ErrorMessage = "Venligst vælg et forløb")]
         public int ForløbId { get; set; }
         
         public int PlanId { get; set; }
   
         public string? Type { get; set; }
+
         public string Title { get; set; }
+   
         public string Description { get; set; }
         public string? Status { get; set; } = "Active";
 

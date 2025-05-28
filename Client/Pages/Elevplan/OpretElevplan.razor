@@ -20,6 +20,8 @@ else
     {
         <h4>Elevplan for @elev.FirstName @elev.LastName</h4>
         
+        <span style="color: red">@errorText</span>
+
         <ElevplanComponent Plan="@nyElevPlan"ShowSubmitButton="true"ShowComments="false" 
                            OnDelteClicked="HandleDeleteGoal" OnSubmitClicked="HandleElevplanSubmit" />
 
@@ -39,7 +41,7 @@ else
     }
     else
     {
-        <scan style="color: red">@errorText</scan>
+        <span style="color: red">@errorText</span>
     }
 }
 
@@ -53,10 +55,10 @@ else
     
     //Elevens id
     [Parameter] public int studentId { get; set; }
-    
-    private Plan nyElevPlan = new();
-    
-    private User elev = new();
+
+    private Plan nyElevPlan;
+
+    private User elev;
     
     private TilføjDelmålComponent addGoalModalRef;
     
@@ -80,19 +82,16 @@ else
         {
             navMan.NavigateTo("dashboard");
         }
-        
-        elev = await IBrugerService.GetBrugerById(studentId);
 
-        if (elev == null)
+        try
         {
-            errorText = "Kunne ikke finde brugeren";
+            elev = await IBrugerService.GetBrugerById(studentId);
+            nyElevPlan = await IElevPlanService.GetElevPlanTemplate(studentId);
         }
-        
-        nyElevPlan = await IElevPlanService.GetElevPlanTemplate(studentId);
 
-        if (nyElevPlan == null)
+        catch (Exception e)
         {
-            errorText = "Kunne ikke finde template, prøv venligst igen";
+            errorText = e.Message;
         }
         
         _loading = false;
@@ -120,6 +119,7 @@ else
         {
             forløb.Goals.Add(newGoal);
         }
+        
         StateHasChanged();
     }
     
@@ -132,6 +132,8 @@ else
         if (!result)
         {
             errorText = "Kunne ikke gemme elevplan, prøv venligst igen";
+            _addingPlan = false;
+            return;
         }
         navMan.NavigateTo("/dashboard");
         

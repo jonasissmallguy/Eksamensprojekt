@@ -241,7 +241,6 @@ namespace Server
                 return null;
 
             var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
-            //Skal dette laves om - herunder?
             var goal = user?.ElevPlan?.Forløbs?
                 .FirstOrDefault(f => f.Id == mentor.ForløbId)?
                 .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);

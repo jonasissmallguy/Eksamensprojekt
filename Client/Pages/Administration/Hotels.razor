@@ -16,7 +16,7 @@
             <EditForm Model="newHotel" OnSubmit="@HandleNewHotel">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-                <scan style="color: red">@errorText</scan>
+                <span style="color: red">@errorText</span>
                 <div class="form-group">
                     <label class="form-label required-field">Hotel navn</label>
                     <InputText class="form-control" @bind-Value="newHotel.HotelNavn" placeholder="Indtast hotelnavn" />

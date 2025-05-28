@@ -29,7 +29,8 @@ namespace Client
    
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Kunne ikke tilføje målet");
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception(message);
             }
             return true;
         }
@@ -40,7 +41,8 @@ namespace Client
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Kunne ikke opdatere skoleopholdet korrekt");
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception(message);
             }
             return true;
         }

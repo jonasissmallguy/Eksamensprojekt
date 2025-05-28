@@ -61,7 +61,7 @@ namespace Server
             
             if (template == null)
             {
-                return NotFound("Kunne ikke finde skabelonen");  
+                return NotFound("Kunne ikke finde template, prøv venligst igen");  
             }
 
             var nyPlan = new Plan
@@ -127,7 +127,7 @@ namespace Server
             
             var elevplan = await _elevplanRepository.SaveElevplan(studentId, plan);
 
-            if (elevplan.MatchedCount == 0)
+            if (elevplan.MatchedCount == 0) 
             {
                 return NotFound();
             }

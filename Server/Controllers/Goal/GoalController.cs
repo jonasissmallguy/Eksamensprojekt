@@ -55,16 +55,35 @@ namespace Server
         [Route("{studentId}/{planId}/{forløbId}")]
         public async Task<IActionResult> AddGoal(int studentId, int planId, int forløbId, [FromBody] Goal newGoal)
         {
-            if (newGoal == null || studentId <= 0 || newGoal.PlanId <= 0 || newGoal.ForløbId <= 0)
+            if (newGoal == null || studentId <= 0 || newGoal.PlanId <= 0)
             {
                 return BadRequest("Mangler påkrævede felter");
             }
 
+            if (newGoal.ForløbId <= 0)
+            {
+                return BadRequest("Venligst vælg et forløb");
+            }
+            
+            //Validering af tilføjelse af nyt delmål
+            if (newGoal.Type == "Delmål")
+            {
+                if (string.IsNullOrWhiteSpace(newGoal.Title))
+                {
+                    return BadRequest("Venligst indtast en titel");
+                }
+
+                if (string.IsNullOrWhiteSpace(newGoal.Description))
+                {
+                    return BadRequest("Venligst indtast en beskrivelse");
+                }
+            }
+            
             var add = await _goalRepository.AddGoal(studentId, forløbId, newGoal);
 
             if (!add)
             {
-                return BadRequest("Kunne ikke tilføje goalet");
+                return BadRequest("Kunne ikke tilføje goalet  ");
             }
             return Ok();
         }
@@ -83,6 +102,22 @@ namespace Server
             {
                 return BadRequest("Input er forkert");
             }
+
+            if (!goal.StartDate.HasValue || !goal.EndDate.HasValue)
+            {
+                return BadRequest("Start- og slutdato skal udfyldes.");
+            }
+
+            if (goal.StartDate > goal.EndDate)
+            {
+                return BadRequest("Mismatch i start og slutdato");
+            }
+
+            if (string.IsNullOrWhiteSpace(goal.SkoleNavn))
+            {
+                return BadRequest("Skolenavn skal være udfyldt");
+            }
+            
             
             var updateResult = await _goalRepository.UpdateSchoolWithDate(goal, studentId);
 
@@ -520,7 +555,7 @@ namespace Server
 
             if (!forløbs.Any())
             {
-                return NotFound("Kunne ikke hente brugerdata");
+                    return NotFound("Kunne ikke hente goalprogress");
             }
 
             var result = new List<GoalProgessDTO>();

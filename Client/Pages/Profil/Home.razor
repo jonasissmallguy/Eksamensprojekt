@@ -230,8 +230,11 @@ else
                     </div>    
             </div>
             
+            
             <div class="dashboard-card">
                 <h5 class="card-title">Afventende godkendelser</h5>
+                <span style="color: red">@_deleteError</span>
+
                 @if (_missingApproval != null)
                 {
                     <div class="table-container">
@@ -307,6 +310,8 @@ else
     //Indeholder kurset man ønsker at tilmelde
     private KursusManglendeDTO? _currentMissingCourse;
     
+    //Delegoalerror message
+    private string _deleteError = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -368,12 +373,20 @@ else
     
     private async Task ConfirmGoal(StartedGoalsDTO goalDto)
     {
-        var success = await IGoalService.ConfirmGoal(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
 
-        if (goalDto != null)
+        try
         {
-            _missingApproval = _missingApproval.Where(g => g.GoalId != goalDto.GoalId).ToList();
-            StateHasChanged();
+            var success = await IGoalService.ConfirmGoal(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
+
+            if (goalDto != null)
+            {
+                _missingApproval = _missingApproval.Where(g => g.GoalId != goalDto.GoalId).ToList();
+                StateHasChanged();
+            }
+        }
+        catch (Exception e)
+        {
+            _deleteError = e.Message;
         }
     }
     
