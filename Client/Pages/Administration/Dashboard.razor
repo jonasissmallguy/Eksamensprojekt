@@ -150,6 +150,10 @@ else
         }
         @if (selectedStudentIds.Any() && _currentUser.Rolle == "HR")
         {
+            
+            <scan style="color: red">@_failedMailSent</scan>
+            <scan style="color: green">@_sucessMailSent</scan>
+       
             <!-- Knap til eksport af elevoversigt. Fordi det er i en div skal hele diven have en class for at rykke til højre -->
             <div class="export-button">
                 <Button @onclick="() => SendExcelFile(selectedStudentIds)" class="btn btn-primary">Eksporter fil</Button>
@@ -228,6 +232,12 @@ else
     
     // En variabel som gemmer det der bliver tastet ind i søgebaren
     private string searchText = string.Empty;
+    
+    //Success mail sent
+    private string _sucessMailSent;
+    
+    //Failed mail sent
+    private string _failedMailSent;
 
     //Variabler der sættes ved filtering
     private string selectedYear = String.Empty;
@@ -397,9 +407,15 @@ else
     //Sender mail med excelfil over valgte elever 
     private async Task SendExcelFile(HashSet<int> hashSet)
     {
-       await IBrugerService.SendEmail(hashSet, _currentUser.Email);
+        var result = await IBrugerService.SendEmail(hashSet, _currentUser.Email);
+
+        if (!result)
+        {
+            _failedMailSent = "Kunne ikke sende mail";
+        }
+        _sucessMailSent = "Mail sendt";
     }
-    
+
     private async Task OpenModal()
     {
         var elevId = selectedStudentIds.FirstOrDefault();

@@ -520,7 +520,7 @@ namespace Server
 
             if (!forløbs.Any())
             {
-                return NotFound("Kunne ikke finde nogen forløb");
+                return NotFound("Kunne ikke hente brugerdata");
             }
 
             var result = new List<GoalProgessDTO>();

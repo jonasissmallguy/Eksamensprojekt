@@ -16,8 +16,8 @@ namespace Server
         Task<UpdateResult> UpdateHotelChef(Hotel hotel);
         //Fjerner en køkkenchef fra Hotel hvor køkkenChefId = KøkkenChefId
         Task<UpdateResult> RemoveChefFromHotel(int køkkenChefId);
+        Task<bool> CheckUnique(string hotelNavn);
         
-
     }
 
 }

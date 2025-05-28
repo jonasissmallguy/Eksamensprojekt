@@ -3,6 +3,7 @@
 @using Core.DTO.Kursus
 
 @inject IKursus IKursusService;
+@inject IAuth IAuthService;
 @inject NavigationManager navMan;
 
 @page "/kursusoversigt"
@@ -10,7 +11,7 @@
 
 <button @onclick="AddCourse">Tilføj kursus</button>
 
-@if (!string.IsNullOrEmpty(errorText))
+@if (!string.IsNullOrEmpty(errorText))  
 {
     <span style="color: red">@errorText</span>
 }
@@ -44,11 +45,11 @@
     </table>
 }
 
-<ModalDialog @ref="_modalKursus">
-    <EditForm Model="newCourse" OnValidSubmit="SaveCourse">
+<ModalDialog @ref="_modalKursus" Title="Tilføj kursus">
+    <EditForm Model="newCourse" OnSubmit="SaveCourse">
         <DataAnnotationsValidator />
         <ValidationSummary />
-        
+        <span style="color: red">@errorTextModal</span>
         <div class="form-group mb-3">
             <label for="courseSelect">Vælg kursus:</label>
             <InputSelect class="form-select" @bind-Value="newCourse.TemplateId">
@@ -114,10 +115,17 @@
     //Indeholder alle vores kursustemplates
     private List<KursusTemplate> CoursesTemplates;
     
+    //Kursus
+    private Kursus _kursus;
+    
     string errorText = "";
+    string errorTextModal = "";
+
     
     protected override async Task OnInitializedAsync()
     {
+        _currentUser = await IAuthService.GetBruger();
+        
         if (_currentUser == null)
         {
             navMan.NavigateTo("login/kursusoversigt");
@@ -164,15 +172,24 @@
             newCourse.CourseCode = selected.CourseCode;
         }
 
-        var kursus = await IKursusService.SaveCourse(newCourse);
-
-        if (kursus == null)
+        try
         {
-            errorText = "Kunne ikke gemme kursus, prøv venligst igen";
+            var _kursus = await IKursusService.SaveCourse(newCourse);
+            alleKurser.Add(_kursus);
+            _modalKursus.Close();      
         }
-        
-        alleKurser.Add(kursus);
-        _modalKursus.Close();
+
+        catch (Exception e)
+        {
+            if (e.Message.Contains("Mismatch"))
+            {
+                errorTextModal = "Mistmatch i start og slut dato";
+            }
+            else
+            {
+            errorTextModal = e.Message;
+            }
+        }
     }
 
     private void NavigateToCourse(int kursusId)

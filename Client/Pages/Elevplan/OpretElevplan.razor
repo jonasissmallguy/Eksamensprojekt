@@ -81,18 +81,18 @@ else
             navMan.NavigateTo("dashboard");
         }
         
-        elev = await IBrugerService.GetBrugerById(99);
+        elev = await IBrugerService.GetBrugerById(studentId);
 
         if (elev == null)
         {
-            errorText = "Kunen ikke finde brugeren";
+            errorText = "Kunne ikke finde brugeren";
         }
         
         nyElevPlan = await IElevPlanService.GetElevPlanTemplate(studentId);
 
         if (nyElevPlan == null)
         {
-            errorText = "En fejl opstod, venglist prøv igen";
+            errorText = "Kunne ikke finde template, prøv venligst igen";
         }
         
         _loading = false;

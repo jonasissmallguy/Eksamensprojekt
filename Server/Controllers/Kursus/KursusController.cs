@@ -147,6 +147,12 @@ namespace Server
                 return BadRequest("Kursus objektet er ikke korrekt");
             }
             
+            //Validering
+            if (kursus.StartDate > kursus.EndDate)
+            {
+                return Conflict("Mismatch i start og slutdato");
+            }
+            
             var kursusModel = new Kursus
             {
                 CourseCode = kursus.CourseCode,

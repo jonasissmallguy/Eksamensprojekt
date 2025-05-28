@@ -31,11 +31,12 @@ namespace Client
 
         public async Task CreateHotel(HotelCreationDTO newHotel)
         { 
-            var hotel = await _client.PostAsJsonAsync($"hotels", newHotel);
+            var response = await _client.PostAsJsonAsync($"hotels", newHotel);
 
-            if (!hotel.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Kunne ikke oprette et hotel, prøv venligst igen");
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception(message);
             }
         }
     }

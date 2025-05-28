@@ -4,6 +4,7 @@
 @inject IBruger IBrugerService;
 @inject IHotel IHotelService;
 @inject NavigationManager navMan;
+@inject IAuth IAuthService;
 
 @page "/brugeradministration"
 <h3>Bruger administration</h3>
@@ -133,6 +134,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        
+        _currentUser = await IAuthService.GetBruger();
+        
         if (_currentUser == null)
         {
             navMan.NavigateTo("login/brugeradministration");

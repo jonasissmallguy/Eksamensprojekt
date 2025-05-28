@@ -9,7 +9,7 @@
 @page "/minelevplan/{studentId:int}"
 
 <div class="page-wrapper">
-    
+    <scan style="color: red">@_errorMessage</scan>
     @if (elev != null)
     {
         <div class="bio">
@@ -47,19 +47,15 @@
         }
         else if (elev != null && _currentUser.Rolle == "Køkkenchef")
         {
-            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal" OnConfirmSchool="ConfirmSchool"/>
+            <ElevplanComponent Plan="@elevPlan" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal" OnConfirmSchool="ConfirmSchool"/>
         }
         else if (elev != null && _currentUser.Rolle == "Kok")
         {
-            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
+            <ElevplanComponent Plan="@elevPlan" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart" OnProcessGoal="ConfirmGoal"/>
         }
         else if (elev != null && _currentUser.Rolle == "Elev")
         {
-            <ElevplanComponent Plan="@elevPlan"  ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart"/>
-        }
-        else
-        {
-            <p>..Loading</p>
+            <ElevplanComponent Plan="@elevPlan" ShowSubmitButton="false" ShowComments="true" OnAddCommentClick="AddComment" StartGoal="true" OnStartGoal="HandlingGoalStart"/>
         }
     </div>
 </div>
@@ -73,6 +69,9 @@
     
     //Alle mål fordelt på år / progress
     private List<GoalProgessDTO> goalList;
+    
+    //Error besked 
+    private string _errorMessage = "";
 
 
     protected override async Task OnInitializedAsync()
@@ -82,13 +81,19 @@
             navMan.NavigateTo($"login/minelevplan/{studentId}");
             return;
         }
-        
-        elev = await IBrugerService.GetBrugerById(studentId);
-        elevPlan = elev.ElevPlan;
-        
-        //Hener vores mål for goal progress
-        goalList = await IGoalService.GoalProgess(studentId);
 
+        try
+        {
+            elev = await IBrugerService.GetBrugerById(99);
+            elevPlan = elev.ElevPlan;
+
+            //Hener vores mål for goal progress
+            goalList = await IGoalService.GoalProgess(studentId);
+        }
+        catch (Exception e)
+        {
+            _errorMessage = e.Message;
+        }
     }
 
     private async Task AddComment(NewComment comment)

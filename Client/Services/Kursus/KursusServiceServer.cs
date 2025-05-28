@@ -1,6 +1,7 @@
 ﻿using Core;
 using System.Net.Http.Json;
 using Core.DTO.Kursus;
+using SendGrid;
 
 namespace Client
 {
@@ -45,7 +46,8 @@ namespace Client
 
              if (!result.IsSuccessStatusCode)
              {
-                 return null;
+                 var message = await result.Content.ReadAsStringAsync();
+                 throw new Exception(message);
              }
              return await result.Content.ReadFromJsonAsync<Kursus>();
         }

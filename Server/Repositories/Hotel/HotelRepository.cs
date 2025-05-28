@@ -78,6 +78,17 @@ namespace Server
             
             return await _hotelCollection.UpdateOneAsync(filter, update);
         }
+
+        public async Task<bool> CheckUnique(string hotelNavn)
+        {
+            var filter = Builders<Hotel>.Filter.Eq("HotelNavn", hotelNavn);
+
+            if (_hotelCollection.Find(filter).Any())
+            {
+                return false;
+            }
+            return true;
+        }
     }
 
 }

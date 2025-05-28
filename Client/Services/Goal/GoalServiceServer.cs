@@ -93,7 +93,15 @@ namespace Client
 
         public async Task<List<GoalProgessDTO>> GoalProgess(int studentId)
         {
-            return await _client.GetFromJsonAsync<List<GoalProgessDTO>>($"goals/progress/{studentId}");
+            try
+            {
+                var result = await _client.GetFromJsonAsync<List<GoalProgessDTO>>($"goals/progress/{studentId}");
+                return result ?? new List<GoalProgessDTO>();
+            }
+            catch (HttpRequestException)
+            {
+                return new List<GoalProgessDTO>();
+            }
         }
 
         public async Task<Comment> AddComment(NewComment comment)

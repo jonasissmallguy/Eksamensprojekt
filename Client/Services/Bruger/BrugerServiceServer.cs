@@ -22,7 +22,8 @@ namespace Client
 
             if (!result.IsSuccessStatusCode)
             {
-                return null;
+                var message = await result.Content.ReadAsStringAsync();
+                throw new Exception(message);
             }
             
             var user = await result.Content.ReadFromJsonAsync<User>();
