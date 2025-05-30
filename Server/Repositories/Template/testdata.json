@@ -187,7 +187,6 @@
       "Title": "Interne kurser",
       "Goals": [
         { "_id": 73, "Type": "Kursus", "Title": "Førstehjælpskursus", "Description": "Obligatorisk førstehjælpskursus", "CourseCode": "COMWELL_FIRSTAID_004" },
-        { "_id": 75, "Type": "Kursus", "Title": "Elev-ERFA", "Description": "Kun for udvalgte", "CourseCode": "COMWELL_ERFA_005" },
         { "_id": 76, "Type": "Kursus", "Title": "Green chef", "Description": "Hvordan man er en bæredygtig kok", "CourseCode": "COMWELL_GREENCHEF_006" }
       ]
     },

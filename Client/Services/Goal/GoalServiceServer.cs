@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Client.Components.Elevoversigt;
 using Core;
 
 namespace Client
@@ -30,7 +29,8 @@ namespace Client
    
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Kunne ikke tilføje målet");
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception(message);
             }
             return true;
         }
@@ -41,7 +41,8 @@ namespace Client
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Kunne ikke opdatere skoleopholdet korrekt");
+                var message = await response.Content.ReadAsStringAsync();
+                throw new Exception(message);
             }
             return true;
         }
@@ -94,7 +95,15 @@ namespace Client
 
         public async Task<List<GoalProgessDTO>> GoalProgess(int studentId)
         {
-            return await _client.GetFromJsonAsync<List<GoalProgessDTO>>($"goals/progress/{studentId}");
+            try
+            {
+                var result = await _client.GetFromJsonAsync<List<GoalProgessDTO>>($"goals/progress/{studentId}");
+                return result ?? new List<GoalProgessDTO>();
+            }
+            catch (HttpRequestException)
+            {
+                return new List<GoalProgessDTO>();
+            }
         }
 
         public async Task<Comment> AddComment(NewComment comment)
@@ -117,7 +126,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/awaiting-approval/{hotelId}");
+                var result = await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/awaiting-approval/{hotelId}");
+                
+                return result ?? new List<StartedGoalsDTO>();
+                
             }
             catch (HttpRequestException)
             {
@@ -129,7 +141,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<KursusManglendeDTO>>($"goals/missing-courses/{hotelId}");
+                var result = await _client.GetFromJsonAsync<List<KursusManglendeDTO>>($"goals/missing-courses/{hotelId}");
+                
+                return result ?? new List<KursusManglendeDTO>();
+                
             }
             catch (HttpRequestException)
             {
@@ -141,7 +156,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"goals/need-action-goals/{elevId}");
+                var response = await _client.GetFromJsonAsync<List<GoalNeedActionDTO>>($"goals/need-action-goals/{elevId}");
+                
+                return response ?? new List<GoalNeedActionDTO>();
+                
             }
             catch (HttpRequestException)
             {
@@ -153,7 +171,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"goals/future-schools/{elevId}");
+                var result = await _client.GetFromJsonAsync<List<FutureSchoolDTO>>($"goals/future-schools/{elevId}");
+                
+                return result ?? new List<FutureSchoolDTO>();
+                
             }
             catch (HttpRequestException)
             {
@@ -165,7 +186,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"goals/outofhouse/{hotelId}");
+                var result = await _client.GetFromJsonAsync<List<OutOfHouseDTO>>($"goals/outofhouse/{hotelId}");
+                
+                return result ?? new List<OutOfHouseDTO>();
+                
             }
             catch (HttpRequestException)
             {
@@ -177,12 +201,31 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/started-goals/{hotelId}");
-
+                var result = await _client.GetFromJsonAsync<List<StartedGoalsDTO>>($"goals/started-goals/{hotelId}");
+                
+                return result ?? new List<StartedGoalsDTO>();
+                
             }
             catch (HttpRequestException)
             {
                 return new List<StartedGoalsDTO>();
+            }
+            
+        }
+        
+        public async Task<List<KursusDeltagerListeDTO>> GetAllStudentsMissingCourse(string courseCode)
+        {
+            try
+            {
+                var result = await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"goals/allstudents/{courseCode}");
+                
+                return result ?? new List<KursusDeltagerListeDTO>();
+                
+            }
+
+            catch (HttpRequestException)
+            {
+                return new List<KursusDeltagerListeDTO>();
             }
             
         }

@@ -55,16 +55,35 @@ namespace Server
         [Route("{studentId}/{planId}/{forløbId}")]
         public async Task<IActionResult> AddGoal(int studentId, int planId, int forløbId, [FromBody] Goal newGoal)
         {
-            if (newGoal == null || studentId <= 0 || newGoal.PlanId <= 0 || newGoal.ForløbId <= 0)
+            if (newGoal == null || studentId <= 0 || newGoal.PlanId <= 0)
             {
                 return BadRequest("Mangler påkrævede felter");
             }
 
+            if (newGoal.ForløbId <= 0)
+            {
+                return BadRequest("Venligst vælg et forløb");
+            }
+            
+            //Validering af tilføjelse af nyt delmål
+            if (newGoal.Type == "Delmål")
+            {
+                if (string.IsNullOrWhiteSpace(newGoal.Title))
+                {
+                    return BadRequest("Venligst indtast en titel");
+                }
+
+                if (string.IsNullOrWhiteSpace(newGoal.Description))
+                {
+                    return BadRequest("Venligst indtast en beskrivelse");
+                }
+            }
+            
             var add = await _goalRepository.AddGoal(studentId, forløbId, newGoal);
 
             if (!add)
             {
-                return BadRequest("Kunne ikke tilføje goalet");
+                return BadRequest("Kunne ikke tilføje goalet  ");
             }
             return Ok();
         }
@@ -83,6 +102,22 @@ namespace Server
             {
                 return BadRequest("Input er forkert");
             }
+
+            if (!goal.StartDate.HasValue || !goal.EndDate.HasValue)
+            {
+                return BadRequest("Start- og slutdato skal udfyldes.");
+            }
+
+            if (goal.StartDate > goal.EndDate)
+            {
+                return BadRequest("Mismatch i start og slutdato");
+            }
+
+            if (string.IsNullOrWhiteSpace(goal.SkoleNavn))
+            {
+                return BadRequest("Skolenavn skal være udfyldt");
+            }
+            
             
             var updateResult = await _goalRepository.UpdateSchoolWithDate(goal, studentId);
 
@@ -139,7 +174,7 @@ namespace Server
         /// Finder alle mål for en elev med type = delmål , der har statusen InProgress eller AwaitingApproval
         /// </summary>
         /// <param name="elevId"></param>
-        /// <returns>Liste med GoalNeedActionDTO</returns>
+        /// <returns>Liste med GoalNeedActionDTO</returns> 
         [HttpGet]
         [Route("need-action-goals/{elevId}")]
         public async Task<IActionResult> NeedActionGoals(int elevId)
@@ -150,11 +185,6 @@ namespace Server
             }
             
             var users = await _goalRepository.GetActionGoals(elevId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever");
-            }
 
             var result = new List<GoalNeedActionDTO>();
 
@@ -200,11 +230,7 @@ namespace Server
             }
             
             var users = await _goalRepository.GetAwaitingApproval(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen hotel");
-            }
+            
 
             var result = new List<StartedGoalsDTO>();
 
@@ -251,11 +277,6 @@ namespace Server
             }
             
             var users = await _goalRepository.GetStartedGoals(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen mål for hotellet");
-            }
             
             var result = new List<StartedGoalsDTO>();
 
@@ -300,12 +321,7 @@ namespace Server
             }
             
             var users = await _goalRepository.GetMissingCourses(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde manglende kurser for elverne på dette hotel");
-            }
-
+            
             var result = new List<KursusManglendeDTO>();
 
             foreach (var user in users)
@@ -355,11 +371,6 @@ namespace Server
             }
             
             var users = await _goalRepository.GetOutOfHouse(hotelId);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen delmål med typen kursus eller skoleophold med status InProgress");
-            }
             
             var result = new List<OutOfHouseDTO>();
 
@@ -411,9 +422,6 @@ namespace Server
                 return BadRequest("Forkert elevId");
 
             var goals = await _goalRepository.GetFutureSchools(elevId);
-            
-            if (!goals.Any())
-                return NotFound("Kunne ikke finde nogen kommende skoleophold");
 
             List<FutureSchoolDTO> futureSchools = new ();
             
@@ -547,7 +555,7 @@ namespace Server
 
             if (!forløbs.Any())
             {
-                return NotFound("Kunne ikke finde nogen forløb");
+                    return NotFound("Kunne ikke hente goalprogress");
             }
 
             var result = new List<GoalProgessDTO>();
@@ -581,7 +589,41 @@ namespace Server
             return Ok(result);
         }
         
+                
+        /// <summary>
+        /// Finder alle studerende, der mangler et kursus
+        /// </summary>
+        /// <param name="kursusCode"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("allstudents/{kursusCode}")]
+        public async Task<IActionResult> GetAllStudentsWithCourse(string kursusCode)
+        {
+            if (string.IsNullOrWhiteSpace(kursusCode))
+            {
+                return BadRequest("Kursus koden er blank");
+            }
+            
+            List<KursusDeltagerListeDTO> students = new();
+            var users = await _goalRepository.GetAllStudentsMissingCourse(kursusCode);
+            
+            foreach (var user in users)
+            {
+                students.Add(new KursusDeltagerListeDTO
+                {
+                    Id = user.Id,
+                    Hotel = user.HotelNavn,
+                    Navn = user.FirstName + "  " + user.LastName
+                });
+            }
+
+            return Ok(students);
+        }
+
+        
         
     }
+    
+    
 
 }

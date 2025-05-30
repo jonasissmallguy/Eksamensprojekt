@@ -22,7 +22,8 @@ namespace Client
 
             if (!result.IsSuccessStatusCode)
             {
-                return null;
+                var message = await result.Content.ReadAsStringAsync();
+                throw new Exception(message);
             }
             
             var user = await result.Content.ReadFromJsonAsync<User>();
@@ -46,14 +47,28 @@ namespace Client
         
         public async Task<List<ElevOversigtDTO>> GetElevOversigt()
         {
-            return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt");
+
+            try
+            {
+                var result = await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt");
+                return result ?? new List<ElevOversigtDTO>();
+            }
+            
+            catch (HttpRequestException)
+            {
+                return new List<ElevOversigtDTO>();
+            }
+            
         }
 
         public async Task<List<ElevOversigtDTO>> GetElevOversigtByHotelId(int? hotelId)
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt/{hotelId}");
+                var result = await _client.GetFromJsonAsync<List<ElevOversigtDTO>>($"users/oversigt/{hotelId}");
+                
+                return result ?? new List<ElevOversigtDTO>();
+                
             }
             catch (HttpRequestException)
             {
@@ -63,12 +78,29 @@ namespace Client
 
         public async Task<List<BrugerLoginDTO>> GetAllActiveUsers()
         {
-            return await _client.GetFromJsonAsync<List<BrugerLoginDTO>>($"users/active");
+            try
+            {
+                var result = await _client.GetFromJsonAsync<List<BrugerLoginDTO>>($"users/active");
+                return result ?? new List<BrugerLoginDTO>();
+                
+            }
+            catch (HttpRequestException)
+            {
+                return new List<BrugerLoginDTO>();
+            }
         }
 
         public async Task<List<BrugerAdministrationDTO>> GetAllUsersWithOutCurrent(int userId)
         {
-            return await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"users/withoutmyself/{userId}");
+            try
+            {
+                var result = await _client.GetFromJsonAsync<List<BrugerAdministrationDTO>>($"users/withoutmyself/{userId}");
+                return result ?? new List<BrugerAdministrationDTO>();
+            }
+            catch (HttpRequestException)
+            {
+                return new List<BrugerAdministrationDTO>();
+            }
         }
         
 
@@ -116,7 +148,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents");
+                var result = await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents");
+                
+                return result ?? new List<KursusDeltagerListeDTO>();
+                
             }
             catch (HttpRequestException)
             {
@@ -128,7 +163,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"users/allstudents/{courseCode}");
+                var result = await _client.GetFromJsonAsync<List<KursusDeltagerListeDTO>>($"goals/allstudents/{courseCode}");
+                
+                return result ?? new List<KursusDeltagerListeDTO>();
+                
             }
 
             catch (HttpRequestException)

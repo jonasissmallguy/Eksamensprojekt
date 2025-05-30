@@ -1,6 +1,7 @@
 ﻿@page "/hotels"
 
 @inject IHotel IHotelService;
+@inject IAuth IAuthService;
 @inject NavigationManager navMan;
 
 @using Core;
@@ -12,10 +13,10 @@
                 <h1 class="form-title">Opret nyt hotel</h1>
                 <p class="form-description">Udfyld nedenstående felter for at oprette et nyt hotel i systemet.</p>
             </div>
-            <EditForm Model="newHotel" OnValidSubmit="@HandleNewHotel">
+            <EditForm Model="newHotel" OnSubmit="@HandleNewHotel">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-
+                <span style="color: red">@errorText</span>
                 <div class="form-group">
                     <label class="form-label required-field">Hotel navn</label>
                     <InputText class="form-control" @bind-Value="newHotel.HotelNavn" placeholder="Indtast hotelnavn" />
@@ -45,8 +46,7 @@
                         }
                     </InputSelect>
                 </div>
-                <button @onclick="() => CreateHotel(newHotel)" type="submit" class="submit-btn">Opret hotel</button>
-                <scan style="color: red">@errorText</scan>
+                <button type="submit" class="submit-btn">Opret hotel</button>
             </EditForm>
         </div>
     </div>
@@ -71,6 +71,8 @@
     
     protected override async Task OnInitializedAsync()
     {
+        _currentUser = await IAuthService.GetBruger();
+        
         if (_currentUser == null)
         {
             navMan.NavigateTo("login/hotels");
@@ -85,22 +87,24 @@
         newHotel.Region = regioner[0];
     }
 
-    private void HandleNewHotel()
+    private async Task HandleNewHotel()
     {
-        navMan.NavigateTo("/");
-    }
-
-    private async Task CreateHotel(HotelCreationDTO hotel)
-    {
+        
         try
         {
-            await IHotelService.CreateHotel(hotel);
-
+            await IHotelService.CreateHotel(newHotel);
+            navMan.NavigateTo("/");
         }
         catch (Exception e)
         {
-            errorText = "Kunne ikke oprette et hotel, prøv venligst igen";
+            if (e.Message.Contains("Dette hotelnavn er ikke unikt"))
+            {
+                errorText = "Dette hotelnavn er ikke unikt";
+            }
+            else
+            {
+                errorText = e.Message;
+            }
         }
     }
-
 }

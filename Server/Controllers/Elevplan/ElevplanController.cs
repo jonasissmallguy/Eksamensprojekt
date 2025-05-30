@@ -9,13 +9,13 @@ namespace Server
     [Route("elevplan")]
     public class ElevplanController : ControllerBase
     {
-        private ITemplateRepository _template;
-        private IElevplan _elevplan;
+        private ITemplateRepository _templateRepository;
+        private IElevplanRepository _elevplanRepository;
 
-        public ElevplanController(ITemplateRepository template, IElevplan elevplan)
+        public ElevplanController(ITemplateRepository template, IElevplanRepository elevplanRepository)
         {
-            _template = template;
-            _elevplan = elevplan;
+            _templateRepository = template;
+            _elevplanRepository = elevplanRepository;
         }
         
         
@@ -33,7 +33,7 @@ namespace Server
                 return BadRequest("Forkert studentId");
             }
             
-            var elevplan = await _elevplan.GetPlanByStudentId(studentId);
+            var elevplan = await _elevplanRepository.GetPlanByStudentId(studentId);
 
             if (elevplan == null)
             {
@@ -57,11 +57,11 @@ namespace Server
                 return BadRequest("Forkert studentId");
             }
             
-            var template = await _template.GetPlanTemplate(1);
+            var template = await _templateRepository.GetPlanTemplate(1);
             
             if (template == null)
             {
-                return NotFound("Kunne ikke finde skabelonen");  
+                return NotFound("Kunne ikke finde template, prøv venligst igen");  
             }
 
             var nyPlan = new Plan
@@ -125,9 +125,9 @@ namespace Server
                 return BadRequest("Forkert plan eller studentId");
             }
             
-            var elevplan = await _elevplan.SaveElevplan(studentId, plan);
+            var elevplan = await _elevplanRepository.SaveElevplan(studentId, plan);
 
-            if (elevplan.MatchedCount == 0)
+            if (elevplan.MatchedCount == 0) 
             {
                 return NotFound();
             }

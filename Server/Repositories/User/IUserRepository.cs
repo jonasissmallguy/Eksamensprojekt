@@ -23,8 +23,6 @@ namespace Server
         Task<List<User>> GetAllStudents();
         //Retunerer alle elever med hotelId = HotelId og Rolle = Elev
         Task<List<User>> GetAllStudentsByHotelId(int hotelId);
-        //Retunerer alle elever hvor kursusCode = CourseCode, Type = Kursus og Status = Active
-        Task<List<User>> GetAllStudentsMissingCourse(string kursusCode);
         //Tjekker om email er unik
         Task<bool> CheckUnique(string email);
         //Sætter Status = Deactivated efter id

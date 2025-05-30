@@ -4,7 +4,7 @@ using Core;
 namespace Server
 {
 
-    public interface IElevplan
+    public interface IElevplanRepository
     {
         //Gemmer en elevplan efter studentId = _id
         Task<UpdateResult> SaveElevplan(int studentId, Plan plan);

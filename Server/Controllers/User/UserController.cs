@@ -32,11 +32,6 @@ namespace Server
         public async Task<IActionResult> GetAllUsers()
         {
             var allUsers = await _userRepository.GetAllUsers();
-
-            if (allUsers == null)
-            {
-                return NotFound("Kunne ikke finde nogen users");
-            }
             
             List<BrugerLoginDTO> brugerLogins = new();
 
@@ -73,10 +68,6 @@ namespace Server
 
             var allUsers = await _userRepository.GetAllUsersWithOutMyself(id);
 
-            if (allUsers == null)
-            {
-                return NotFound();
-            }
 
             foreach (var x in allUsers)
             {
@@ -279,15 +270,14 @@ namespace Server
                 }
             }
 
-            //Deaktiveret indtil vi går live...
-            /*var mailSent = await SendLoginDetails(nyBruger);
+            //Sender mail med logindetaljer
+            var mailSent = await SendLoginDetails(nyBruger);
 
             if (!mailSent)
             {
-                return Confligt(); //skal give fejlbesked med invalid mail
+                return Conflict("Dette er ikke en valid mail");
             }
-            */
-    
+            
             return Ok(newUser);
         }
 
@@ -481,11 +471,7 @@ namespace Server
         {
             List<KursusDeltagerListeDTO> students = new();
             var users = await _userRepository.GetAllStudents();
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever");
-            }
+            
 
             foreach (var user in users)
             {
@@ -500,40 +486,6 @@ namespace Server
             return Ok(students);
         }
         
-        /// <summary>
-        /// Finder alle studerende, der mangler et kursus
-        /// </summary>
-        /// <param name="kursusCode"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("allstudents/{kursusCode}")]
-        public async Task<IActionResult> GetAllStudentsWithCourse(string kursusCode)
-        {
-            if (string.IsNullOrWhiteSpace(kursusCode))
-            {
-                return BadRequest("Kursus koden er blank");
-            }
-            
-            List<KursusDeltagerListeDTO> students = new();
-            var users = await _userRepository.GetAllStudentsMissingCourse(kursusCode);
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever med de mang");
-            }
-            
-            foreach (var user in users)
-            {
-                students.Add(new KursusDeltagerListeDTO
-                {
-                    Id = user.Id,
-                    Hotel = user.HotelNavn,
-                    Navn = user.FirstName + "  " + user.LastName
-                });
-            }
-
-            return Ok(students);
-        }
 
         /// <summary>
         /// Henter elevoversigten for HR
@@ -544,11 +496,6 @@ namespace Server
         public async Task<IActionResult> GetElevOversigt()
         {
             var users = await _userRepository.GetAllStudents();
-
-            if (!users.Any())
-            {
-                return NotFound("Kunne ikke finde nogen elever");
-            }
             
             var elevOversigt = new List<ElevOversigtDTO>();
 
@@ -590,11 +537,6 @@ namespace Server
             }
             
             var elever = await _userRepository.GetAllStudentsByHotelId(hotelId);
-
-            if (!elever.Any())
-            {
-                return NotFound();
-            }
             
             List<ElevOversigtDTO> elevOversigt = new();
 
@@ -681,12 +623,7 @@ namespace Server
         public async Task<IActionResult> GetAllActiveUsers()
         {
             var activeUsers = await _userRepository.GetAllActiveUsers();
-
-            if (!activeUsers.Any())
-            {
-                return NotFound("Kunne ikke finde nogen aktive elever");
-            }
-
+            
             List<BrugerLoginDTO> users = new();
 
             foreach (var user in activeUsers)
@@ -721,12 +658,12 @@ namespace Server
 
             //Indhold
             var subject = "Nulstilling af Comwell adgangskode";
-            var plainTextContent =
-                $"Opret din nye adgangskode\t\n\t\t\n\t" +
-                $"Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil." +
-                $"\n\nDu skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\t\n " +
-                $"{verificeringsKode}" +
-                $"\t\nHar du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.\t";
+            var plainTextContent = 
+                "Opret din nye adgangskode\n\n" +
+                "Vi skriver til dig fordi du har oplyst, at du har glemt din adgangskode til din Comwell profil.\n\n" +
+                "Du skal bruge følgende midlertidige kode til at oprette din nye adgangskode:\n" +
+                $"{verificeringsKode}\n\n" +
+                "Har du ikke anmodet om en ny adgangskode til Comwell login, kan du se bort fra denne mail.";
 
             var htmlContent = $"{verificeringsKode}";
 

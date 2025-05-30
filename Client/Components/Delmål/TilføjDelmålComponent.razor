@@ -6,6 +6,7 @@
         <DataAnnotationsValidator/>
         <ValidationSummary/>
         <div class="row justify-content-center">
+            <span style="color: red">@_errorMessage</span>
             <div class="col-md-6 mb-3">
                 <label for="Type">Type:</label>
                 <InputSelect class="form-select" @bind-Value="tilføjDelmål.Type">
@@ -48,7 +49,7 @@
                         <option value="0" disabled selected hidden>Vælg forløb</option>
                         @if (ElevPlan?.Forløbs != null)
                         {
-                            @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester && g.Title != "Skoleforløb")))
+                            @foreach (var e in ElevPlan.Forløbs.Where((g => g.Semester == selectedSemester && g.Title != "Skoleforløb" && g.Title != "Interne Kurser")))
                             {
                                 <option value="@e.Id">@e.Title</option>
                             }
@@ -149,6 +150,9 @@
     
     //Valgt semester 
     private string selectedSemester;
+    
+    //Error message
+    private string _errorMessage;
 
     public void Open()
     {
@@ -177,8 +181,33 @@
 
         if (WorkInMemory)
         {
-            // Just invoke callback, don't call DB service here
+
+            _errorMessage = null;
+
+            if (tilføjDelmål.ForløbId == 0)
+            {
+                _errorMessage = "Venligst vælg et forløb";
+            }
+
+            if (string.IsNullOrWhiteSpace(tilføjDelmål.Description))
+            {
+                _errorMessage = "Venligst udfyld en beskrivelse";
+            }
+
+            if (string.IsNullOrWhiteSpace(tilføjDelmål.Title))
+            {
+                _errorMessage = "Venligst udfyld en titel";
+            }
+
+            if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                StateHasChanged();
+                return;
+            }
+            
+            
             await OnGoalAdded.InvokeAsync(tilføjDelmål);
+            ModalRef.Close();
         }
         else
         {
@@ -191,17 +220,36 @@
                 tilføjDelmål.Title = "";
                 tilføjDelmål.Description = "";
                 tilføjDelmål.ForløbId = skoleForløb.Id;
-                
-                await IGoalService.UpdateSkole(tilføjDelmål, StudentId);
+
+                try
+                {
+                    await IGoalService.UpdateSkole(tilføjDelmål, StudentId);
+                    ModalRef.Close();
+                    StateHasChanged();
+
+                }
+                catch (Exception e)
+                {
+                    _errorMessage = e.Message;
+                }
             }   
             else if (tilføjDelmål.Type == "Delmål")
             {
-                await IGoalService.AddGoal(tilføjDelmål, StudentId); 
-                await OnGoalAdded.InvokeAsync(tilføjDelmål);
+                try
+                {
+                    await IGoalService.AddGoal(tilføjDelmål, StudentId);
+                    await OnGoalAdded.InvokeAsync(tilføjDelmål);
+                    ModalRef?.Close();
+                    StateHasChanged();
+                }
+                catch (Exception e)
+                {
+                    _errorMessage = e.Message;
+                    StateHasChanged();
+                    return;
+                }
             }
         }
-
-        ModalRef?.Close();
     }
     
     }

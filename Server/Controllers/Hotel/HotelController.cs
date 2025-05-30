@@ -22,6 +22,15 @@ namespace Server
         [HttpPost]
         public async Task<IActionResult> PostHotel(HotelCreationDTO newHotel)
         {
+            
+            //Check unique
+            var unique = await _hotelRepository.CheckUnique(newHotel.HotelNavn);
+
+            if (!unique)
+            {
+                return Conflict("Dette hotelnavn er ikke unikt");
+            }
+            
             var hotel = new Hotel
             {
                 HotelNavn = newHotel.HotelNavn,
@@ -45,11 +54,6 @@ namespace Server
         public async Task<IActionResult> GetAllHotels()
         {
             var hotels = await _hotelRepository.GetAllHotels();
-
-            if (!hotels.Any())
-            {
-                return NotFound("Kunne ikke finde nogen hoteller");
-            }
             
             return Ok(hotels);
         }

@@ -1,6 +1,7 @@
 ﻿using Core;
 using System.Net.Http.Json;
 using Core.DTO.Kursus;
+using SendGrid;
 
 namespace Client
 {
@@ -17,7 +18,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<Kursus>>($"kursus");
+                var result = await _client.GetFromJsonAsync<List<Kursus>>($"kursus");
+                
+                return result ?? new List<Kursus>();
+                
             }
             catch (HttpRequestException)
             {
@@ -42,7 +46,8 @@ namespace Client
 
              if (!result.IsSuccessStatusCode)
              {
-                 return null;
+                 var message = await result.Content.ReadAsStringAsync();
+                 throw new Exception(message);
              }
              return await result.Content.ReadFromJsonAsync<Kursus>();
         }
@@ -75,7 +80,10 @@ namespace Client
         {
             try
             {
-                return await _client.GetFromJsonAsync<List<KursusTemplate>>($"kursus/templates");
+                var result = await _client.GetFromJsonAsync<List<KursusTemplate>>($"kursus/templates");
+                
+                return result ?? new List<KursusTemplate>();
+                
             }
             catch (HttpRequestException)
             {

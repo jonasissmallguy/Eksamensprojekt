@@ -10,6 +10,7 @@ public class KursusCreationDTO
     public string CourseCode { get; set; }
 
     [Required(ErrorMessage = "Venligst indtast et antal max deltager")]
+    [Range(1,25,ErrorMessage = "Kursus skal indeholde mellem 1 - 25 deltager")]
     public int MaxParticipants { get; set; } = 25;
     
     [Required (ErrorMessage = "Venligst indtast en lokation")]

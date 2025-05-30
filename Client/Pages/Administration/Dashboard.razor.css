@@ -12,36 +12,36 @@
     align-items: center;
 }
 
-/* Grundlæggende styling for tabellen */
+
 table {
-    width: 100%; /* Tabellen fylder hele bredden af dens container */
-    border-collapse: collapse; /* Fjerner mellemrum mellem celler */
-    margin: 20px 0; /* Tilføjer margin oven og under tabellen */
-    font-size: 18px; /* Justerer skriftstørrelsen */
-    text-align: left; /* Teksten i cellerne er venstrejusteret */
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 20px 0; 
+    font-size: 18px; 
+    text-align: left; 
 }
 
-/* Styling for tabeloverskrifter (th) */
+
 th {
     background-color: #152238;
-    color: white; /* Hvid tekstfarve */
-    padding: 12px; /* Tilføjer padding for bedre læselighed */
+    color: white; 
+    padding: 12px; 
 }
 
-/* Styling for tabelceller (td) */
+
 td {
-    padding: 12px; /* Tilføjer padding for bedre læselighed */
-    border-bottom: 1px solid #ddd; /* Tilføjer en lys grå bundlinje */
+    padding: 12px; 
+    border-bottom: 1px solid #ddd; 
 }
 
-/* Hover-effekt på tabelrækker */
+
 tr:hover {
-    background-color: #f5f5f5; /* Lys grå baggrundsfarve ved hover */
+    background-color: #f5f5f5; 
 }
 
-/* Styling for hver anden række for bedre læselighed */
+
 tr:nth-child(even) {
-    background-color: #f2f2f2; /* Lys grå baggrundsfarve for hver anden række */
+    background-color: #f2f2f2; 
 }
 
 .export-button {

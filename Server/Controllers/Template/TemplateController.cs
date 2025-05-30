@@ -45,11 +45,7 @@ namespace Server
         public async Task<IActionResult> GetTemplates()
         {
             var templates = await _templateRepository.GetAllPlanTemplates();
-
-            if (templates == null)
-            {
-                return NotFound();
-            }
+            
             return Ok(templates);
         }
     }

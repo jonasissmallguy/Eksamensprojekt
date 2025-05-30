@@ -21,7 +21,8 @@ namespace Client
 
             if (!response.IsSuccessStatusCode)
             {
-                return null;
+                var message = response.Content.ReadAsStringAsync().Result;
+                throw new Exception(message);
             }
             return await response.Content.ReadFromJsonAsync<Plan>();
 

@@ -3,6 +3,7 @@
 
 @inject NavigationManager navMan;
 @inject IBruger IBrugerService;
+@inject IAuth IAuthService;
 
 @using Core;
 
@@ -63,9 +64,11 @@
     
     protected override async Task OnInitializedAsync()
     {
+        _currentUser = await IAuthService.GetBruger();
+        
         if (_currentUser == null)
         {
-            navMan.NavigateTo($"login/minside{id}");
+            navMan.NavigateTo($"login/minprofil/{id}");
             return;
         }
 

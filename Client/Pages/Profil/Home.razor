@@ -230,8 +230,11 @@ else
                     </div>    
             </div>
             
+            
             <div class="dashboard-card">
                 <h5 class="card-title">Afventende godkendelser</h5>
+                <span style="color: red">@_deleteError</span>
+
                 @if (_missingApproval != null)
                 {
                     <div class="table-container">
@@ -307,6 +310,8 @@ else
     //Indeholder kurset man ønsker at tilmelde
     private KursusManglendeDTO? _currentMissingCourse;
     
+    //Delegoalerror message
+    private string _deleteError = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -326,9 +331,16 @@ else
         if (_currentUser.Rolle == "Elev")
         {
             //Henter delmål der mangler action fra kok eller leder  
-            _needAction = await IGoalService.GetNeedActionGoals(_currentUser.Id);
-            _futureSchool = await IGoalService.GetFutureSchools(_currentUser.Id);
-            _futureCourses = await IKursusService.GetFutureCoursesByStudentId(_currentUser.Id);
+            var needActionTask = IGoalService.GetNeedActionGoals(_currentUser.Id);
+            var futureSchoolTask = IGoalService.GetFutureSchools(_currentUser.Id);
+            var futureCoursesTask = IKursusService.GetFutureCoursesByStudentId(_currentUser.Id);
+            
+            await Task.WhenAll(needActionTask, futureSchoolTask, futureCoursesTask);
+            
+            _needAction = await needActionTask;
+            _futureSchool = await futureSchoolTask;
+            _futureCourses = await futureCoursesTask;
+
         }
 
         if (_currentUser.Rolle == "Kok")
@@ -339,13 +351,21 @@ else
         if (_currentUser.Rolle == "Køkkenchef")
         {
             //Henter manglende godkendelser for køkkenchef
-            _missingApproval = await IGoalService.GetAwaitingApproval(_currentUser.HotelId);
+            var missingApprovalTask = IGoalService.GetAwaitingApproval(_currentUser.HotelId);
             //Henter aktuelle kurser fra HR
-            _currentCourses = await IKursusService.GetFutureCourses();
+            var currentCoursesTask = IKursusService.GetFutureCourses();
             //Henter manglende kurser
-            _missingCourses = await IGoalService.GetMissingCourses(_currentUser.HotelId);
+            var missingCoursesTask = IGoalService.GetMissingCourses(_currentUser.HotelId);
             //Elever ude af huset
-            _outOfHouse = await IGoalService.GetOutOfHouse(_currentUser.HotelId);
+            var outOfHouseTask = IGoalService.GetOutOfHouse(_currentUser.HotelId);
+            
+            await Task.WhenAll(missingApprovalTask, currentCoursesTask, missingCoursesTask, outOfHouseTask);
+
+            _missingApproval = await missingApprovalTask;
+            _currentCourses = await currentCoursesTask;
+            _missingCourses = await missingCoursesTask;
+            _outOfHouse = await outOfHouseTask;
+            
         }
         _loading = false;
     }
@@ -353,12 +373,20 @@ else
     
     private async Task ConfirmGoal(StartedGoalsDTO goalDto)
     {
-        var success = await IGoalService.ConfirmGoal(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
 
-        if (goalDto != null)
+        try
         {
-            _missingApproval = _missingApproval.Where(g => g.GoalId != goalDto.GoalId).ToList();
-            StateHasChanged();
+            var success = await IGoalService.ConfirmGoal(goalDto.PlanId, goalDto.ForløbId, goalDto.GoalId);
+
+            if (goalDto != null)
+            {
+                _missingApproval = _missingApproval.Where(g => g.GoalId != goalDto.GoalId).ToList();
+                StateHasChanged();
+            }
+        }
+        catch (Exception e)
+        {
+            _deleteError = e.Message;
         }
     }
     

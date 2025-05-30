@@ -7,7 +7,6 @@
     padding: 20px;
 }
 
-/* Form column styling */
 .form-wrapper {
     flex: 1;
     padding-right: 3rem;
@@ -39,7 +38,6 @@
     font-size: 1rem;
 }
 
-/* Form elements styling */
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -80,7 +78,6 @@
     font-size: 1rem;
 }
 
-/* Submit button */
 .submit-btn {
     width: 100%;
     padding: 0.75rem;
@@ -98,7 +95,6 @@
     background-color: #2e5984;
 }
 
-/* Image column styling */
 .image-wrapper {
     flex: 1;
     display: flex;
@@ -114,7 +110,6 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive design */
 @media (max-width: 992px) {
     .form-page-container {
         flex-direction: column;

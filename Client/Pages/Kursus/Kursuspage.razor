@@ -1,6 +1,7 @@
 ﻿@using Core;
 
 @inject IKursus IKursusService;
+@inject IAuth IAuthService;
 @inject IBruger IBrugerService;
 @inject NavigationManager navMan;
 
@@ -141,6 +142,9 @@
     
     protected override async Task OnInitializedAsync()
     {
+        
+        _currentUser = await IAuthService.GetBruger();
+        
         if (_currentUser == null)
         {
             navMan.NavigateTo("login/");

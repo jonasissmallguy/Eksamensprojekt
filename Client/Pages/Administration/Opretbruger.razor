@@ -12,9 +12,8 @@
         <EditForm Model="newUser" OnSubmit="@HandleNewUser">
             <DataAnnotationsValidator />
             <ValidationSummary />
-            <scan style="color: red">@errorText</scan>
+            <span style="color: red">@errorText</span>
             
-            <!-- Cards Container for Side-by-Side Layout -->
             <div class="cards-container" style="display: flex; gap: 20px; align-items: flex-start; margin: 20px;">
                 <!-- Main User Information Card -->
                 <div class="form-card" style="min-width: 400px; flex: 0 0 auto;">
@@ -80,7 +79,6 @@
                     </div>
                 </div>
 
-                <!-- Student Specific Information Card -->
                 @if (newUser.Rolle == "Elev")
                 {
                     <div class="form-card" style="min-width: 400px; flex: 0 0 auto;">

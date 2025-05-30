@@ -19,9 +19,9 @@ namespace Server
 
         public GoalRepository()
         {
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+            string _connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
             
-            _goalClient = new MongoClient(ConnectionString);
+            _goalClient = new MongoClient(_connectionString);
             _goalsDatabase = _goalClient.GetDatabase("comwell");
             _goalCollection = _goalsDatabase.GetCollection<User>("users");
             _countersCollection = _goalsDatabase.GetCollection<BsonDocument>("counters"); 
@@ -241,7 +241,6 @@ namespace Server
                 return null;
 
             var user = await _goalCollection.Find(filter).FirstOrDefaultAsync();
-            //Skal dette laves om - herunder?
             var goal = user?.ElevPlan?.Forløbs?
                 .FirstOrDefault(f => f.Id == mentor.ForløbId)?
                 .Goals?.FirstOrDefault(g => g.Id == mentor.GoalId);
@@ -493,6 +492,25 @@ namespace Server
             );
             
             return await _goalCollection.Find(filter).ToListAsync();
+        }
+        
+        public async Task<List<User>> GetAllStudentsMissingCourse(string kursusCode)
+        {
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.Rolle, "Elev"),
+                Builders<User>.Filter.ElemMatch(u => u.ElevPlan.Forløbs,
+                    Builders<Forløb>.Filter.ElemMatch(f => f.Goals,
+                        Builders<Goal>.Filter.And(
+                            Builders<Goal>.Filter.Eq(g => g.Type, "Kursus"),
+                            Builders<Goal>.Filter.Eq(g => g.CourseCode, kursusCode),
+                            Builders<Goal>.Filter.Eq(g => g.Status, "Active") 
+                        )
+                    )
+                )
+            );
+            
+            return await _goalCollection.Find(filter).ToListAsync();
+            
         }
         
 

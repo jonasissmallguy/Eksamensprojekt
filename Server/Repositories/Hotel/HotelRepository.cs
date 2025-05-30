@@ -14,9 +14,9 @@ namespace Server
 
         public HotelRepository()
         {
-            string ConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+            string _connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
             
-            _hotelClient = new MongoClient(ConnectionString);
+            _hotelClient = new MongoClient(_connectionString);
             _hotelDatabase = _hotelClient.GetDatabase("comwell");
             _hotelCollection = _hotelDatabase.GetCollection<Hotel>("hotels");
             _countersCollection = _hotelDatabase.GetCollection<BsonDocument>("counters"); 
@@ -77,6 +77,17 @@ namespace Server
                 .Set("KøkkenChefNavn", "");
             
             return await _hotelCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<bool> CheckUnique(string hotelNavn)
+        {
+            var filter = Builders<Hotel>.Filter.Eq("HotelNavn", hotelNavn);
+
+            if (_hotelCollection.Find(filter).Any())
+            {
+                return false;
+            }
+            return true;
         }
     }
 
