@@ -13,7 +13,6 @@ namespace Client
             _client = client;
         }
         
-
         public async Task<List<Hotel>> GetHotels()
         {
             try

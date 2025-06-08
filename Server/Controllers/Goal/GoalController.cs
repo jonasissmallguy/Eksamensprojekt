@@ -1,6 +1,7 @@
 ﻿using Client;
 using Core;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 
 namespace Server
 {
@@ -229,36 +230,17 @@ namespace Server
                 return BadRequest("Forkert hotelId");
             }
             
-            var users = await _goalRepository.GetAwaitingApproval(hotelId);
+            var docs = await _goalRepository.GetAwaitingApproval(hotelId);
             
-
-            var result = new List<StartedGoalsDTO>();
-
-            foreach (var user in users)
+            var result = docs.Select(x => new StartedGoalsDTO
             {
-                var name = user.FirstName + " " + user.LastName;
-                
-                var awaitingApprovalGoals = user.ElevPlan.Forløbs
-                    .SelectMany(f => f.Goals)
-                    .Where(g => g.Status == "AwaitingApproval")
-                    .ToList();
-                
-
-                if (awaitingApprovalGoals != null)
-                {
-                    foreach (var goal in awaitingApprovalGoals)
-                    {
-                        result.Add(new StartedGoalsDTO
-                        {
-                            FullName = name,
-                            PlanId = goal.PlanId,
-                            ForløbId = goal.ForløbId,
-                            GoalId = goal.Id,
-                            GoalTitle = goal.Title
-                        });
-                    }
-                }
-            }
+                FullName = x["FullName"].ToString(),
+                PlanId = x["ElevPlan"].ToInt32(),
+                ForløbId = x["ForløbId"].ToInt32(),
+                GoalId = x["GoalId"].ToInt32(),
+                GoalTitle = x["GoalTitle"].ToString(),
+            }).ToList();
+            
             return Ok(result);
         }
 
@@ -272,38 +254,19 @@ namespace Server
         public async Task<IActionResult> GetStartedGoals(int hotelId)
         {
             if (hotelId <= 0)
-            {
-                return BadRequest("Forkert hotelId");
-            }
-            
-            var users = await _goalRepository.GetStartedGoals(hotelId);
-            
-            var result = new List<StartedGoalsDTO>();
+                return BadRequest("Invalid hotelId");
 
-            foreach (var user in users)
-            {
-                var name = user.FirstName + " " + user.LastName;
-                
-                var inProgressGoals = user.ElevPlan.Forløbs
-                    .SelectMany(f => f.Goals)
-                    .Where(g => g.Status == "InProgress" && g.Type == "Delmål")
-                    .ToList();
+            var docs = await _goalRepository.GetStartedGoals(hotelId);
 
-                if (inProgressGoals != null)
-                {
-                    foreach (var goal in inProgressGoals)
-                    {
-                        result.Add(new StartedGoalsDTO
-                        {
-                            FullName = name,
-                            PlanId = goal.PlanId,
-                            ForløbId = goal.ForløbId, 
-                            GoalId = goal.Id,
-                            GoalTitle = goal.Title
-                        });
-                    }
-                }
-            }
+            var result = docs.Select(d => new StartedGoalsDTO
+            {
+                FullName = d["FullName"].AsString,
+                PlanId = d["PlanId"].AsInt32,
+                ForløbId = d["ForløbId"].AsInt32,
+                GoalId = d["GoalId"].AsInt32,
+                GoalTitle = d["GoalTitle"].AsString
+            }).ToList();
+
             return Ok(result);
         }
 
@@ -320,38 +283,18 @@ namespace Server
                 return BadRequest("Forkert hotelId");
             }
             
-            var users = await _goalRepository.GetMissingCourses(hotelId);
+            var docs = await _goalRepository.GetMissingCourses(hotelId);
             
-            var result = new List<KursusManglendeDTO>();
 
-            foreach (var user in users)
+            var result = docs.Select(x => new KursusManglendeDTO
             {
-                var name = user.FirstName + " " + user.LastName;
-
-                var missingCourses = user.ElevPlan?.Forløbs?
-                    .Where(f => f.Semester == user.Year)
-                    .SelectMany(f => f.Goals)
-                    .Where(g => g.Type == "Kursus" && g.Status == "Active")
-                    .ToList();
-                
-
-                if (missingCourses != null)
-                {
-                    foreach (var kursus in missingCourses)
-                    {
-                        result.Add(new KursusManglendeDTO
-                        {
-                            Id = user.Id,
-                            CourseCode = kursus.CourseCode,
-                            FullName = name,
-                            GoalId = kursus.Id,
-                            GoalTitle = kursus.Title,
-                            Hotel = user.HotelNavn
-                        });
-                    }
-                }
-
-            }
+                Id = x["Id"].AsInt32,
+                GoalTitle = x["GoalTitle"].AsString,
+                CourseCode = x["CourseCode"].AsString,
+                FullName = x["FullName"].AsString,
+                GoalId = x["GoalId"].AsInt32,
+                Hotel = x["Hotel"].AsString,
+            });
             
             return Ok(result);
         }
@@ -370,41 +313,16 @@ namespace Server
                 return BadRequest("Forkert hotelId");
             }
             
-            var users = await _goalRepository.GetOutOfHouse(hotelId);
+            var docs = await _goalRepository.GetOutOfHouse(hotelId);
             
-            var result = new List<OutOfHouseDTO>();
-
-            foreach (var user in users)
+            var result = docs.Select(x => new OutOfHouseDTO
             {
-                var name = user.FirstName + " " + user.LastName;
-
-                var outOfHouseGoals = user.ElevPlan.Forløbs
-                    .SelectMany(f => f.Goals)
-                    .Where(g => 
-                        (g.Type == "Kursus" || g.Type == "Skoleophold") &&
-                        g.Status == "InProgress" &&
-                        g.StartDate != null &&
-                        g.EndDate != null &&
-                        g.StartDate <= DateTime.Now.AddYears(1)
-                    )
-                    .ToList();
-
-                if (outOfHouseGoals != null)
-                {
-                    foreach (var goal in outOfHouseGoals)
-                    {
-                        result.Add(new OutOfHouseDTO
-                        {
-                            FullName = name,
-                            GoalId = goal.Id,
-                            GoalTitle = goal.Title,
-                            StartDate = goal.StartDate,
-                            EndDate = goal.EndDate
-                        });
-                    }
-                }
-
-            }
+                FullName = x["FullName"].AsString,
+                GoalId = x["GoalId"].AsInt32,
+                GoalTitle = x["GoalTitle"].AsString,
+                StartDate = x["StartDate"].AsLocalTime,
+                EndDate = x["EndDate"].AsLocalTime,
+            }).ToList();
             
             return Ok(result);
         }

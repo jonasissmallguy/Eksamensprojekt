@@ -528,7 +528,7 @@ namespace Server
         /// <param name="hotelId"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("oversigt/{hotelId}")]
+        [Route("oversigt/{hote  lId}")]
         public async Task<IActionResult> GetElevOversigtByHotel(int hotelId)
         {
             if (hotelId <= 0)

@@ -1,6 +1,7 @@
 ﻿using Client;
 using Client.Components.Elevoversigt;
 using Core;
+using MongoDB.Bson;
 
 namespace Server
 {
@@ -43,13 +44,13 @@ namespace Server
         //Retunerer en liste af brugere, hvor type = Delmål og Status er InProgress, AwaitingApproval
         Task<List<User>> GetActionGoals(int elevId);
         //Retunerer en liste af brugere hvor Status = AwaitingApproval efter hotelId = HotelId
-        Task<List<User>> GetAwaitingApproval(int hotelId);
+        Task<List<BsonDocument>> GetAwaitingApproval(int hotelId);
         //Retunerer en liste af brugere hvor type = Kursus og Status = Active efter hotelId = HotelId
-        Task<List<User>> GetMissingCourses(int hotelId);
+        Task<List<BsonDocument>> GetMissingCourses(int hotelId);
         //Retunerer en liste af brugere hvor type er Kursus eller Skoleophold, Status = InProgress og StartDate er 1 fra dd.
-        Task<List<User>> GetOutOfHouse(int hotelId);
+        Task<List<BsonDocument>> GetOutOfHouse(int hotelId);
         //Retunerer en liste af mål hvor type = Delmål og Status = InProgress
-        Task<List<User>> GetStartedGoals(int hotelId);
+        Task<List<BsonDocument>> GetStartedGoals(int hotelId);  
         //Retunerer alle elever hvor kursusCode = CourseCode, Type = Kursus og Status = Active
         Task<List<User>> GetAllStudentsMissingCourse(string kursusCode);
     }
