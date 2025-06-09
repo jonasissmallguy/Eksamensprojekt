@@ -185,34 +185,19 @@ namespace Server
                 return BadRequest("Forkert elevId");
             }
             
-            var users = await _goalRepository.GetActionGoals(elevId);
+            var docs = await _goalRepository.GetActionGoals(elevId);
 
-            var result = new List<GoalNeedActionDTO>();
-
-            foreach (var user in users)
+            var result = docs.Select(d => new GoalNeedActionDTO
             {
-                var actionGoals = user.ElevPlan.Forløbs
-                    .SelectMany(f => f.Goals)
-                    .Where(g => g.Type == "Delmål" && g.Status == "InProgress" || g.Status == "AwaitingApproval")
-                    .ToList();
-
-                foreach (var goal in actionGoals)
+                GoalId = d["GoalId"].AsInt32,
+                GoalTitle = d["GoalTitle"].AsString,
+                Status = d["GoalStatus"].AsString switch
                 {
-                    var status = goal.Status 
-                        switch
-                    {
-                        "InProgress" => "Mangler godkendelse fra en kok eller din leder",
-                        "AwaitingApproval" => "Afventer din leders godkendelse"
-                    };
-
-                    result.Add(new GoalNeedActionDTO
-                    {
-                        GoalId = goal.Id,
-                        GoalTitle = goal.Title,
-                        Status = status
-                    });
+                    "InProgress" => "Mangler godkendelse fra en kok eller din leder",
+                    "AwaitingApproval" => "Afventer din leders godkendelse"
                 }
-            }
+            }).ToList();
+            
             return Ok(result);
         }
 

@@ -42,7 +42,7 @@ namespace Server
         //Retunerer alle mål hvor type = Skoleophold efter elevId = Id
         Task<List<Goal>> GetFutureSchools(int elevId);
         //Retunerer en liste af brugere, hvor type = Delmål og Status er InProgress, AwaitingApproval
-        Task<List<User>> GetActionGoals(int elevId);
+        Task<List<BsonDocument>> GetActionGoals(int elevId);
         //Retunerer en liste af brugere hvor Status = AwaitingApproval efter hotelId = HotelId
         Task<List<BsonDocument>> GetAwaitingApproval(int hotelId);
         //Retunerer en liste af brugere hvor type = Kursus og Status = Active efter hotelId = HotelId

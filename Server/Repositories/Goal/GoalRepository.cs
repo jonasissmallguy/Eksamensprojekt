@@ -403,7 +403,7 @@ namespace Server
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<User>> GetActionGoals(int elevId)
+        public async Task<List<BsonDocument>> GetActionGoals(int elevId)
         {
             var pipeline = _goalCollection.Aggregate()
                 .Match(Builders<User>.Filter.Eq(u => u.Id, elevId))
@@ -415,8 +415,13 @@ namespace Server
                         new[] { "InProgress", "AwaitingApproval" })))
                 .Project(new BsonDocument
                 {
-                    { },
+                    {"FullName", new BsonDocument("$concat", new BsonArray { "$FirstName", " ","$LastName" }) },
+                    {"GoalId", "$ElevPlan.Forløbs.Goals._id"},
+                    {"GoalTitle", "$ElevPlan.Forløbs.Goals.Title"},
+                    {"GoalStatus", "$ElevPlan.Forløbs.Goals.Status" }
                 });
+            
+            return await pipeline.ToListAsync();
         }
 
 
